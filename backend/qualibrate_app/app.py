@@ -13,10 +13,6 @@ try:
     from json_timeline_database.app import app as json_timeline_db_app
 except ImportError:
     json_timeline_db_app = None
-try:
-    from qualibrate_runner.app import app as runner_app
-except ImportError:
-    runner_app = None
 
 
 app = FastAPI(title="Qualibrate")
