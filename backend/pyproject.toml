@@ -20,6 +20,7 @@ tomli-w = "^1.0.0"
 requests = "^2.31.0"
 jsonpatch = "^1.33"
 qualibrate-runner = {version="^0.2.2", optional = true }
+qualibrate-config = {path = "../../qualibrate-config", develop = true}
 # TODO: replace after publishing timeline-db
 # json-timeline-database = { path = "../../json-timeline-database", optional = true, develop = true }
 
