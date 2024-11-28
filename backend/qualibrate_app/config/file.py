@@ -49,7 +49,7 @@ def read_config_file(
     config_file: Path, solve_references: bool = True
 ) -> dict[str, Any]:
     with config_file.open("rb") as fin:
-        config = tomllib.load(fin)
+        config = dict(tomllib.load(fin))
     if not solve_references:
         return config
     return resolve_references(config)
