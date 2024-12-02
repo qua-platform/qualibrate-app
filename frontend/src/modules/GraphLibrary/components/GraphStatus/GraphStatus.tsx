@@ -5,14 +5,30 @@ import { GraphStatusContextProvider, useGraphStatusContext } from "./context/Gra
 import { Results } from "../../../Nodes/components/Results/Results";
 import { MeasurementHistory } from "./components/MeasurementHistory/MeasurementHistory";
 import { MeasurementElementGraph } from "./components/MeasurementElementGraph/MeasurementElementGraph";
-import { SelectionContextProvider } from "../../../common/context/SelectionContext";
+import { SelectionContextProvider, useSelectionContext } from "../../../common/context/SelectionContext";
 import { GraphContextProvider, useGraphContext } from "../../context/GraphContext";
 import PageName from "../../../../common/ui-components/common/Page/PageName";
 
 const GraphStatus = () => {
   const heading = "Run calibration graph";
+  const { setSelectedItemName } = useSelectionContext();
   const { workflowGraphElements } = useGraphContext();
-  const { allMeasurements, result, diffData } = useGraphStatusContext();
+  const { allMeasurements, result, diffData, fetchResultsAndDiffData, setResult, setDiffData } = useGraphStatusContext();
+
+  const getMeasurementId = (measurementName: string) => {
+    return allMeasurements?.find((measurement) => measurement.name === measurementName)?.snapshot_idx;
+  };
+  const handleOnCytoscapeNodeClick = (name: string) => {
+    setSelectedItemName(undefined);
+    const measurementId = getMeasurementId(name);
+    if (measurementId) {
+      setSelectedItemName(name);
+      fetchResultsAndDiffData(measurementId);
+    } else {
+      setResult({});
+      setDiffData({});
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -21,7 +37,9 @@ const GraphStatus = () => {
           <PageName>{heading}</PageName>
         </div>
         <div className={styles.graphAndHistoryWrapper}>
-          {workflowGraphElements && <MeasurementElementGraph workflowGraphElements={workflowGraphElements} />}
+          {workflowGraphElements && (
+            <MeasurementElementGraph workflowGraphElements={workflowGraphElements} onCytoscapeNodeClick={handleOnCytoscapeNodeClick} />
+          )}
           <MeasurementHistory listOfMeasurements={allMeasurements} />
         </div>
       </div>
