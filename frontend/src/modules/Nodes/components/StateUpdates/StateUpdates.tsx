@@ -8,8 +8,10 @@ import { StateUpdateComponent, StateUpdateProps } from "./StateUpdateComponent";
 
 export const StateUpdates: React.FC<{
   runningNodeInfo: RunningNodeInfo | undefined;
+  updateAllButtonDisabled: boolean;
+  setUpdateAllButtonDisabled: (a: boolean) => void;
 }> = (props) => {
-  const { runningNodeInfo } = props;
+  const { runningNodeInfo, updateAllButtonDisabled, setUpdateAllButtonDisabled } = props;
 
   const handleClick = async (stateUpdates: StateUpdate) => {
     const litOfUpdates = Object.entries(stateUpdates ?? {}).map(([key, stateUpdateObject]) => {
@@ -19,6 +21,7 @@ export const StateUpdates: React.FC<{
       };
     });
     await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", litOfUpdates);
+    setUpdateAllButtonDisabled(true);
   };
 
   return (
@@ -29,7 +32,7 @@ export const StateUpdates: React.FC<{
           <div className={styles.updateAll}>
             <BlueButton
               className={styles.updateAllButton}
-              disabled={false}
+              disabled={updateAllButtonDisabled}
               onClick={() => handleClick(runningNodeInfo?.state_updates ?? {})}
             >
               Update all

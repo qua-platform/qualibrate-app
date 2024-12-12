@@ -9,6 +9,7 @@ import { StateUpdates } from "../StateUpdates/StateUpdates";
 
 export const RunningJob: React.FC = () => {
   const { runningNode, runningNodeInfo, isNodeRunning, setIsNodeRunning } = useNodesContext();
+  const [updateAllButtonDisabled, setUpdateAllButtonDisabled] = React.useState(false);
 
   const getRunningJobInfo = () => {
     return (
@@ -92,7 +93,11 @@ export const RunningJob: React.FC = () => {
           {getRunningJobParameters()}
         </div>
       )}
-      <StateUpdates runningNodeInfo={runningNodeInfo} />
+      <StateUpdates
+        runningNodeInfo={runningNodeInfo}
+        updateAllButtonDisabled={updateAllButtonDisabled}
+        setUpdateAllButtonDisabled={setUpdateAllButtonDisabled}
+      />
       <ErrorStatusWrapper error={runningNodeInfo?.error} />
     </div>
   );
