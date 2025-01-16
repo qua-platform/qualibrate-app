@@ -48,7 +48,7 @@ qualibrate-app = "qualibrate_app.__main__:main"
 python_version = "3.9"
 strict = true
 warn_return_any = true
-exclude = ['tests/']
+exclude = ["tests/", "qualibrate_app/dashboard/"]  # dash isn't typed
 
 [[tool.mypy.overrides]]
 # TODO: add py.typed to json_timeline_database and remove from ignore imports

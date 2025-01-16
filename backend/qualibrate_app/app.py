@@ -1,4 +1,5 @@
 import uvicorn
+from a2wsgi import WSGIMiddleware
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
@@ -8,6 +9,7 @@ from qualibrate_app.api.exceptions.middleware import (
     QualibrateCatchExcMiddleware,
 )
 from qualibrate_app.config.resolvers import get_config_path, get_settings
+from qualibrate_app.dashboard.app import app as dashboard_app
 
 try:
     from json_timeline_database.app import app as json_timeline_db_app
@@ -39,6 +41,7 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api")
+app.mount("/dashboard", WSGIMiddleware(dashboard_app.server))  # type: ignore[arg-type]
 
 if _settings.app is None or not _settings.app.static_site_files.is_dir():
     raise RuntimeError("No static files found in config.toml")
