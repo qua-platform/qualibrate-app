@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NodesContextProvider, useNodesContext } from "./context/NodesContext";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "../Nodes/NodesPage.module.scss";
@@ -8,10 +8,12 @@ import { Results } from "./components/Results/Results";
 import { SelectionContextProvider } from "../common/context/SelectionContext";
 import PageName from "../../common/ui-components/common/Page/PageName";
 import BlueButton from "../../ui-lib/components/Button/BlueButton";
+import { SliderArrowIcon } from "../../ui-lib/Icons/SliderArrowIcon";
 
 const NodesPage = () => {
   const heading = "Run calibration node";
   const { allNodes, fetchAllNodes } = useNodesContext();
+  const [resultSectionExpanded, setResultSectionExpanded] = useState<boolean>(true);
 
   return (
     <div className={styles.wrapper}>
@@ -29,6 +31,12 @@ const NodesPage = () => {
         <div className={styles.nodesContainerDown}>
           <div className={styles.nodeRunningJobInfoWrapper}>
             <RunningJob />
+          </div>
+          <div
+            className={resultSectionExpanded ? styles.sliderArrowWrapper : styles.sliderArrowWrapperRotated}
+            onClick={() => setResultSectionExpanded(!resultSectionExpanded)}
+          >
+            <SliderArrowIcon />
           </div>
           <Results showSearch={false} />
         </div>

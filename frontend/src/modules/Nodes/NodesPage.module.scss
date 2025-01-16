@@ -49,6 +49,23 @@
   padding-top: 10px
 }
 
+.sliderArrowWrapper {
+  align-self: center;
+
+  svg {
+    cursor: pointer;
+  }
+}
+
+.sliderArrowWrapperRotated {
+  align-self: center;
+
+  svg {
+    cursor: pointer;
+    transform: rotateX(180deg);
+  }
+}
+
 .titleWrapper {
   display: flex;
   padding-left: 30px;
