@@ -18,6 +18,8 @@ tomli = { version = "^2.0.1", python = "<3.11" }
 tomli-w = "^1.0.0"
 requests = "^2.31.0"
 jsonpatch = "^1.33"
+a2wsgi = "^1.10.8"
+dash = "^2.18.2"
 qualibrate-config = "^0.1.1"
 # TODO: replace after publishing timeline-db
 # json-timeline-database = { path = "../../json-timeline-database", optional = true, develop = true }
