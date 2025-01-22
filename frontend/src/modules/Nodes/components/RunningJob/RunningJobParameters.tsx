@@ -3,13 +3,17 @@ import React from "react";
 import styles from "./RunningJob.module.scss";
 import { useNodesContext } from "../../context/NodesContext";
 
-export const RunningJobParameters: React.FC = () => {
+interface IProps {
+  showTitle?: boolean;
+}
+
+export const RunningJobParameters: React.FC<IProps> = ({ showTitle = true }) => {
   const { runningNode } = useNodesContext();
   return (
     <div className={styles.parametersWrapper}>
       {/*{Object.entries(runningNode?.parameters ?? {}).length > 0 && (*/}
       <>
-        <div className={styles.parameterTitleWrapper}>Parameters</div>
+        {showTitle && <div className={styles.parameterTitleWrapper}>Parameters</div>}
         <div>
           {
             // expanded &&
