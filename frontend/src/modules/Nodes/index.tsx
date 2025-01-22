@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NodesContextProvider, useNodesContext } from "./context/NodesContext";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "../Nodes/NodesPage.module.scss";
@@ -12,6 +12,7 @@ import BlueButton from "../../ui-lib/components/Button/BlueButton";
 const NodesPage = () => {
   const heading = "Run calibration node";
   const { allNodes, fetchAllNodes } = useNodesContext();
+  const [resultSectionExpanded, setResultSectionExpanded] = useState<boolean>(false);
 
   return (
     <div className={styles.wrapper}>
@@ -28,7 +29,7 @@ const NodesPage = () => {
         </div>
         <div className={styles.nodesContainerDown}>
           <div className={styles.nodeRunningJobInfoWrapper}>
-            <RunningJob />
+            <RunningJob resultSectionExpanded={resultSectionExpanded} />
           </div>
           <Results showSearch={false} />
         </div>

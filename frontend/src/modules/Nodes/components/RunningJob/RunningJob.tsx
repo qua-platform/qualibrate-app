@@ -8,7 +8,11 @@ import { StopIcon } from "../../../../ui-lib/Icons/StopIcon";
 import { RunningJobInfoSection } from "./RunningJobInfoSection";
 import { RunningJobParameters } from "./RunningJobParameters";
 
-export const RunningJob: React.FC = () => {
+interface IProps {
+  resultSectionExpanded?: boolean;
+}
+
+export const RunningJob: React.FC<IProps> = ({ resultSectionExpanded }) => {
   const {
     runningNode,
     runningNodeInfo,
