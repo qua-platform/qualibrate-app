@@ -48,13 +48,17 @@
 }
 
 .titleOrNameWrapper {
+  color: #FFF;
+  font-family: Roboto, serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
   align-items: center;
   max-width: 80%;
   width: 20%;
   display: flex;
   flex: 1;
-  font-size: 16px;
-  font-weight: bolder;
 }
 
 .titleOrName {
