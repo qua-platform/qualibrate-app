@@ -3,7 +3,7 @@ from .models import (
     QuaDashboardsConfig,
     QuaDashboardsConfigTopLevelConfig,
 )
-from .resolvers import get_config_path, get_settings, get_qua_dashboards_config
+from .resolvers import get_config_path, get_qua_dashboards_config, get_settings
 from .vars import (
     CONFIG_PATH_ENV_NAME,
 )
