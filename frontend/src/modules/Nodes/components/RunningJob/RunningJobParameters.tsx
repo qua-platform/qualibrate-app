@@ -10,17 +10,25 @@ interface IProps {
 export const RunningJobParameters: React.FC<IProps> = ({ showTitle = true }) => {
   const { runningNode } = useNodesContext();
   return (
-    <div className={styles.parametersWrapper}>
+    <div className={styles.parametersWrapper} data-testid="parameters-wrapper">
       {/*{Object.entries(runningNode?.parameters ?? {}).length > 0 && (*/}
       <>
-        {showTitle && <div className={styles.parameterTitleWrapper}>Parameters</div>}
-        <div>
+        {showTitle && (
+          <div className={styles.parameterTitleWrapper} data-testid="parameter-title">
+            Parameters
+          </div>
+        )}
+        <div data-testid="parameters-list">
           {
             // expanded &&
             Object.entries(runningNode?.parameters ?? {}).map(([key, parameter]) => (
-              <div key={key} className={styles.parameterValues}>
-                <div className={styles.parameterLabel}>{parameter.title}:</div>
-                <div className={styles.parameterValue}>{parameter.default?.toString()}</div>
+              <div key={key} className={styles.parameterValues} data-testid={`parameter-item-${key}`}>
+                <div className={styles.parameterLabel} data-testid={`parameter-label-${key}`}>
+                  {parameter.title}:
+                </div>
+                <div className={styles.parameterValue} data-testid={`parameter-value-${key}`}>
+                  {parameter.default?.toString()}
+                </div>
               </div>
             ))
           }

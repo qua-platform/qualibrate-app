@@ -1,9 +1,10 @@
-@import "../../../../assets/styles/variables";
-@import "../../../../assets/styles/base";
+@use "../../../../assets/styles/variables";
+@use "../../../../assets/styles/base";
 
 .wrapper {
   height: 100%;
   min-height: 65%;
   border: 1px solid var(--border-color);
   background-color: var(--popup-background);
+  padding-bottom: 15px;
 }
