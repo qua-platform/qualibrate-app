@@ -7,7 +7,7 @@
   max-height: 52%;
   //padding: 30px;
   color: #A5ACB6;
-  padding-bottom: 28px;
+  padding-bottom: 8px;
 }
 
 .title {
@@ -16,6 +16,7 @@
   gap: 10px;
   font-size: 20px;
   vertical-align: middle;
+  height: 30px;
 }
 
 .runningJobWrapper {
@@ -125,9 +126,13 @@
 
 .parameterTitleWrapper {
   display: flex;
+  font-family: Roboto, serif;
+  font-style: normal;
+  font-weight: 400;
   font-size: 14px;
-  font-weight: bold;
-  padding: 10px 15px 1px 6px;
+  padding: 10px 15px 0 0;
+  color: var(--Gray, #A5ACB6);
+  line-height: normal;
 }
 
 .parameterValues {
@@ -159,6 +164,12 @@
 .stateTitle {
   width: 100%;
   text-wrap-mode: nowrap;
+  color: var(--Gray, #A5ACB6);
+  font-family: Roboto, serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
 .updateAllButton {

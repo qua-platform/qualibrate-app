@@ -8,10 +8,13 @@ import { Results } from "./components/Results/Results";
 import { SelectionContextProvider } from "../common/context/SelectionContext";
 import PageName from "../../common/ui-components/common/Page/PageName";
 import BlueButton from "../../ui-lib/components/Button/BlueButton";
+import { SliderArrowIcon } from "../../ui-lib/Icons/SliderArrowIcon";
+import { classNames } from "../../utils/classnames";
 
 const NodesPage = () => {
   const heading = "Run calibration node";
   const { allNodes, fetchAllNodes } = useNodesContext();
+  const [resultsExpanded, setResultsExpanded] = React.useState(false);
 
   return (
     <div className={styles.wrapper} data-testid="nodes-page-wrapper">
@@ -30,7 +33,17 @@ const NodesPage = () => {
         </div>
         <div className={styles.nodesContainerDown}>
           <div className={styles.nodeRunningJobInfoWrapper}>
-            <RunningJob />
+            <div>
+              <RunningJob expanded={resultsExpanded} />
+            </div>
+            <div className={styles.sliderArrowWrapper}>
+              <div
+                className={classNames(resultsExpanded && styles.sliderArrowRotated)}
+                onClick={() => setResultsExpanded(!resultsExpanded)}
+              >
+                <SliderArrowIcon />
+              </div>
+            </div>
           </div>
           <Results showSearch={false} toggleSwitch={true} />
         </div>

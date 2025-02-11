@@ -1,5 +1,5 @@
 import React from "react";
-import { RunningNodeInfo, StateUpdate } from "../../context/NodesContext";
+import { StateUpdate, useNodesContext } from "../../context/NodesContext";
 import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "../RunningJob/RunningJob.module.scss";
@@ -7,13 +7,8 @@ import { StateUpdateElement, StateUpdateProps } from "./StateUpdateElement";
 import { Button } from "@mui/material";
 import { ErrorStatusWrapper } from "../../../common/Error/ErrorStatusWrapper";
 
-export const StateUpdates: React.FC<{
-  runningNodeInfo: RunningNodeInfo | undefined;
-  setRunningNodeInfo: (a: RunningNodeInfo) => void;
-  updateAllButtonPressed: boolean;
-  setUpdateAllButtonPressed: (a: boolean) => void;
-}> = (props) => {
-  const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed } = props;
+export const StateUpdates: React.FC = () => {
+  const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed } = useNodesContext();
 
   const handleClick = async (stateUpdates: StateUpdate) => {
     const litOfUpdates = Object.entries(stateUpdates ?? {})
