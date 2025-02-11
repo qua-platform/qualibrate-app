@@ -77,6 +77,29 @@
   border-radius: 4px;
 }
 
+.parametersStateCollapsedComponent {
+  display: flex;
+  padding-left: 20px;
+  padding-top: 16px;
+  padding-bottom: 10px;
+  color: var(--Gray, #A5ACB6);
+  font-family: Roboto, serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.collapsedTitleWrapper {
+  padding-right: 10px;
+}
+
+.collapsedIconWrapper {
+  svg {
+    cursor: pointer;
+  }
+}
+
 .runInfoWrapper {
   display: flex;
   padding-left: 20px;
