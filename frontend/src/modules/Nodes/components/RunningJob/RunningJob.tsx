@@ -7,6 +7,7 @@ import { RunningJobParameters } from "./RunningJobParameters";
 import { RunningJobTitleRow } from "./RunningJobTitle";
 import { CollapsedComponentIcon } from "../../../../ui-lib/Icons/CollapsedComponentIcon";
 import { classNames } from "../../../../utils/classnames";
+import { StateUpdatesTooltip } from "../StateUpdates/StateUpdatesTooltip";
 
 interface IProps {
   expanded: boolean;
@@ -30,23 +31,41 @@ export const RunningJob: React.FC<IProps> = ({ expanded }) => {
     title: string;
     el: React.JSX.Element;
   }> = ({ cssClassName, title, el }) => {
-    const [show, setShow] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
+    const handleOnMouseOver = (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      setShowTooltip(true);
+    };
+    const handleOnMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      setShowTooltip(false);
+    };
     return (
       <>
         <div className={classNames(styles.parametersStateCollapsedComponent, cssClassName)}>
           <div className={styles.collapsedTitleWrapper}>{title}</div>
-          <div className={styles.collapsedIconWrapper} onMouseOverCapture={() => setShow(true)} onMouseLeave={() => setShow(false)}>
-            <CollapsedComponentIcon />
+          <div onMouseOver={handleOnMouseOver} onMouseLeave={handleOnMouseLeave}>
+            <div className={styles.collapsedIconWrapper}>
+              <CollapsedComponentIcon />
+            </div>
           </div>
-          {show && el}
+          <div className={classNames(styles.tooltipElement, !showTooltip ? styles.show : styles.hide)}>{el}</div>
         </div>
       </>
     );
   };
 
   const ParametersAndStateUpdatesCollapsedComponentWrapper: React.FC = () => {
-    const parameterElement = <div>Parameters</div>;
-    const stateUpdatesElement = <div>State updates</div>;
+    const parameterElement = (
+      <div className={styles.parameterColumnWrapper}>
+        <RunningJobParameters />
+      </div>
+    );
+    const stateUpdatesElement = (
+      <div className={styles.parameterColumnWrapper}>
+        <StateUpdatesTooltip />
+      </div>
+    );
     return (
       <>
         <div className={styles.parameterColumnWrapper}>

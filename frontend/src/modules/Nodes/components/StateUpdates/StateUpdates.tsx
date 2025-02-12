@@ -27,8 +27,6 @@ export const StateUpdates: React.FC = () => {
 
   return (
     <>
-      {/*{Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >*/}
-      {/*  0 && (*/}
       <div className={styles.stateWrapper} data-testid="state-wrapper">
         <div className={styles.stateTitle} data-testid="state-title">
           State updates&nbsp;

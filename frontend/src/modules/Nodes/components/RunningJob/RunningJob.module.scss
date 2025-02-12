@@ -90,14 +90,30 @@
   line-height: normal;
 }
 
+.tooltipElement {
+  pointer-events: none;
+  z-index: 10000;
+  position: absolute;
+  div {
+    width: fit-content;
+  }
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
 .collapsedTitleWrapper {
   padding-right: 10px;
 }
 
 .collapsedIconWrapper {
-  svg {
-    cursor: pointer;
-  }
+  cursor: pointer;
+  //pointer-events: none;
 }
 
 .runInfoWrapper {
@@ -204,6 +220,12 @@
   text-transform: none !important;
 }
 
+.stateUpdatesTooltipWrapper {
+  width: 432px;
+  padding-top: 15px;
+  padding-left: 15px;
+  padding-bottom: 15px;
+}
 .stateUpdatesTopWrapper {
   overflow-y: scroll;
   max-height: calc(100% - 51px);

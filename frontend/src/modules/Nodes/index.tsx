@@ -14,7 +14,7 @@ import { classNames } from "../../utils/classnames";
 const NodesPage = () => {
   const heading = "Run calibration node";
   const { allNodes, fetchAllNodes } = useNodesContext();
-  const [resultsExpanded, setResultsExpanded] = React.useState(false);
+  const [resultsExpanded, setResultsExpanded] = React.useState(true);
 
   return (
     <div className={styles.wrapper} data-testid="nodes-page-wrapper">
