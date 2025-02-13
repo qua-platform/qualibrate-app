@@ -36,7 +36,10 @@ const config = {
     static: path.join("dist"),
     port: 1234,
     hot: true,
+    liveReload: true,
+    allowedHosts: "all",
     historyApiFallback: true,
+    client: { webSocketTransport: "ws" },
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -103,7 +106,6 @@ const config = {
       {
         test: /\.(css)$/,
         use: [
-          "css-hot-loader",
           MiniCssExtractPlugin.loader,
           {
             loader: "css-loader",
@@ -118,7 +120,6 @@ const config = {
       },
       {
         test: /\.js$/,
-        loader: "ify-loader",
       },
     ],
   },

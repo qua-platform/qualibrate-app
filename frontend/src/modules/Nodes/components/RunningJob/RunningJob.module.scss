@@ -7,7 +7,7 @@
   max-height: 52%;
   //padding: 30px;
   color: #A5ACB6;
-  padding-bottom: 28px;
+  padding-bottom: 8px;
 }
 
 .title {
@@ -16,6 +16,7 @@
   gap: 10px;
   font-size: 20px;
   vertical-align: middle;
+  height: 30px;
 }
 
 .runningJobWrapper {
@@ -76,6 +77,45 @@
   border-radius: 4px;
 }
 
+.parametersStateCollapsedComponent {
+  display: flex;
+  padding-left: 20px;
+  padding-top: 16px;
+  padding-bottom: 10px;
+  color: var(--Gray, #A5ACB6);
+  font-family: Roboto, serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.tooltipElement {
+  pointer-events: none;
+  z-index: 10000;
+  position: absolute;
+  div {
+    width: fit-content;
+  }
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+.collapsedTitleWrapper {
+  padding-right: 10px;
+}
+
+.collapsedIconWrapper {
+  cursor: pointer;
+  //pointer-events: none;
+}
+
 .runInfoWrapper {
   display: flex;
   padding-left: 20px;
@@ -125,9 +165,13 @@
 
 .parameterTitleWrapper {
   display: flex;
+  font-family: Roboto, serif;
+  font-style: normal;
+  font-weight: 400;
   font-size: 14px;
-  font-weight: bold;
-  padding: 10px 15px 1px 6px;
+  padding: 10px 15px 0 0;
+  color: var(--Gray, #A5ACB6);
+  line-height: normal;
 }
 
 .parameterValues {
@@ -159,6 +203,12 @@
 .stateTitle {
   width: 100%;
   text-wrap-mode: nowrap;
+  color: var(--Gray, #A5ACB6);
+  font-family: Roboto, serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
 .updateAllButton {
@@ -170,6 +220,12 @@
   text-transform: none !important;
 }
 
+.stateUpdatesTooltipWrapper {
+  width: 432px;
+  padding-top: 15px;
+  padding-left: 15px;
+  padding-bottom: 15px;
+}
 .stateUpdatesTopWrapper {
   overflow-y: scroll;
   max-height: calc(100% - 51px);

@@ -76,3 +76,17 @@
   border-radius: 50%;
   display: inline-block;
 }
+.sliderArrowWrapper {
+  justify-items: center;
+  padding-bottom: 8px;
+  div {
+    width: fit-content;
+  }
+  svg {
+    cursor: pointer;
+  }
+}
+.sliderArrowRotated {
+  transition: transform 0.3s ease-in-out;
+  transform: rotate(180deg);
+}
