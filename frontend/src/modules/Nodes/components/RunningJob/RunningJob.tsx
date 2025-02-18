@@ -1,69 +1,89 @@
-import React from "react";
+import React, { useState } from "react";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./RunningJob.module.scss";
-import { useNodesContext } from "../../context/NodesContext";
-import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 import { StateUpdates } from "../StateUpdates/StateUpdates";
-import { StopIcon } from "../../../../ui-lib/Icons/StopIcon";
 import { RunningJobInfoSection } from "./RunningJobInfoSection";
 import { RunningJobParameters } from "./RunningJobParameters";
+import { RunningJobTitleRow } from "./RunningJobTitle";
+import { CollapsedComponentIcon } from "../../../../ui-lib/Icons/CollapsedComponentIcon";
+import { classNames } from "../../../../utils/classnames";
+import { StateUpdatesTooltip } from "../StateUpdates/StateUpdatesTooltip";
 
-export const RunningJob: React.FC = () => {
-  const {
-    runningNode,
-    runningNodeInfo,
-    setRunningNodeInfo,
-    isNodeRunning,
-    setIsNodeRunning,
-    updateAllButtonPressed,
-    setUpdateAllButtonPressed,
-  } = useNodesContext();
+interface IProps {
+  expanded: boolean;
+}
 
-  const insertSpaces = (str: string, interval = 40) => {
-    let result = "";
-    for (let i = 0; i < str.length; i += interval) {
-      result += str.slice(i, i + interval) + " ";
-    }
-    return result.trim();
-  };
-
-  const handleStopClick = () => {
-    SnapshotsApi.stopNodeRunning().then((res) => {
-      if (res.isOk) {
-        setIsNodeRunning(!res.result);
-      }
-    });
-  };
-
-  return (
-    <div className={styles.wrapper} data-testid="running-job-wrapper">
-      <div className={styles.title} data-testid="running-job-title">
-        <div className={styles.dot} data-testid="running-job-dot"></div>
-        <div className={styles.runningJobWrapper} data-testid="running-job-name-wrapper">
-          <div className={styles.runningJobNameWrapper}>
-            <div>Running job{runningNode?.name ? ":" : ""}</div>
-            <div className={styles.runningJobName} data-testid="running-job-name">&nbsp;&nbsp;{runningNode?.name ? insertSpaces(runningNode?.name) : ""}</div>
-          </div>
+export const RunningJob: React.FC<IProps> = ({ expanded }) => {
+  const ParametersAndStateExpanded: React.FC = () => {
+    return (
+      <>
+        <div className={styles.parameterColumnWrapper}>
+          <RunningJobParameters />
         </div>
-        {isNodeRunning && (
-          <div className={styles.stopButtonWrapper}>
-            <div onClick={handleStopClick} data-testid="stop-button">
-              <StopIcon />
+        <div className={styles.statesColumnWrapper} data-testid="states-column-wrapper">
+          <StateUpdates />
+        </div>
+      </>
+    );
+  };
+  const ParametersStateCollapsedComponent: React.FC<{
+    cssClassName?: string;
+    title: string;
+    el: React.JSX.Element;
+  }> = ({ cssClassName, title, el }) => {
+    const [showTooltip, setShowTooltip] = useState(false);
+    const handleOnMouseOver = (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      setShowTooltip(true);
+    };
+    const handleOnMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      setShowTooltip(false);
+    };
+    return (
+      <>
+        <div className={classNames(styles.parametersStateCollapsedComponent, cssClassName)}>
+          <div className={styles.collapsedTitleWrapper}>{title}</div>
+          <div onMouseOver={handleOnMouseOver} onMouseLeave={handleOnMouseLeave}>
+            <div className={styles.collapsedIconWrapper}>
+              <CollapsedComponentIcon />
             </div>
           </div>
-        )}
-      </div>
-      {runningNodeInfo && <RunningJobInfoSection />}
-      <div className={styles.parameterStatesWrapper}>
-        <div className={styles.parameterColumnWrapper}>{runningNodeInfo && <RunningJobParameters />}</div>
-        <div className={styles.statesColumnWrapper} data-testid="states-column-wrapper">
-          <StateUpdates
-            runningNodeInfo={runningNodeInfo}
-            setRunningNodeInfo={setRunningNodeInfo}
-            updateAllButtonPressed={updateAllButtonPressed}
-            setUpdateAllButtonPressed={setUpdateAllButtonPressed}
-          />
+          <div className={classNames(styles.tooltipElement, !showTooltip ? styles.show : styles.hide)}>{el}</div>
         </div>
+      </>
+    );
+  };
+
+  const ParametersAndStateUpdatesCollapsedComponentWrapper: React.FC = () => {
+    const parameterElement = (
+      <div className={styles.parameterColumnWrapper}>
+        <RunningJobParameters />
+      </div>
+    );
+    const stateUpdatesElement = (
+      <div className={styles.parameterColumnWrapper}>
+        <StateUpdatesTooltip />
+      </div>
+    );
+    return (
+      <>
+        <div className={styles.parameterColumnWrapper}>
+          <ParametersStateCollapsedComponent title={"Parameters"} el={parameterElement} />
+        </div>
+        <div className={styles.statesColumnWrapper}>
+          <ParametersStateCollapsedComponent title={"State updates"} el={stateUpdatesElement} />
+        </div>
+      </>
+    );
+  };
+  return (
+    <div className={styles.wrapper} data-testid="running-job-wrapper">
+      <RunningJobTitleRow />
+      <RunningJobInfoSection />
+      <div className={styles.parameterStatesWrapper}>
+        {!expanded && <ParametersAndStateExpanded />}
+        {expanded && <ParametersAndStateUpdatesCollapsedComponentWrapper />}
       </div>
     </div>
   );
