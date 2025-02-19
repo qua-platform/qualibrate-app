@@ -1,5 +1,5 @@
 import React from "react";
-import { JSONEditor } from "../../../Data/components/JSONEditor";
+import { JSONEditor } from "../../../common/JSONEditor/JSONEditor";
 import { useNodesContext } from "../../context/NodesContext";
 import styles from "./Results.module.scss";
 

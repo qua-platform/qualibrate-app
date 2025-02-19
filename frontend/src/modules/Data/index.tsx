@@ -5,7 +5,7 @@ import useModuleStyle from "../../ui-lib/hooks/useModuleStyle";
 import { classNames } from "../../utils/classnames";
 import { SnapshotsContextProvider, useSnapshotsContext } from "../Snapshots/context/SnapshotsContext";
 import PaginationWrapper from "../Pagination/PaginationWrapper";
-import { JSONEditor } from "./components/JSONEditor";
+import { JSONEditor } from "../common/JSONEditor/JSONEditor";
 import { TimelineGraph } from "./components/TimelineGraph";
 
 const Data = () => {
@@ -28,6 +28,7 @@ const Data = () => {
       <div className={classNames(styles.explorer)}>
         <div className={classNames(styles.data)}>
           <div data-cy={cyKeys.data.EXPERIMENT_LIST}></div>
+          {/*TODO Replace TimelineGraph with DataSection component + delete timeline component from package.json and update package-lock.json*/}
           <TimelineGraph
             allSnapshots={allSnapshots}
             setFlag={setFlag}
