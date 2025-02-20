@@ -9,6 +9,7 @@
 logs
 **/*.backup.*
 **/*.back.*
+test-results/
 
 dist
 
