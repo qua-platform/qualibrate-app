@@ -149,4 +149,4 @@ test('Workflow1 - Running a Calibration Node', async ({ page }) => {
   await expect(ch2.getByTestId('update-before-icon')).toBeVisible();
   ch2.getByTestId('update-before-icon').click(); // Click the icon to update the state 
   await expect(ch2.getByTestId('update-after-icon')).toBeVisible();
-});
+}); 
