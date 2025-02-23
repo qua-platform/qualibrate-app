@@ -81,10 +81,11 @@ test('Workflow1 - Running a Calibration Node', async ({ page }) => {
   await expect(page.getByTestId('running-job-title')).toContainText('Running job: test_cal');
   await expect(page.getByTestId('running-job-name-wrapper')).toBeVisible();
   await expect(page.getByTestId('run-info-wrapper')).toBeVisible();
+  await page.waitForTimeout(10000); // wait 10 second max delay for job to complete 
+  await expect(page.getByTestId('run-info-value-status')).toContainText('finished'); // status changes to finished 
   await expect(page.getByTestId('run-info-value-duration')).toContainText(runDuration); // Matches the format: 4.00 s
   await expect(page.getByTestId('run-info-value-idx')).toContainText(idx); // Matches the format of any integer number  
-  // Job status changes to finished upon completion, along with other stats.
-  await expect(page.getByTestId('run-info-value-status')).toContainText('finished'); // status changes to finished 
+  // Job status changes to finished upon completion 
   await expect(page.getByTestId('running-job-dot')).toHaveCSS('background-color', 'rgb(50, 205, 50)'); // green color 
   // parameters here match parameters in node parameter feilds 
   await expect(page.getByTestId('parameters-wrapper')).toBeVisible();
