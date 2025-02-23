@@ -16,31 +16,28 @@ test('Workflow1 - Running a Calibration Node', async ({ page }) => {
   expect(page.url()).toBe('http://localhost:8001/'); // page loaded successfully
 
   // 2. Verify Calibration Nodes
-  // Check that at least one calibration node (e.g., test_cal) is displayed in the Node Library.
+  // Check that at least one calibration node (e.g., test_node1) is displayed in the Node Library.
   await expect(page.getByTestId('nodes-and-job-wrapper')).toBeVisible(); // Node page loaded sucessfully
   await expect(page.getByTestId('nodes-page-wrapper')).toBeVisible(); // Node page loaded sucessfully
   await expect(page.getByTestId('title-wrapper')).toBeVisible(); // title wrapper is visible 
   await expect(page.getByTestId('title-wrapper')).toContainText('Run calibration node'); // title is correct
   await expect(page.getByTestId('refresh-button')).toBeVisible(); // refresh button is visible
   await expect(page.getByTestId('menu-item-nodes')).toBeVisible(); // node library is showing as the landing page 
-  // await page.waitForTimeout(10000); 
   await expect(page.getByTestId('node-list-wrapper')).toBeVisible(); // node library list of nodes are visible
-  // await page.pause();
-  console.log(await page.locator('data-testid=node-list-wrapper').textContent());
-  await expect(page.getByTestId('node-element-test_cal')).toBeVisible(); // test_cal 'calibration node tab' is visible in the node library 
-  await expect(page.getByTestId('title-or-name-test_cal')).toBeVisible(); // test_cal label is visible in the node library 
-  // Check that the test_cal node has no visible parameters
-  const testCalNode = page.getByTestId('node-element-test_cal');
+  await expect(page.getByTestId('node-element-test_node1')).toBeVisible(); // test_node1 'calibration node tab' is visible in the node library 
+  await expect(page.getByTestId('title-or-name-test_node1')).toBeVisible(); // test_node1 label is visible in the node library 
+  // Check that the test_node1 node has no visible parameters
+  const testCalNode = page.getByTestId('node-element-test_node1');
   await expect(testCalNode.getByTestId('node-parameters-wrapper')).toBeHidden();
   await expect(testCalNode.getByTestId('parameter-values-resonator')).toBeHidden();
   await expect(testCalNode.getByTestId('parameter-values-sampling_points')).toBeHidden();
   await expect(testCalNode.getByTestId('parameter-values-noise_factor')).toBeHidden();
 
   // 3. Select a Calibration Node
-  // Click the test_cal node.
-  await page.getByTestId('node-element-test_cal').click();
-  // Check that the test_cal node is runnable by containing a green dot.
-  await expect(page.getByTestId('dot-wrapper-test_cal')).toBeVisible(); 
+  // Click the test_node1 node.
+  await page.getByTestId('node-element-test_node1').click();
+  // Check that the test_node1 node is runnable by containing a green dot.
+  await expect(page.getByTestId('dot-wrapper-test_node1')).toBeVisible(); 
   // Check that the 3 different labels exist
   await expect(testCalNode.getByTestId('node-parameters-wrapper')).toBeVisible();
   await expect(testCalNode.getByTestId('parameter-values-resonator')).toBeVisible();
@@ -71,20 +68,20 @@ test('Workflow1 - Running a Calibration Node', async ({ page }) => {
   await expect(noiseFactorField).toHaveValue('0.2');
 
   // 5. Run the Calibration Node
-  // Click the Run button for test_cal.
+  // Click the Run button for test_node1.
   await page.getByTestId('run-button').click();
-  await expect(page.getByTestId('circular-progress-test_cal')).toBeVisible(); // spinning loading icon appears 
+  await expect(page.getByTestId('circular-progress-test_node1')).toBeVisible(); // spinning loading icon appears 
   await expect(page.getByTestId('run-info-value-timestamp')).toContainText(date); // Matches the format: 2021/09/30 15:00:00
   await expect(page.getByTestId('run-info-value-status')).toContainText('running'); // status changes to running 
   await expect(page.getByTestId('stop-button')).toBeVisible(); // stop button appears 
-  await expect(page.getByTestId('running-job-name')).toContainText('test_cal'); 
+  await expect(page.getByTestId('running-job-name')).toContainText('test_node1'); 
   // Verify:
   // The Running Job section appears, showing parameters and status.
   await expect(page.getByTestId('running-job-wrapper')).toBeVisible();
-  await expect(page.getByTestId('running-job-title')).toContainText('Running job: test_cal');
+  await expect(page.getByTestId('running-job-title')).toContainText('Running job: test_node1');
   await expect(page.getByTestId('running-job-name-wrapper')).toBeVisible();
   await expect(page.getByTestId('run-info-wrapper')).toBeVisible();
-  await page.waitForTimeout(10000); // wait 10 second max delay for job to complete 
+  await page.waitForTimeout(5000); // wait 5 second delay for job to complete 
   await expect(page.getByTestId('run-info-value-status')).toContainText('finished'); // status changes to finished 
   await expect(page.getByTestId('run-info-value-duration')).toContainText(runDuration); // Matches the format: 4.00 s
   await expect(page.getByTestId('run-info-value-idx')).toContainText(idx); // Matches the format of any integer number  
