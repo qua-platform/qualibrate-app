@@ -23,8 +23,10 @@ test('Workflow1 - Running a Calibration Node', async ({ page }) => {
   await expect(page.getByTestId('title-wrapper')).toContainText('Run calibration node'); // title is correct
   await expect(page.getByTestId('refresh-button')).toBeVisible(); // refresh button is visible
   await expect(page.getByTestId('menu-item-nodes')).toBeVisible(); // node library is showing as the landing page 
-  await page.waitForTimeout(10000); // wait for 10 seconds for calibration nodes to appear before testing test_cal node
+  // await page.waitForTimeout(10000); 
   await expect(page.getByTestId('node-list-wrapper')).toBeVisible(); // node library list of nodes are visible
+  // await page.pause();
+  console.log(await page.locator('data-testid=node-list-wrapper').textContent());
   await expect(page.getByTestId('node-element-test_cal')).toBeVisible(); // test_cal 'calibration node tab' is visible in the node library 
   await expect(page.getByTestId('title-or-name-test_cal')).toBeVisible(); // test_cal label is visible in the node library 
   // Check that the test_cal node has no visible parameters
