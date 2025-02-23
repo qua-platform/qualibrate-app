@@ -31,7 +31,7 @@ To simulate GitHub Actions locally and run the tests, you can use the `act` tool
 
 To execute the Playwright tests locally using act, run the following command from qualibrate-app directory:
 ```bash
-act -j test --container-architecture linux/amd64 -s GITHUB_TOKEN=<your_token> -s QUALIBRATION_EXAMPLES_TOKEN=<your_token>
+act -j test --container-architecture linux/amd64 -s GITHUB_TOKEN=<your_token> -s QUALIBRATE_EXAMPLES_TOKEN=<your_token>
 ```
 - -j test: Runs the test job defined in the GitHub Actions workflow file.
 - --container-architecture linux/amd64: Ensures compatibility with the workflow container.

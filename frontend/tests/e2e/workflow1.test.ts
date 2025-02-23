@@ -71,6 +71,7 @@ test('Workflow1 - Running a Calibration Node', async ({ page }) => {
   // Click the Run button for test_cal.
   await page.getByTestId('run-button').click();
   await expect(page.getByTestId('circular-progress-test_cal')).toBeVisible(); // spinning loading icon appears 
+  await expect(page.getByTestId('run-info-value-timestamp')).toContainText(date); // Matches the format: 2021/09/30 15:00:00
   await expect(page.getByTestId('run-info-value-status')).toContainText('running'); // status changes to running 
   await expect(page.getByTestId('stop-button')).toBeVisible(); // stop button appears 
   await expect(page.getByTestId('running-job-name')).toContainText('test_cal'); 
@@ -80,11 +81,10 @@ test('Workflow1 - Running a Calibration Node', async ({ page }) => {
   await expect(page.getByTestId('running-job-title')).toContainText('Running job: test_cal');
   await expect(page.getByTestId('running-job-name-wrapper')).toBeVisible();
   await expect(page.getByTestId('run-info-wrapper')).toBeVisible();
-  await expect(page.getByTestId('run-info-value-timestamp')).toContainText(date); // Matches the format: 2021/09/30 15:00:00
   await expect(page.getByTestId('run-info-value-duration')).toContainText(runDuration); // Matches the format: 4.00 s
+  await expect(page.getByTestId('run-info-value-idx')).toContainText(idx); // Matches the format of any integer number  
   // Job status changes to finished upon completion, along with other stats.
   await expect(page.getByTestId('run-info-value-status')).toContainText('finished'); // status changes to finished 
-  await expect(page.getByTestId('run-info-value-idx')).toContainText(idx); // Matches the format of any integer number  
   await expect(page.getByTestId('running-job-dot')).toHaveCSS('background-color', 'rgb(50, 205, 50)'); // green color 
   // parameters here match parameters in node parameter feilds 
   await expect(page.getByTestId('parameters-wrapper')).toBeVisible();
