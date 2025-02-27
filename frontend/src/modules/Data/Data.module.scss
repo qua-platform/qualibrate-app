@@ -5,15 +5,19 @@
   height: 100%;
 }
 
+.dataWrapper {
+  min-width: 614px;
+  display: flex;
+  flex-direction: column;
+}
+
 .data {
-  min-width: 350px;
-  flex-shrink: 0;
-  width: 350px;
+  height: 100%;
   overflow: scroll;
 }
 
 .explorer {
-  height: calc(100% - 50px);
+  height: calc(100% - 10px);
   width: 100%;
   display: flex;
   box-sizing: border-box;
