@@ -8,7 +8,14 @@ def test_snapshot_get_snapshot_default(
     response = client_custom_settings.get(f"/api/snapshot/{snapshot_id}/")
     snapshot = snapshots_history[len(snapshots_history) - snapshot_id]
     snapshot.update(
-        {"data": {"quam": {"node": snapshot_id}, "info": "snapshot"}}
+        {
+            "data": {
+                "quam": {"node": snapshot_id},
+                "info": "snapshot",
+            },
+            "parameters": None,
+            "outcomes": None,
+        }
     )
     assert response.status_code == 200
     assert response.json() == snapshot
@@ -17,10 +24,39 @@ def test_snapshot_get_snapshot_default(
 @pytest.mark.parametrize(
     "load_type, to_update",
     (
-        (1, {"metadata": {}, "data": None}),
-        (2, {"data": None}),
-        (3, {"data": {"quam": {"node": 4}, "info": "snapshot"}}),
-        (4, {"data": {"quam": {"node": 4}, "info": "snapshot"}}),
+        (
+            1,
+            {
+                "metadata": {},
+                "data": None,
+                "parameters": None,
+                "outcomes": None,
+            },
+        ),
+        (
+            2,
+            {
+                "data": None,
+                "parameters": None,
+                "outcomes": None,
+            },
+        ),
+        (
+            3,
+            {
+                "data": {"quam": {"node": 4}, "info": "snapshot"},
+                "parameters": None,
+                "outcomes": None,
+            },
+        ),
+        (
+            4,
+            {
+                "data": {"quam": {"node": 4}, "info": "snapshot"},
+                "parameters": None,
+                "outcomes": None,
+            },
+        ),
     ),
 )
 def test_snapshot_get_snapshot_load_type(
