@@ -2,7 +2,7 @@
 @use "../../../../assets/styles/base";
 
 .wrapper {
-  height: calc(100% - 5px);
+  height: 100%;
   width: 100%;
   display: flex;
   background: var(--background-color);
@@ -16,17 +16,13 @@
 }
 
 .graphAndHistoryWrapper {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+  height: calc(100% - 55px);
 }
 
 .leftContainer {
-  display: flex;
   color: rgb(217 213 212);
   min-width: 33%;
-  height: 100%;
+  height: calc(100% - 20px);
 }
 
 .rightContainer {
@@ -38,6 +34,6 @@
   color: rgb(217 213 212);
   margin-left: 20px;
   margin-right: 20px;
-  height: 100%;
+  height: calc(100% - 20px);
   background-color: var(--background-color);
 }

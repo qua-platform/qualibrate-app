@@ -28,8 +28,6 @@ cypress/videos
 
 /.env
 /.idea
-/tests
 
-/tests
 
 # End of https://www.toptal.com/developers/gitignore/api/react

@@ -24,11 +24,11 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
       if (allMeasurements) {
         const element = allMeasurements[0];
         if (element) {
-          setSelectedItemName(element?.metadata?.name);
-          setSelectedNodeNameInWorkflow(allMeasurements[0]?.metadata?.name);
+          setSelectedItemName(element?.name);
+          setSelectedNodeNameInWorkflow(allMeasurements[0]?.name);
 
-          if (element.id) {
-            fetchResultsAndDiffData(element.id);
+          if (element.snapshot_idx) {
+            fetchResultsAndDiffData(element.snapshot_idx);
           } else {
             setResult({});
             setDiffData({});

@@ -2,24 +2,21 @@
 @use "../../assets/styles/base";
 
 .wrapper {
-  display: flex;
   height: 100%;
-  width: 100%;
   background: var(--background-color);
   border-radius: var(--border-radius);
 }
 
 .nodesAndRunningJobInfoWrapper {
+  height: calc(100% - 80px);
   display: flex;
-  width: 100%;
-  overflow-y: hidden;
 }
 
 .nodesContainerTop {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   overflow: hidden;
   flex-grow: 1;
   color: rgb(217 213 212);
@@ -39,7 +36,7 @@
   padding-top: 5px;
   //border: 1px solid blue;
   border: 1px solid #42424C;
-  padding-right: 5px;
+  padding-right: 30px;
   background: #28292F;
 }
 
@@ -48,15 +45,14 @@
 }
 
 .nodeRunningJobInfoWrapper {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 20px;
   padding-top: 10px
 }
 
-.refreshButtonWrapper {
+.titleWrapper {
   display: flex;
+  padding-left: 30px;
   background-color: #28292F;
-  align-self: center;
 }
 
 .nodeElementListWrapper {

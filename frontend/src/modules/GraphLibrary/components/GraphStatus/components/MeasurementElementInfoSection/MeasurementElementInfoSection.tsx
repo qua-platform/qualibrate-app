@@ -4,8 +4,7 @@ import { classNames } from "../../../../../../utils/classnames";
 
 interface MeasurementElementStatusInfoAndParametersProps {
   title?: string;
-  data?: Record<string, string | number | string[] | object> | object;
-  isInfoSection?: boolean;
+  data: Record<string, string | number | string[]>;
   filterEmpty?: boolean;
   className: string;
   evenlySpaced?: boolean;
@@ -14,14 +13,11 @@ interface MeasurementElementStatusInfoAndParametersProps {
 export const MeasurementElementStatusInfoAndParameters: React.FC<MeasurementElementStatusInfoAndParametersProps> = ({
   title,
   data,
-  isInfoSection = false,
   filterEmpty = false,
   className,
   evenlySpaced = false,
 }) => {
-  const filteredData = filterEmpty
-    ? Object.entries(data ?? {}).filter(([, value]) => value != null && value !== "")
-    : Object.entries(data ?? {});
+  const filteredData = filterEmpty ? Object.entries(data).filter(([, value]) => value != null && value !== "") : Object.entries(data);
 
   if (filteredData.length === 0) return null;
 
@@ -35,7 +31,7 @@ export const MeasurementElementStatusInfoAndParameters: React.FC<MeasurementElem
       >
         {filteredData.map(([key, value]) => (
           <div className={styles.infoItem} key={key}>
-            <div className={classNames(styles.label, isInfoSection && styles.info)}>{key}:</div>
+            <div className={styles.label}>{key}:</div>
             <div className={styles.value}>{Array.isArray(value) ? value.join(", ") : value?.toString() || "N/A"}</div>
           </div>
         ))}
@@ -45,8 +41,8 @@ export const MeasurementElementStatusInfoAndParameters: React.FC<MeasurementElem
 };
 
 export const MeasurementElementOutcomes: React.FC<{
-  outcomes?: object;
-}> = ({ outcomes }: { outcomes?: object }) => {
+  outcomes: object;
+}> = ({ outcomes }: { outcomes: object }) => {
   return (
     outcomes &&
     Object.keys(outcomes).length > 0 && (

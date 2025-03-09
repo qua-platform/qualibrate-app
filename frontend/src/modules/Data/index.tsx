@@ -1,34 +1,41 @@
 import React from "react";
 import styles from "../Data/Data.module.scss";
+import cyKeys from "../../utils/cyKeys";
+import useModuleStyle from "../../ui-lib/hooks/useModuleStyle";
+import { classNames } from "../../utils/classnames";
 import { SnapshotsContextProvider, useSnapshotsContext } from "../Snapshots/context/SnapshotsContext";
 import PaginationWrapper from "../Pagination/PaginationWrapper";
 import { JSONEditor } from "./components/JSONEditor";
-import { SnapshotsTimeline } from "./components/SnapshotsTimeline/SnapshotsTimeline";
+import { TimelineGraph } from "./components/TimelineGraph";
 
 const Data = () => {
+  const [ref] = useModuleStyle<HTMLDivElement>();
   const {
     totalPages,
     setPageNumber,
     allSnapshots,
-    selectedSnapshotId,
+    selectedSnapshotIndex,
+    setSelectedSnapshotIndex,
     setSelectedSnapshotId,
     jsonData,
     diffData,
     result,
-    fetchOneSnapshot,
+    setFlag,
+    fetchOneGitgraphSnapshot,
   } = useSnapshotsContext();
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.explorer}>
-        <div className={styles.dataWrapper}>
-          <div className={styles.data}>
-            <SnapshotsTimeline
-              allSnapshots={allSnapshots}
-              selectedSnapshotId={selectedSnapshotId}
-              setSelectedSnapshotId={setSelectedSnapshotId}
-              fetchOneSnapshot={fetchOneSnapshot}
-            />
-          </div>
+    <div ref={ref} className={styles.wrapper}>
+      <div className={classNames(styles.explorer)}>
+        <div className={classNames(styles.data)}>
+          <div data-cy={cyKeys.data.EXPERIMENT_LIST}></div>
+          <TimelineGraph
+            allSnapshots={allSnapshots}
+            setFlag={setFlag}
+            selectedSnapshotIndex={selectedSnapshotIndex}
+            setSelectedSnapshotIndex={setSelectedSnapshotIndex}
+            setSelectedSnapshotId={setSelectedSnapshotId}
+            fetchOneGitgraphSnapshot={fetchOneGitgraphSnapshot}
+          />
           <PaginationWrapper numberOfPages={totalPages} setPageNumber={setPageNumber} />
         </div>
         <div className={styles.viewer}>
@@ -41,7 +48,7 @@ const Data = () => {
           >
             {jsonData && !diffData && <JSONEditor title={"QUAM"} jsonDataProp={jsonData} height={"100%"} />}
             {jsonData && diffData && <JSONEditor title={"QUAM"} jsonDataProp={jsonData} height={"66%"} />}
-            {jsonData && diffData && <JSONEditor title={"QUAM Updates"} jsonDataProp={diffData} height={"34%"} />}
+            {jsonData && diffData && <JSONEditor title={"QUAM Updates"} jsonDataProp={diffData} height={"33%"} />}
           </div>
         </div>
       </div>
