@@ -16,11 +16,11 @@
 
   &.nodeSelected {
     border-color: var(--primary-color);
-    background-color: #28292F;
+    background-color: var(--job-list-background);
   }
 
   &.expanded {
-    background-color: #28292F;
+    background-color: var(--job-list-background);
   }
 }
 
