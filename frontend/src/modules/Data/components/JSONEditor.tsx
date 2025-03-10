@@ -126,7 +126,7 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
         <InputField value={searchTerm} title={"Search"} onChange={(_e, event) => handleSearch(event.target.value, event)}></InputField>
       )}
       <>
-        <div style={{ width: "100%", height: "100%", display: activeTab === "final" ? "block" : "none" }}>
+        <div style={{ width: "100%", display: activeTab === "final" ? "block" : "none", flex: 1, overflowY: "auto" }}>
           <JsonViewer
             rootName={false}
             onSelect={(path) => handleOnSelect(path)}
@@ -138,7 +138,7 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
             style={{ overflowY: "auto", height: "100%" }}
           />
         </div>
-        <div style={{ width: "100%", height: "100%", display: activeTab === "live" ? "block" : "none" }}>
+        <div style={{ width: "100%", display: activeTab === "live" ? "block" : "none" }}>
           <Iframe targetUrl={iframeURL} />
         </div>
       </>
