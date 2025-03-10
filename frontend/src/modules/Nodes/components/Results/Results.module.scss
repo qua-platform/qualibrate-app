@@ -2,11 +2,35 @@
 @use "../../../../assets/styles/base";
 
 .wrapper {
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 150px);
   min-height: 65%;
   max-height: 100%;
-  overflow-y: auto;
   border: 1px solid var(--border-color);
   background-color: var(--popup-background);
   padding-bottom: 15px;
+  overflow: hidden;
+}
+
+.resultsContainer {
+  flex-grow: 1; 
+  overflow-y: auto;
+  max-height: calc(100% - 40px);
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #A5ACB6 transparent;
+}
+
+.resultsContainer::-webkit-scrollbar {
+  width: 4px;
+}
+
+.resultsContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.resultsContainer::-webkit-scrollbar-thumb {
+  background: #A5ACB6;
+  border-radius: 2px;
 }
