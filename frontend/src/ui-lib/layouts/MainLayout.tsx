@@ -7,7 +7,7 @@ import ToastComponent from "../../modules/toastModule/ToastComponent";
 import QUAlibrateLogoIcon from "../Icons/QUAlibrateLogoIcon";
 import { useGlobalThemeContext } from "../../modules/themeModule/GlobalThemeContext";
 import TitleBarMenu from "../../modules/TopbarMenu/TitleBarMenu";
-import { TitleBarContextProvider } from "../../contexts/TitleBarMenuContext";
+import { NodesContextProvider } from "../../modules/Nodes/context/NodesContext";
 
 const EmptyPlaceholder = (
   <div className={styles.emptyPlaceholder}>
@@ -26,10 +26,10 @@ const MainLayout = ({ className, children }: Props) => {
     <div className={styles.wrapper}>
       <SidebarMenu />
       <div className={classNames(styles.content, pinSideMenu && styles.addLeftMargin, className)}>
-        <TitleBarContextProvider>
+        <NodesContextProvider>
           <TitleBarMenu />
           {children ?? EmptyPlaceholder}
-        </TitleBarContextProvider>
+        </NodesContextProvider>
       </div>
       <ToastComponent />
     </div>
