@@ -1,45 +1,69 @@
-@use "../../../assets/styles/variables.scss";
-@use "../../../assets/styles/_base.scss";
-
 .wrapper {
-  height: 63px;
-  width: 295px;
-  flex-shrink: 0;
-  margin-top: 12px;
-  margin-bottom: 12px;
-  border-radius: 6px;
-  border: 1px solid rgb(59 220 247 / 30%);
-  background: rgb(44 203 229 / 8%);
+  display: flex;
+  align-items: center; 
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: fit-content;
+  min-width: 250px;
+}
+
+.contentWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.indicatorWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50;
+  height: 50;
+  margin-right: 10px;
+}
+
+.textWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
 }
 
 .rowWrapper {
-  padding-left: 12px;
   display: flex;
-  height: 50%;
-  flex: 1;
+  justify-content: space-between;
   align-items: center;
 }
 
-.labelColumnWrapper {
-  width: 130px;
-  display: flex;
+.statusContainer {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
 }
 
-.valueColumnWrapper {
-  display: flex;
-  width: calc(100% - 100px);
+.running {
+  background-color: #1e2a38;
 }
 
-.dotWrapper {
-  align-self: center;
-  width: 8px;
+.finished {
+  background-color: #204d28;
 }
 
-.dot {
-  background-color: rgb(44 203 229 / 100%);
-  margin-right: 10px;
-  height: 8px;
-  width: 8px;
-  border-radius: 50%;
-  display: inline-block;
+.error {
+  background-color: #3a1e1e;
+}
+
+.statusRunning {
+  color: #80e1ff;
+  background-color: rgba(128, 225, 255, 0.15);
+}
+
+.statusFinished {
+  color: #78e08f;
+  background-color: rgba(120, 224, 143, 0.15);
+}
+
+.statusError {
+  color: #e74c3c;
+  background-color: hsla(6, 78%, 57%, 0.15);
 }
