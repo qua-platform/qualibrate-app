@@ -1,0 +1,136 @@
+@use "../../../assets/styles/variables.scss";
+@use "../../../assets/styles/_base.scss";
+
+.workflowCardWrapper {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 100%;
+  gap: 12px;
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.running {
+  background-color: rgb(14 60 74 / 10%);
+  border: 1px solid rgb(60 222 248 / 50%);
+  color: #fff;
+}
+
+.finished {
+  background-color: rgb(11 59 48 / 10%);
+  border: 1px solid rgb(50 255 198 / 50%);
+  color: #fff;
+}
+
+.error {
+  background-color: rgb(77 31 31 / 10%);
+  border: 1px solid rgb(255 97 115 / 50%);
+  color: #fff;
+}
+
+.pending {
+  background-color: transparent;
+  border: 1px solid #3cdef8;
+}
+
+.graphDetailsWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.indicatorWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+}
+
+.textWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.graphTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.graphStatusRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statusText {
+  font-weight: 500;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.statusRunning {
+  background-color: rgb(0 178 255 / 20%);
+  color: #3CDEF8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.statusFinished {
+  background-color: rgb(0 255 150 / 20%);
+  color: #32FFC6;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.statusError {
+  background-color: rgb(255 50 70 / 20%);
+  color: #FF6173;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.statusPending {
+  color: #3CDEF8;
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.nodeCount {
+  font-size: 0.8rem;
+  color: #8CA0B3;
+}
+
+.workflowCardWrapper > .menuCardInsideWorkflow {
+  margin-left: auto;
+  min-width: 260px;
+}
+
+.stopAndTimeWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.stopButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeRemaining {
+  color: #A5ACB6;
+  font-size: 14px;
+}
