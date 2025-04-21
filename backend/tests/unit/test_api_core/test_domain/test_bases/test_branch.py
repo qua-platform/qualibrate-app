@@ -1,6 +1,6 @@
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import datetime
-from typing import Optional, Union, Mapping, Any
+from typing import Any, Optional, Union
 
 import pytest
 from pydantic import ValidationError
