@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Annotated, Any, Union
 
 from fastapi import APIRouter, Depends, Query
@@ -17,8 +17,9 @@ from qualibrate_app.api.core.models.snapshot import (
     SimplifiedSnapshotWithMetadata,
 )
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
-from qualibrate_app.api.core.types import IdType
+from qualibrate_app.api.core.types import IdType, PageSearchFilter
 from qualibrate_app.api.dependencies.search import get_search_path
+from qualibrate_app.api.routes._queries import SearchAllSnapshotsQuery
 from qualibrate_app.config import (
     get_settings,
 )
@@ -103,7 +104,9 @@ def get_snapshots_history(
     global_reverse: bool = False,
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> PagedCollection[SimplifiedSnapshotWithMetadata]:
-    total, snapshots = root.get_latest_snapshots(page, per_page, global_reverse)
+    total, snapshots = root.get_latest_snapshots(
+        PageSearchFilter(page=page, per_page=per_page), global_reverse
+    )
     snapshots_dumped = [
         SimplifiedSnapshotWithMetadata(**snapshot.dump().model_dump())
         for snapshot in snapshots
@@ -127,7 +130,9 @@ def get_nodes_history(
     global_reverse: bool = False,
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> PagedCollection[NodeModel]:
-    total, nodes = root.get_latest_nodes(page, per_page, global_reverse)
+    total, nodes = root.get_latest_nodes(
+        PageSearchFilter(page=page, per_page=per_page), global_reverse
+    )
     nodes_dumped = [node.dump() for node in nodes]
     if reverse:
         # TODO: make more correct relationship update
@@ -147,3 +152,12 @@ def search_snapshot(
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> Any:
     return root.search_snapshot(id, data_path)
+
+
+@root_router.get("/search_all")
+def search_all_snapshots_with_path(
+    filters: Annotated[SearchAllSnapshotsQuery, Query()],
+    root: Annotated[RootBase, Depends(_get_root_instance)],
+) -> Mapping[IdType, Any]:
+    search_path = get_search_path(filters.data_path)
+    return root.search_snapshots_data(filters, search_path)

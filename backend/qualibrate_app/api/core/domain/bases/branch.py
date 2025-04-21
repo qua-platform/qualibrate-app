@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import datetime
 from enum import IntEnum
-from typing import Optional
+from typing import Any, Optional, Union
 
 from qualibrate_config.models import QualibrateConfig
 
@@ -13,7 +13,7 @@ from qualibrate_app.api.core.domain.bases.i_dump import IDump
 from qualibrate_app.api.core.domain.bases.node import NodeBase
 from qualibrate_app.api.core.domain.bases.snapshot import SnapshotBase
 from qualibrate_app.api.core.models.branch import Branch as BranchModel
-from qualibrate_app.api.core.types import DocumentType, IdType
+from qualibrate_app.api.core.types import DocumentType, IdType, PageSearchFilter
 
 __all__ = ["BranchBase", "BranchLoadType"]
 
@@ -68,8 +68,7 @@ class BranchBase(DomainWithConfigBase, IDump, ABC):
     @abstractmethod
     def get_latest_snapshots(
         self,
-        page: int = 0,
-        per_page: int = 50,
+        filters: PageSearchFilter,
         reverse: bool = False,
     ) -> tuple[int, Sequence[SnapshotBase]]:
         pass
@@ -77,10 +76,15 @@ class BranchBase(DomainWithConfigBase, IDump, ABC):
     @abstractmethod
     def get_latest_nodes(
         self,
-        page: int = 1,
-        per_page: int = 50,
+        filters: PageSearchFilter,
         reverse: bool = False,
     ) -> tuple[int, Sequence[NodeBase]]:
+        pass
+
+    @abstractmethod
+    def search_snapshots_data(
+        self, filters: PageSearchFilter, data_path: Sequence[Union[str, int]]
+    ) -> Mapping[IdType, Any]:
         pass
 
     def dump(self) -> BranchModel:

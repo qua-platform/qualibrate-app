@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union, Mapping, Any
 
 import pytest
 from pydantic import ValidationError
@@ -11,7 +11,7 @@ from qualibrate_app.api.core.domain.bases.branch import (
 )
 from qualibrate_app.api.core.domain.bases.node import NodeBase
 from qualibrate_app.api.core.domain.bases.snapshot import SnapshotBase
-from qualibrate_app.api.core.types import IdType
+from qualibrate_app.api.core.types import IdType, PageSearchFilter
 
 
 class CustomBranchBase(BranchBase):
@@ -28,10 +28,23 @@ class CustomBranchBase(BranchBase):
     def get_node(self, id: Optional[IdType] = None) -> NodeBase:
         raise NotImplementedError
 
-    def get_latest_snapshots(self, num: int = 50) -> Sequence[SnapshotBase]:
+    def get_latest_snapshots(
+        self,
+        filters: PageSearchFilter,
+        reverse: bool = False,
+    ) -> Sequence[SnapshotBase]:
         raise NotImplementedError
 
-    def get_latest_nodes(self, num: int = 50) -> Sequence[NodeBase]:
+    def get_latest_nodes(
+        self,
+        filters: PageSearchFilter,
+        reverse: bool = False,
+    ) -> Sequence[NodeBase]:
+        raise NotImplementedError
+
+    def search_snapshots_data(
+        self, filters: PageSearchFilter, data_path: Sequence[Union[str, int]]
+    ) -> Mapping[IdType, Any]:
         raise NotImplementedError
 
 

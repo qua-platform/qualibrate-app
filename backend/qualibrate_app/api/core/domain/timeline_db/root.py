@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any, Optional, Union
 
 from qualibrate_app.api.core.domain.bases.root import RootBase
@@ -11,6 +11,7 @@ from qualibrate_app.api.core.types import (
     DocumentSequenceType,
     DocumentType,
     IdType,
+    PageSearchFilter,
 )
 from qualibrate_app.api.core.utils.request_utils import request_with_db
 from qualibrate_app.api.exceptions.classes.timeline_db import QJsonDbException
@@ -24,14 +25,17 @@ class RootTimelineDb(RootBase):
 
     def _get_latest_snapshots(
         self,
-        page: int,
-        per_page: int,
+        filters: PageSearchFilter,
         reverse: bool,
     ) -> tuple[int, DocumentSequenceType]:
         timeline_db_config = self.timeline_db_config
         result = request_with_db(
             "snapshot/n_latest",
-            params={"page": page, "per_page": per_page, "reverse": reverse},
+            params={
+                "page": filters.page,
+                "per_page": filters.per_page,
+                "reverse": reverse,
+            },
             db_name=self._settings.project,
             host=timeline_db_config.address_with_root,
             timeout=timeline_db_config.timeout,
@@ -42,7 +46,9 @@ class RootTimelineDb(RootBase):
         return parsed["total"], list(parsed["items"])
 
     def _get_latest_snapshot(self) -> DocumentType:
-        _, snapshots = self._get_latest_snapshots(1, 1, False)
+        _, snapshots = self._get_latest_snapshots(
+            PageSearchFilter(page=1, per_page=1), False
+        )
         if len(snapshots) != 1:
             raise QJsonDbException("Latest snapshot wasn't retrieved.")
         return snapshots[0]
@@ -69,11 +75,10 @@ class RootTimelineDb(RootBase):
 
     def get_latest_snapshots(
         self,
-        page: int = 1,
-        per_page: int = 50,
+        filters: PageSearchFilter,
         reverse: bool = False,
     ) -> tuple[int, Sequence[SnapshotTimelineDb]]:
-        total, snapshots = self._get_latest_snapshots(page, per_page, reverse)
+        total, snapshots = self._get_latest_snapshots(filters, reverse)
         return total, [
             SnapshotTimelineDb(
                 id=snapshot["id"], content=snapshot, settings=self._settings
@@ -83,11 +88,10 @@ class RootTimelineDb(RootBase):
 
     def get_latest_nodes(
         self,
-        page: int = 1,
-        per_page: int = 50,
+        filters: PageSearchFilter,
         reverse: bool = False,
     ) -> tuple[int, Sequence[NodeTimelineDb]]:
-        total, snapshots = self._get_latest_snapshots(page, per_page, reverse)
+        total, snapshots = self._get_latest_snapshots(filters, reverse)
         return total, [
             NodeTimelineDb(
                 node_id=snapshot["id"],
@@ -112,3 +116,9 @@ class RootTimelineDb(RootBase):
         if result.status_code != 200:
             raise QJsonDbException("Branch history wasn't retrieved.")
         return result.json()
+
+    def search_snapshots_data(
+        self, filters: PageSearchFilter, data_path: Sequence[Union[str, int]]
+    ) -> Mapping[IdType, Any]:
+        # not implemented yet
+        return {}

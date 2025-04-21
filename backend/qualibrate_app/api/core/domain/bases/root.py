@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any, Optional, Union
 
 from qualibrate_config.models import QualibrateConfig
@@ -10,7 +10,7 @@ from qualibrate_app.api.core.domain.bases.base_with_settings import (
 from qualibrate_app.api.core.domain.bases.branch import BranchBase
 from qualibrate_app.api.core.domain.bases.node import NodeBase
 from qualibrate_app.api.core.domain.bases.snapshot import SnapshotBase
-from qualibrate_app.api.core.types import IdType
+from qualibrate_app.api.core.types import IdType, PageSearchFilter
 
 __all__ = ["RootBase"]
 
@@ -34,8 +34,7 @@ class RootBase(DomainWithConfigBase, ABC):
     @abstractmethod
     def get_latest_snapshots(
         self,
-        page: int = 1,
-        per_page: int = 50,
+        filters: PageSearchFilter,
         reverse: bool = False,
     ) -> tuple[int, Sequence[SnapshotBase]]:
         pass
@@ -43,8 +42,7 @@ class RootBase(DomainWithConfigBase, ABC):
     @abstractmethod
     def get_latest_nodes(
         self,
-        page: int = 1,
-        per_page: int = 50,
+        filters: PageSearchFilter,
         reverse: bool = False,
     ) -> tuple[int, Sequence[NodeBase]]:
         pass
@@ -55,4 +53,10 @@ class RootBase(DomainWithConfigBase, ABC):
         snapshot_id: IdType,
         data_path: Sequence[Union[str, int]],
     ) -> Any:
+        pass
+
+    @abstractmethod
+    def search_snapshots_data(
+        self, filters: PageSearchFilter, data_path: Sequence[Union[str, int]]
+    ) -> Mapping[IdType, Any]:
         pass

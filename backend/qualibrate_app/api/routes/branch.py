@@ -1,4 +1,5 @@
-from typing import Annotated
+from collections.abc import Mapping
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Path, Query
 from qualibrate_config.models import QualibrateConfig, StorageType
@@ -20,7 +21,9 @@ from qualibrate_app.api.core.models.snapshot import (
     SimplifiedSnapshotWithMetadata,
 )
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
-from qualibrate_app.api.core.types import IdType
+from qualibrate_app.api.core.types import IdType, PageSearchFilter
+from qualibrate_app.api.dependencies.search import get_search_path
+from qualibrate_app.api.routes._queries import SearchAllSnapshotsQuery
 from qualibrate_app.config import get_settings
 
 branch_router = APIRouter(prefix="/branch/{name}", tags=["branch"])
@@ -103,7 +106,7 @@ def get_snapshots_history(
     branch: Annotated[BranchBase, Depends(_get_branch_instance)],
 ) -> PagedCollection[SimplifiedSnapshotWithMetadata]:
     total, snapshots = branch.get_latest_snapshots(
-        page, per_page, global_reverse
+        PageSearchFilter(page=page, per_page=per_page), global_reverse
     )
     snapshots_dumped = [
         SimplifiedSnapshotWithMetadata(**snapshot.dump().model_dump())
@@ -129,7 +132,9 @@ def get_nodes_history(
     global_reverse: bool = False,
     branch: Annotated[BranchBase, Depends(_get_branch_instance)],
 ) -> PagedCollection[NodeModel]:
-    total, nodes = branch.get_latest_nodes(page, per_page, global_reverse)
+    total, nodes = branch.get_latest_nodes(
+        PageSearchFilter(page=page, per_page=per_page), global_reverse
+    )
     nodes_dumped = [node.dump() for node in nodes]
     if reverse:
         # TODO: make more correct relationship update
@@ -140,3 +145,12 @@ def get_nodes_history(
         total_items=total,
         items=nodes_dumped,
     )
+
+
+@branch_router.get("/search_all")
+def search_all_snapshots_with_path(
+    filters: Annotated[SearchAllSnapshotsQuery, Query()],
+    branch: Annotated[BranchBase, Depends(_get_branch_instance)],
+) -> Mapping[IdType, Any]:
+    search_path = get_search_path(filters.data_path)
+    return branch.search_snapshots_data(filters, search_path)
