@@ -15,6 +15,9 @@ from qualibrate_app.api.core.domain.local_storage.snapshot import (
 from qualibrate_app.api.core.domain.local_storage.utils.node_utils import (
     find_n_latest_nodes_ids,
 )
+from qualibrate_app.api.core.domain.local_storage.utils.snapshot_content import (  # noqa: E501
+    search_snapshots_data_with_filter,
+)
 from qualibrate_app.api.core.types import IdType, PageSearchFilter
 from qualibrate_app.api.exceptions.classes.storage import QFileNotFoundException
 
@@ -72,12 +75,14 @@ class RootLocalStorage(RootBase):
         return self.get_snapshot(snapshot_id).search(data_path, load=True)
 
     def search_snapshots_data(
-        self, filters: PageSearchFilter, data_path: Sequence[Union[str, int]]
+        self,
+        filters: PageSearchFilter,
+        data_path: Sequence[Union[str, int]],
+        filter_no_change: bool,
     ) -> Mapping[IdType, Any]:
         _, snapshots = BranchLocalStorage(
             "main", settings=self._settings
         ).get_latest_snapshots(filters)
-        return {
-            snapshot.id or -1: snapshot.search(data_path, load=True)
-            for snapshot in snapshots
-        }
+        return search_snapshots_data_with_filter(
+            snapshots, data_path, filter_no_change
+        )

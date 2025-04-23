@@ -160,4 +160,6 @@ def search_all_snapshots_with_path(
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> Mapping[IdType, Any]:
     search_path = get_search_path(filters.data_path)
-    return root.search_snapshots_data(filters, search_path)
+    return root.search_snapshots_data(
+        filters, search_path, filter_no_change=filters.filter_no_change
+    )

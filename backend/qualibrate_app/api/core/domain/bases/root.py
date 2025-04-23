@@ -57,6 +57,9 @@ class RootBase(DomainWithConfigBase, ABC):
 
     @abstractmethod
     def search_snapshots_data(
-        self, filters: PageSearchFilter, data_path: Sequence[Union[str, int]]
+        self,
+        filters: PageSearchFilter,
+        data_path: Sequence[Union[str, int]],
+        filter_no_change: bool,
     ) -> Mapping[IdType, Any]:
         pass
