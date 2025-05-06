@@ -9,6 +9,8 @@ import cyKeys from "../../utils/cyKeys";
 import GlobalThemeContext, { GlobalThemeContextState } from "../themeModule/GlobalThemeContext";
 import QUAlibrateLogoIcon from "../../ui-lib/Icons/QUAlibrateLogoIcon";
 import QUAlibrateLogoSmallIcon from "../../ui-lib/Icons/QualibrateLogoSmall";
+import { FeedbackIcon } from "../../ui-lib/Icons/FeedbackIcon";
+import FeedbackModal from "./FeedbackModal";
 import { HelpIcon } from "../../ui-lib/Icons/HelpIcon";
 import ExpandSideMenuIcon from "../../ui-lib/Icons/ExpandSideMenuIcon";
 import CollapseSideMenuIcon from "../../ui-lib/Icons/CollapseSideMenuIcon";
@@ -16,6 +18,7 @@ import CollapseSideMenuIcon from "../../ui-lib/Icons/CollapseSideMenuIcon";
 const SidebarMenu: React.FunctionComponent = () => {
   const { pinSideMenu } = useContext(GlobalThemeContext) as GlobalThemeContextState;
   const [minify, setMinify] = useState(true);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const containerClassName = classNames(styles.sidebarMenu, minify ? styles.collapsed : styles.expanded);
 
@@ -48,6 +51,12 @@ const SidebarMenu: React.FunctionComponent = () => {
             <MenuItem {...item} key={item.keyId} hideText={minify} onClick={() => {}} />
           ))}
           <MenuItem 
+            menuItem={{ title: "Feedback", icon: FeedbackIcon, dataCy: "feedback-btn" }} 
+            keyId="feedback" 
+            hideText={minify} 
+            onClick={() => setFeedbackOpen(true)}
+          />          
+          <MenuItem 
             menuItem={{ title: "Help", icon: HelpIcon, dataCy: "help-btn" }} 
             keyId="help" 
             hideText={minify} 
@@ -58,6 +67,7 @@ const SidebarMenu: React.FunctionComponent = () => {
               <ThemeToggle showText={!minify} />
             </div>
           )} */}
+
           <MenuItem
             menuItem={{
               icon: minify ? ExpandSideMenuIcon : CollapseSideMenuIcon,
@@ -70,6 +80,7 @@ const SidebarMenu: React.FunctionComponent = () => {
         </div>
       </div>
     </div>
+    {feedbackOpen && <FeedbackModal onClose={() => setFeedbackOpen(false)} />}
     </>
   );
 };
