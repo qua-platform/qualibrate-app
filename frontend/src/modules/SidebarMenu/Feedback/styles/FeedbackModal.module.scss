@@ -1,0 +1,253 @@
+@keyframes pop-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+}
+  
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgb(0 0 0 / 40%);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 24px;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: popIn 150ms ease-out;
+
+    &.closing {
+        animation: fadeOut 150ms ease-in forwards;
+    }
+}  
+
+.input {
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #2a2a2a;
+    color: #fff;
+}
+
+.textarea {
+    padding: 10px;
+    height: 120px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #2a2a2a;
+    color: #fff;
+    resize: none;
+}
+
+.buttonRow {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.cancelButton {
+    padding: 8px 16px;
+    background: #444;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.submitButton {
+    padding: 8px 16px;
+    background: #42ac4b;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.submitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.fileInputWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.fileLabel {
+    font-size: 12px;
+    color: #a5acb6;
+    cursor: pointer;
+    border: 2px dashed #a5acb6;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.fileInput {
+    display: none;
+}
+
+.previewGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: center;
+}
+
+.previewWrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.previewImage {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.removeButton {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ff6173;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #ff425c;
+    }
+}
+
+.dragHint {
+    font-size: 12px;
+    color: #888;
+    display: block;
+    margin-top: 8px;
+}
+
+.dragActive {
+    border-color: #3cdef8;
+    background-color: rgb(60 222 248 / 5%);
+}
+
+.fileName {
+    margin-top: 6px;
+    font-size: 10px;
+    color: #a5acb6;
+    word-break: break-word;
+    text-align: center;
+    max-width: 80px;
+}
+
+.addMore {
+    border: 2px dashed #3cdef8;
+    border-radius: 8px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3cdef8;
+    font-size: 36px;
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.addMore:hover {
+    background-color: rgb(60 222 248 / 10%);
+    border-color: rgb(0 207 255);
+}
+
+.plusSign {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.summaryAndTypeWrapper {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .summaryAndTypeWrapper .input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #2a2a2a;
+    color: #fff;
+    font-size: 14px;
+    font-family: Roboto, sans-serif;
+    text-align: left;
+    background-color: #2a2a2a;
+
+  }
+  
+  .summaryAndTypeWrapper .select {
+    width: 150px;
+    flex-shrink: 0;
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #2a2a2a;
+    font-size: 14px;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='7' viewBox='0 0 10 7' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23A5ACB6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+  }
+  
+  .select:focus {
+    outline: none;
+  }
+  

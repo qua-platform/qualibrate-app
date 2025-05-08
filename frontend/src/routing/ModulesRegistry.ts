@@ -33,6 +33,7 @@ export type ModuleKey =
   | "admin-settings"
   | "graph-library"
   | "graph-status"
+  | "feedback"
   | "help"
   | "toggle";
 
