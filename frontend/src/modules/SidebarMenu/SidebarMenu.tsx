@@ -10,7 +10,7 @@ import GlobalThemeContext, { GlobalThemeContextState } from "../themeModule/Glob
 import QUAlibrateLogoIcon from "../../ui-lib/Icons/QUAlibrateLogoIcon";
 import QUAlibrateLogoSmallIcon from "../../ui-lib/Icons/QualibrateLogoSmall";
 import { FeedbackIcon } from "../../ui-lib/Icons/FeedbackIcon";
-import FeedbackModal from "./FeedbackModal";
+import FeedbackModal from "./Feedback/FeedbackModal";
 import { HelpIcon } from "../../ui-lib/Icons/HelpIcon";
 import ExpandSideMenuIcon from "../../ui-lib/Icons/ExpandSideMenuIcon";
 import CollapseSideMenuIcon from "../../ui-lib/Icons/CollapseSideMenuIcon";

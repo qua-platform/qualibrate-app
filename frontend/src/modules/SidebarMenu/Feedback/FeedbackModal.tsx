@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./styles/FeedbackModal.module.scss";
-import SuccessToast from "../toastModule/SuccessToast";
+import SuccessToast from "./components/SuccessToast";
+// import FeedbackHeader from "./components/FeedbackHeader";
 
 interface FeedbackModalProps {
   onClose: () => void;
