@@ -9,10 +9,16 @@
   width: 250px;
 }
 
-.contentWrapper {
+.hoverRegion {
   display: flex;
   align-items: center;
-  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: rgb(255 255 255 / 4%);
+  }
 }
 
 .indicatorWrapper {
@@ -21,7 +27,7 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  margin-right: 10px;
+  margin-right: 16px;   
 }
 
 .textWrapper {
@@ -113,14 +119,10 @@
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 220px; 
+  max-width: 214px; 
 }
 
 .noNodeRunningLabel {
   font-size: 14px;
   color: #a0a0af;
-}
-
-.pointerCursor {
-  cursor: pointer;
 }
