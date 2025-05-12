@@ -7,6 +7,14 @@ interface TooltipContentProps {
   node: LastRunStatusNodeResponseDTO;
 }
 
+const formatTime = (sec: number | null) => {
+  if (sec === null) return "";
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = Math.floor(sec % 60);
+  return `${h ? `${h}h ` : ""}${m ? `${m}m ` : ""}${s}s`;
+};
+
 export const TitleBarTooltipContent: React.FC<TooltipContentProps> = ({ node }) => {
   return (
     <div className={styles.tooltipContent}>
@@ -16,11 +24,11 @@ export const TitleBarTooltipContent: React.FC<TooltipContentProps> = ({ node }) 
       </div>
       <div className={styles.tooltipRow}>
         <div className={styles.tooltipLabel}>Status:</div>
-        <div className={styles.tooltipValue}>{node.status}</div>
+        <div className={styles.tooltipValue}>{node.status.charAt(0).toUpperCase() + node.status.slice(1)}</div>
       </div>
       <div className={styles.tooltipRow}>
         <div className={styles.tooltipLabel}>Run duration:</div>
-        <div className={styles.tooltipValue}>{Math.floor(node.run_duration ?? 0)}s</div>
+        <div className={styles.tooltipValue}>{formatTime(node.run_duration ?? 0)}</div>
       </div>
       {node.id && node.id !== -1 && (
         <div className={styles.tooltipRow}>
