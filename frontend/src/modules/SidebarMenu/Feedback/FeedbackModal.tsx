@@ -208,7 +208,12 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose }) => {
               placeholder="Summary"
               className={styles.input}
               value={summary}
-              onChange={(e) => setSummary(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= 100) {
+                  setSummary(value);
+                }
+              }}
             />
 
             <select
@@ -231,17 +236,38 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose }) => {
               placeholder="Custom feedback type"
               className={styles.input}
               value={customType}
-              onChange={(e) => setCustomType(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= 50) {
+                  setCustomType(value);
+                }
+              }}
             />
           )}
 
           {/* Detail */}
-          <textarea
-            placeholder="Detail"
-            className={styles.textarea}
-            value={detail}
-            onChange={(e) => setDetail(e.target.value)}
-          />
+          <div className={styles.textareaWrapper}>
+            <textarea
+              placeholder="Detail"
+              className={styles.textarea}
+              value={detail}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= 500) {
+                  setDetail(value);
+                }
+              }}
+            />
+            <span
+              className={styles.detailCharCounter}
+              style={{
+                color: detail.length > 450 ? "#ff6173" : "#888",
+                opacity: detail.length > 0 ? 1 : 0,
+              }}
+            >
+              {detail.length}/500
+            </span>
+          </div>
 
           {/* Images */}
           <div className={styles.fileInputWrapper}>
