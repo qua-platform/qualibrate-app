@@ -2,11 +2,14 @@ import json
 import logging
 from collections.abc import Mapping, Sequence
 from datetime import datetime
+from itertools import groupby
 from pathlib import Path
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Optional,
+    Union,
     cast,
 )
 
@@ -20,12 +23,16 @@ from qualibrate_app.api.core.domain.local_storage._id_to_local_path import (
 )
 from qualibrate_app.api.core.types import (
     DocumentType,
+    IdType,
 )
 from qualibrate_app.api.core.utils.path.node import NodePath
 from qualibrate_app.api.exceptions.classes.storage import QFileNotFoundException
 from qualibrate_app.api.exceptions.classes.values import QValueException
 from qualibrate_app.config.resolvers import get_quam_state_path
 from qualibrate_app.config.vars import METADATA_OUT_PATH
+
+if TYPE_CHECKING:
+    from qualibrate_app.api.core.domain.bases.snapshot import SnapshotBase
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +42,7 @@ __all__ = [
     "SnapshotContentUpdaterType",
     "default_snapshot_content_loader",
     "default_snapshot_content_updater",
+    "search_snapshots_data_with_filter",
 ]
 
 SnapshotContentLoaderType = Callable[
@@ -321,3 +329,27 @@ def default_snapshot_content_loader(
         node_info, node_filepath, snapshot_path
     )
     return content
+
+
+def search_snapshots_data_with_filter(
+    snapshots: Sequence["SnapshotBase"],
+    data_path: Sequence[Union[str, int]],
+    filter_no_change: bool,
+) -> dict[IdType, Any]:
+    search_results = [
+        (snapshot.id or -1, snapshot.search(data_path, load=True))
+        for snapshot in snapshots
+    ]
+    search_results = [
+        (i, k[0]["value"] if k and len(k) > 0 else None)
+        for i, k in search_results
+    ]
+    if not filter_no_change:
+        return dict(search_results)
+    filtered_results = list(
+        map(
+            lambda x: list(x[1])[-1],
+            groupby(search_results, key=lambda i: i[1]),
+        )
+    )
+    return dict(filtered_results)
