@@ -1,6 +1,7 @@
 import pytest
 
 from qualibrate_app.api.core.domain.local_storage.root import RootLocalStorage
+from qualibrate_app.api.core.types import PageSearchFilter
 from qualibrate_app.api.exceptions.classes.storage import QFileNotFoundException
 
 
@@ -23,8 +24,7 @@ class TestLocalStorageRoot:
         assert ex.value.args == ("There is no msg",)
         patched_find_latest.assert_called_once_with(
             settings.storage.location,
-            1,
-            1,
+            PageSearchFilter(page=1, per_page=1),
             settings.project,
         )
 
@@ -39,8 +39,7 @@ class TestLocalStorageRoot:
         assert self.root._get_latest_node_id("msg") == 1
         patched_find_latest.assert_called_once_with(
             settings.storage.location,
-            1,
-            1,
+            PageSearchFilter(page=1, per_page=1),
             settings.project,
         )
 
@@ -106,18 +105,21 @@ class TestLocalStorageRoot:
 
     def test_get_latest_snapshots(self, mocker, settings):
         class _Branch:
-            def get_latest_snapshots(self, page, per_page, reverse):
-                assert page == 1
-                assert per_page == 2
+            def get_latest_snapshots(self, filters, reverse):
+                assert filters.page == 1
+                assert filters.per_page == 2
                 assert reverse is False
                 return [1, 2]
 
         patched_branch = mocker.patch(
             (
-                "qualibrate_app.api.core.domain.local_storage.root"
-                ".BranchLocalStorage"
+                "qualibrate_app.api.core.domain.local_storage.root."
+                "BranchLocalStorage"
             ),
             return_value=_Branch(),
         )
-        assert self.root.get_latest_snapshots(1, 2, False) == [1, 2]
+        assert self.root.get_latest_snapshots(
+            PageSearchFilter(page=1, per_page=2),
+            False,
+        ) == [1, 2]
         patched_branch.assert_called_once_with("main", settings=settings)
