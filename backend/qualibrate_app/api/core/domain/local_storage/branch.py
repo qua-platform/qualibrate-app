@@ -22,7 +22,12 @@ from qualibrate_app.api.core.domain.local_storage.utils.node_utils import (
     find_n_latest_nodes_ids,
 )
 from qualibrate_app.api.core.models.branch import Branch as BranchModel
-from qualibrate_app.api.core.types import DocumentType, IdType
+from qualibrate_app.api.core.types import (
+    DocumentType,
+    IdType,
+    PageFilter,
+    SearchFilter,
+)
 from qualibrate_app.api.exceptions.classes.storage import QFileNotFoundException
 
 __all__ = ["BranchLocalStorage"]
@@ -49,23 +54,24 @@ class BranchLocalStorage(BranchBase):
         pass
 
     def _get_latest_node_id(self, error_msg: str) -> IdType:
-        id = next(
+        node_id = next(
             find_n_latest_nodes_ids(
                 self._settings.storage.location,
-                1,
-                1,
-                self._settings.project,
+                pages_filter=PageFilter(page=1, per_page=1),
+                project_name=self._settings.project,
             ),
             None,
         )
-        if id is None:
+        if node_id is None:
             raise QFileNotFoundException(f"There is no {error_msg}")
-        return id
+        return node_id
 
-    def get_snapshot(self, id: Optional[IdType] = None) -> SnapshotBase:
-        if id is None:
-            id = self._get_latest_node_id("snapshots")
-        return SnapshotLocalStorage(id, settings=self._settings)
+    def get_snapshot(
+        self, snapshot_id: Optional[IdType] = None
+    ) -> SnapshotBase:
+        if snapshot_id is None:
+            snapshot_id = self._get_latest_node_id("snapshots")
+        return SnapshotLocalStorage(snapshot_id, settings=self._settings)
 
     def get_node(self, id: Optional[IdType] = None) -> NodeBase:
         if id is None:
@@ -74,17 +80,17 @@ class BranchLocalStorage(BranchBase):
 
     def get_latest_snapshots(
         self,
-        page: int = 0,
-        per_page: int = 50,
+        pages_filter: PageFilter,
+        search_filter: Optional[SearchFilter] = None,
         reverse: bool = False,
     ) -> tuple[int, Sequence[SnapshotBase]]:
         # TODO: use reverse
         storage_location = self._settings.storage.location
         ids = find_n_latest_nodes_ids(
             storage_location,
-            page,
-            per_page,
-            self._settings.project,
+            pages_filter=pages_filter,
+            search_filter=search_filter,
+            project_name=self._settings.project,
         )
         snapshots = [
             SnapshotLocalStorage(id, settings=self._settings) for id in ids
@@ -96,17 +102,17 @@ class BranchLocalStorage(BranchBase):
 
     def get_latest_nodes(
         self,
-        page: int = 0,
-        per_page: int = 50,
+        pages_filter: PageFilter,
+        search_filter: Optional[SearchFilter] = None,
         reverse: bool = False,
     ) -> tuple[int, Sequence[NodeBase]]:
         # TODO: use reverse
         storage_location = self._settings.storage.location
         ids = find_n_latest_nodes_ids(
             storage_location,
-            page,
-            per_page,
-            self._settings.project,
+            pages_filter=pages_filter,
+            search_filter=search_filter,
+            project_name=self._settings.project,
         )
         nodes = [NodeLocalStorage(id, settings=self._settings) for id in ids]
         for node in nodes:
@@ -121,3 +127,12 @@ class BranchLocalStorage(BranchBase):
             name=self._name,
             snapshot_id=-1,
         )
+
+    # def search_snapshots_data(
+    #     self,
+    #     data_path: Sequence[Union[str, int]],
+    #     filter_no_change: bool,
+    #     pages_filter: PageFilter,
+    #     search_filter: Optional[SearchFilter] = None,
+    # ) -> Mapping[IdType, Any]:
+    #     pass

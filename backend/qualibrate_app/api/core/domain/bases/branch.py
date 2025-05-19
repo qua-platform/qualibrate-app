@@ -13,7 +13,12 @@ from qualibrate_app.api.core.domain.bases.i_dump import IDump
 from qualibrate_app.api.core.domain.bases.node import NodeBase
 from qualibrate_app.api.core.domain.bases.snapshot import SnapshotBase
 from qualibrate_app.api.core.models.branch import Branch as BranchModel
-from qualibrate_app.api.core.types import DocumentType, IdType
+from qualibrate_app.api.core.types import (
+    DocumentType,
+    IdType,
+    PageFilter,
+    SearchFilter,
+)
 
 __all__ = ["BranchBase", "BranchLoadType"]
 
@@ -68,8 +73,8 @@ class BranchBase(DomainWithConfigBase, IDump, ABC):
     @abstractmethod
     def get_latest_snapshots(
         self,
-        page: int = 0,
-        per_page: int = 50,
+        pages_filter: PageFilter,
+        search_filter: Optional[SearchFilter] = None,
         reverse: bool = False,
     ) -> tuple[int, Sequence[SnapshotBase]]:
         pass
@@ -77,11 +82,21 @@ class BranchBase(DomainWithConfigBase, IDump, ABC):
     @abstractmethod
     def get_latest_nodes(
         self,
-        page: int = 1,
-        per_page: int = 50,
+        pages_filter: PageFilter,
+        search_filter: Optional[SearchFilter] = None,
         reverse: bool = False,
     ) -> tuple[int, Sequence[NodeBase]]:
         pass
+
+    # @abstractmethod
+    # def search_snapshots_data(
+    #     self,
+    #     data_path: Sequence[Union[str, int]],
+    #     filter_no_change: bool,
+    #     pages_filter: PageFilter,
+    #     search_filter: Optional[SearchFilter] = None,
+    # ) -> Mapping[IdType, Any]:
+    #     pass
 
     def dump(self) -> BranchModel:
         return BranchModel(

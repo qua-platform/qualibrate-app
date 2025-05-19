@@ -8,7 +8,10 @@ from qualibrate_app.api.core.domain.bases.branch import (
     BranchLoadType,
 )
 from qualibrate_app.api.core.domain.bases.node import NodeLoadType
-from qualibrate_app.api.core.domain.bases.snapshot import SnapshotLoadType
+from qualibrate_app.api.core.domain.bases.snapshot import (
+    SnapshotLoadType,
+    SnapshotLoadTypeFlag,
+)
 from qualibrate_app.api.core.domain.local_storage.branch import (
     BranchLocalStorage,
 )
@@ -20,7 +23,10 @@ from qualibrate_app.api.core.models.snapshot import (
     SimplifiedSnapshotWithMetadata,
 )
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
-from qualibrate_app.api.core.types import IdType
+from qualibrate_app.api.core.types import IdType, PageFilter, PageSearchFilter
+from qualibrate_app.api.routes.utils.snapshot_load_type import (
+    parse_load_type_flag,
+)
 from qualibrate_app.config import get_settings
 
 branch_router = APIRouter(prefix="/branch/{name}", tags=["branch"])
@@ -63,8 +69,13 @@ def get_snapshot(
 def get_latest_snapshot(
     *,
     load_type: SnapshotLoadType = SnapshotLoadType.Metadata,
+    load_type_flag: Annotated[
+        SnapshotLoadTypeFlag, Depends(parse_load_type_flag)
+    ],
     branch: Annotated[BranchBase, Depends(_get_branch_instance)],
 ) -> SnapshotModel:
+    # TODO: process new snapshot load type
+    print(f"{load_type_flag = }")
     snapshot = branch.get_snapshot()
     snapshot.load(load_type)
     return snapshot.dump()
@@ -103,7 +114,8 @@ def get_snapshots_history(
     branch: Annotated[BranchBase, Depends(_get_branch_instance)],
 ) -> PagedCollection[SimplifiedSnapshotWithMetadata]:
     total, snapshots = branch.get_latest_snapshots(
-        page, per_page, global_reverse
+        pages_filter=PageFilter(page=page, per_page=per_page),
+        reverse=global_reverse,
     )
     snapshots_dumped = [
         SimplifiedSnapshotWithMetadata(**snapshot.dump().model_dump())
@@ -129,7 +141,10 @@ def get_nodes_history(
     global_reverse: bool = False,
     branch: Annotated[BranchBase, Depends(_get_branch_instance)],
 ) -> PagedCollection[NodeModel]:
-    total, nodes = branch.get_latest_nodes(page, per_page, global_reverse)
+    total, nodes = branch.get_latest_nodes(
+        pages_filter=PageFilter(page=page, per_page=per_page),
+        reverse=global_reverse,
+    )
     nodes_dumped = [node.dump() for node in nodes]
     if reverse:
         # TODO: make more correct relationship update
@@ -140,3 +155,42 @@ def get_nodes_history(
         total_items=total,
         items=nodes_dumped,
     )
+
+
+@branch_router.get("/search/")
+def search_filtered_snapshots(
+    filters: Annotated[PageSearchFilter, Query()],
+    branch: Annotated[BranchBase, Depends(_get_branch_instance)],
+) -> PagedCollection[SimplifiedSnapshotWithMetadata]:
+    total, snapshots = branch.get_latest_snapshots(
+        pages_filter=filters,
+        search_filter=filters,
+    )
+    snapshots_dumped = [
+        SimplifiedSnapshotWithMetadata(**snapshot.dump().model_dump())
+        for snapshot in snapshots
+    ]
+    return PagedCollection[SimplifiedSnapshotWithMetadata](
+        page=filters.page,
+        per_page=filters.per_page,
+        total_items=total,
+        items=snapshots_dumped,
+    )
+
+
+# @branch_router.get("/search/data")
+# def search_all_snapshots_data(
+#     filters: Annotated[FilteredSnapshotsDataQuery, Query()],
+#     branch: Annotated[BranchBase, Depends(_get_branch_instance)],
+# ) -> Mapping[IdType, Any]:
+#     if filters.data_path is None:
+#         raise HTTPException(
+#             status_code=400,
+#             detail="Path parameter 'data_path' is required.",
+#         )
+#     return branch.search_snapshots_data(
+#         data_path=filters.data_path,
+#         filter_no_change=filters.filter_no_change,
+#         pages_filter=filters,
+#         search_filter=filters,
+#     )

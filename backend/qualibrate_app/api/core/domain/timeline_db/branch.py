@@ -17,7 +17,12 @@ from qualibrate_app.api.core.domain.timeline_db.node import NodeTimelineDb
 from qualibrate_app.api.core.domain.timeline_db.snapshot import (
     SnapshotTimelineDb,
 )
-from qualibrate_app.api.core.types import DocumentType, IdType
+from qualibrate_app.api.core.types import (
+    DocumentType,
+    IdType,
+    PageFilter,
+    SearchFilter,
+)
 from qualibrate_app.api.core.utils.request_utils import request_with_db
 from qualibrate_app.api.exceptions.classes.timeline_db import QJsonDbException
 
@@ -63,7 +68,9 @@ class BranchTimelineDb(BranchBase):
 
     def get_snapshot(self, id: Optional[IdType] = None) -> SnapshotBase:
         if id is None:
-            latest = self.get_latest_snapshots(1)
+            latest = self.get_latest_snapshots(
+                pages_filter=PageFilter(page=1, per_page=1)
+            )
             if len(latest) != 1:
                 raise QJsonDbException("Can't load latest snapshot of branch")
             return latest[1][0]
@@ -84,7 +91,9 @@ class BranchTimelineDb(BranchBase):
 
     def get_node(self, id: Optional[IdType] = None) -> NodeBase:
         if id is None:
-            latest = self.get_latest_nodes(1)
+            latest = self.get_latest_nodes(
+                pages_filter=PageFilter(page=1, per_page=1)
+            )
             if len(latest) != 1:
                 raise QJsonDbException("Can't load latest node of branch")
             return latest[1][0]
@@ -134,13 +143,13 @@ class BranchTimelineDb(BranchBase):
 
     def get_latest_snapshots(
         self,
-        page: int = 0,
-        per_page: int = 50,
+        pages_filter: PageFilter,
+        search_filter: Optional[SearchFilter] = None,
         reverse: bool = False,
     ) -> tuple[int, list[SnapshotBase]]:
         """Retrieve last num_snapshots from this branch"""
         total, snapshots = self._get_remote_snapshots(
-            True, page, per_page, reverse
+            True, pages_filter.page, pages_filter.per_page, reverse
         )
         return total, [
             SnapshotTimelineDb(
@@ -151,13 +160,13 @@ class BranchTimelineDb(BranchBase):
 
     def get_latest_nodes(
         self,
-        page: int = 0,
-        per_page: int = 50,
+        pages_filter: PageFilter,
+        search_filter: Optional[SearchFilter] = None,
         reverse: bool = False,
     ) -> tuple[int, list[NodeBase]]:
         """Retrieve last num_snapshots from this branch"""
         total, snapshots = self._get_remote_snapshots(
-            False, page, per_page, reverse
+            False, pages_filter.page, pages_filter.per_page, reverse
         )
         return total, [
             NodeTimelineDb(
@@ -167,3 +176,13 @@ class BranchTimelineDb(BranchBase):
             )
             for snapshot in snapshots
         ]
+
+    # def search_snapshots_data(
+    #     self,
+    #     data_path: Sequence[Union[str, int]],
+    #     filter_no_change: bool,
+    #     pages_filter: PageFilter,
+    #     search_filter: Optional[SearchFilter] = None,
+    # ) -> Mapping[IdType, Any]:
+    #     # not implemented yet
+    #     return {}

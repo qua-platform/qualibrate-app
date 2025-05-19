@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Mapping, Sequence
 from datetime import datetime
-from enum import IntEnum
+from enum import IntEnum, IntFlag
 from typing import Any, ClassVar, Optional, Union
 
 from qualibrate_config.models import QualibrateConfig
@@ -20,7 +20,7 @@ from qualibrate_app.api.core.utils.find_utils import (
     get_subpath_value_on_any_depth,
 )
 
-__all__ = ["SnapshotBase", "SnapshotLoadType"]
+__all__ = ["SnapshotBase", "SnapshotLoadType", "SnapshotLoadTypeFlag"]
 
 
 class SnapshotLoadType(IntEnum):
@@ -29,6 +29,22 @@ class SnapshotLoadType(IntEnum):
     Metadata = 2
     Data = 3
     Full = 4
+
+
+class SnapshotLoadTypeFlag(IntFlag):
+    Minified = 2**0
+    Metadata = Minified | 2**1
+    DataWithoutRefs = Minified | 2**2
+    DataWithMachine = DataWithoutRefs | 2**3
+    DataWithResults = DataWithoutRefs | 2**4
+    Full = (
+        2**8
+        | Minified
+        | Metadata
+        | DataWithoutRefs
+        | DataWithMachine
+        | DataWithResults
+    )
 
 
 class SnapshotBase(DomainWithConfigBase, IDump, ABC):

@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Annotated, Union
+from typing import Annotated, Optional, Union
 
 from fastapi import Query
 
@@ -41,3 +41,13 @@ def get_search_path(
         int(item) if item.isnumeric() else item
         for item in check_path(data_path).split(".")
     ]
+
+
+def get_optional_search_path(
+    data_path: Annotated[
+        Optional[str], Query(description="Path to search")
+    ] = None,
+) -> Optional[Sequence[Union[str, int]]]:
+    if data_path is None:
+        return None
+    return get_search_path(data_path)

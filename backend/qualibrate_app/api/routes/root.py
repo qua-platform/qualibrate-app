@@ -1,13 +1,15 @@
-from collections.abc import Sequence
-from typing import Annotated, Any, Union
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from qualibrate_config.models import QualibrateConfig, StorageType
 
 from qualibrate_app.api.core.domain.bases.branch import BranchLoadType
 from qualibrate_app.api.core.domain.bases.node import NodeLoadType
 from qualibrate_app.api.core.domain.bases.root import RootBase
-from qualibrate_app.api.core.domain.bases.snapshot import SnapshotLoadType
+from qualibrate_app.api.core.domain.bases.snapshot import (
+    SnapshotLoadType,
+    SnapshotLoadTypeFlag,
+)
 from qualibrate_app.api.core.domain.local_storage.root import RootLocalStorage
 from qualibrate_app.api.core.domain.timeline_db.root import RootTimelineDb
 from qualibrate_app.api.core.models.branch import Branch as BranchModel
@@ -17,8 +19,11 @@ from qualibrate_app.api.core.models.snapshot import (
     SimplifiedSnapshotWithMetadata,
 )
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
-from qualibrate_app.api.core.types import IdType
-from qualibrate_app.api.dependencies.search import get_search_path
+from qualibrate_app.api.core.types import IdType, PageFilter, PageSearchFilter
+from qualibrate_app.api.routes._queries import FilteredSnapshotsDataQuery
+from qualibrate_app.api.routes.utils.snapshot_load_type import (
+    parse_load_type_flag,
+)
 from qualibrate_app.config import (
     get_settings,
 )
@@ -75,7 +80,12 @@ def get_latest_node(
 def get_snapshot_by_id(
     *,
     id: IdType,
-    load_type: SnapshotLoadType = SnapshotLoadType.Metadata,
+    load_type: Annotated[
+        SnapshotLoadType, Query(deprecated="use load_type_flag")
+    ] = SnapshotLoadType.Metadata,
+    load_type_flag: Annotated[
+        SnapshotLoadTypeFlag, Depends(parse_load_type_flag)
+    ] = SnapshotLoadTypeFlag.Metadata,
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> SnapshotModel:
     snapshot = root.get_snapshot(id)
@@ -103,7 +113,9 @@ def get_snapshots_history(
     global_reverse: bool = False,
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> PagedCollection[SimplifiedSnapshotWithMetadata]:
-    total, snapshots = root.get_latest_snapshots(page, per_page, global_reverse)
+    total, snapshots = root.get_latest_snapshots(
+        PageFilter(page=page, per_page=per_page), reverse=global_reverse
+    )
     snapshots_dumped = [
         SimplifiedSnapshotWithMetadata(**snapshot.dump().model_dump())
         for snapshot in snapshots
@@ -127,7 +139,9 @@ def get_nodes_history(
     global_reverse: bool = False,
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> PagedCollection[NodeModel]:
-    total, nodes = root.get_latest_nodes(page, per_page, global_reverse)
+    total, nodes = root.get_latest_nodes(
+        PageSearchFilter(page=page, per_page=per_page), reverse=global_reverse
+    )
     nodes_dumped = [node.dump() for node in nodes]
     if reverse:
         # TODO: make more correct relationship update
@@ -142,8 +156,20 @@ def get_nodes_history(
 
 @root_router.get("/search")
 def search_snapshot(
-    id: IdType,
-    data_path: Annotated[Sequence[Union[str, int]], Depends(get_search_path)],
+    filters: Annotated[FilteredSnapshotsDataQuery, Query()],
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> Any:
-    return root.search_snapshot(id, data_path)
+    # TODO: separate search nodes and search data
+    if filters.id is not None:
+        if filters.data_path is None:
+            raise HTTPException(
+                status_code=400,
+                detail="Parameter 'data_path' is required for resolving by id.",
+            )
+        return root.search_snapshot(filters.id, filters.data_path)
+    # return root.search_snapshots_data(
+    #     pages_filter=filters,
+    #     search_filter=filters,
+    #     data_path=filters.data_path,
+    #     filter_no_change=filters.filter_no_change,
+    # )
