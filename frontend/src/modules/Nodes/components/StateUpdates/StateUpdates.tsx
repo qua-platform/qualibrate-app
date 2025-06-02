@@ -5,17 +5,21 @@ import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 import styles from "../RunningJob/RunningJob.module.scss";
 import { StateUpdateElement, StateUpdateProps } from "./StateUpdateElement";
 import { Button } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
+import EllipsesIcon from "../../../../ui-lib/Icons/EllipsesIcon";
 
 export const StateUpdates: React.FC<{
   runningNodeInfo: RunningNodeInfo | undefined;
   setRunningNodeInfo: (a: RunningNodeInfo) => void;
   updateAllButtonPressed: boolean;
   setUpdateAllButtonPressed: (a: boolean) => void;
-}> = (props) => {
+  isExpanded: boolean;
+}> = ({ isExpanded, ...props }) => {
+
   const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed } = props;
 
   const handleClick = async (stateUpdates: StateUpdate) => {
-    const litOfUpdates = Object.entries(stateUpdates ?? {})
+    const listOfUpdates = Object.entries(stateUpdates ?? {})
       .filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated)
       .map(([key, stateUpdateObject]) => {
         return {
@@ -23,7 +27,7 @@ export const StateUpdates: React.FC<{
           value: stateUpdateObject.val ?? stateUpdateObject.new!,
         };
       });
-    const result = await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", litOfUpdates);
+    const result = await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", listOfUpdates);
     if (result.isOk) {
       setUpdateAllButtonPressed(result.result!);
     }
@@ -39,6 +43,24 @@ export const StateUpdates: React.FC<{
           {runningNodeInfo?.state_updates && Object.keys(runningNodeInfo?.state_updates).length > 0
             ? `(${Object.keys(runningNodeInfo?.state_updates).length})`
             : ""}
+          {!isExpanded && (
+            <Tooltip
+              title={
+                <div className={styles.expandedTooltip}>
+                  {Object.entries(runningNodeInfo?.state_updates ?? {}).map(([key, update]) => (
+                    <div key={key}>
+                      <strong>{key}:</strong> {JSON.stringify(update.val ?? update.new)}
+                    </div>
+                  ))}
+                </div>
+              }
+              placement="bottom-start"
+            >
+              <span className={styles.tooltipIcon}>
+                &nbsp; <EllipsesIcon />
+              </span>
+            </Tooltip>
+          )}
         </div>
         {updateAllButtonPressed ||
           (Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >
@@ -54,7 +76,7 @@ export const StateUpdates: React.FC<{
           ))}
       </div>
       {/*// )}*/}
-      {runningNodeInfo?.state_updates && (
+      {isExpanded && runningNodeInfo?.state_updates && (
         <div className={styles.stateUpdatesTopWrapper} data-testid="state-updates-top-wrapper">
           {Object.entries(runningNodeInfo?.state_updates ?? {}).map(([key, stateUpdateObject], index) =>
             StateUpdateElement({
