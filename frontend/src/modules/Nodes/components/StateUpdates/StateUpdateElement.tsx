@@ -16,10 +16,11 @@ export interface StateUpdateProps {
   runningNodeInfo?: RunningNodeInfo;
   setRunningNodeInfo?: (a: RunningNodeInfo) => void;
   updateAllButtonPressed: boolean;
+  stateUpdateKey: string;
 }
 
 export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
-  const { key, index, stateUpdateObject, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed } = props;
+  const { index, stateUpdateObject, stateUpdateKey, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed } = props;
   const [runningUpdate, setRunningUpdate] = React.useState<boolean>(false);
   const [parameterUpdated, setParameterUpdated] = useState<boolean>(false);
   const [customValue, setCustomValue] = useState<string | number>(JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? ""));
@@ -144,13 +145,13 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
     if (runningNodeInfo && runningNodeInfo.idx && stateUpdateObject && ("val" in stateUpdateObject || "new" in stateUpdateObject)) {
       setRunningUpdate(true);
       const stateUpdateValue = customValue ? customValue : stateUpdateObject.val ?? stateUpdateObject.new!;
-      const response = await SnapshotsApi.updateState(runningNodeInfo?.idx, key, stateUpdateValue);
+      const response = await SnapshotsApi.updateState(runningNodeInfo?.idx, stateUpdateKey, stateUpdateValue);
 
       const stateUpdate = { ...stateUpdateObject, stateUpdated: response.result! };
       if (setRunningNodeInfo) {
         setRunningNodeInfo({
           ...runningNodeInfo,
-          state_updates: { ...runningNodeInfo.state_updates, [key]: stateUpdate },
+          state_updates: { ...runningNodeInfo.state_updates, [stateUpdateKey]: stateUpdate },
         });
       }
       setParameterUpdated(response.result!);
@@ -162,10 +163,10 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
   };
   return (
     // {!runningUpdate && !parameterUpdated && (
-    <div key={`${key}-wrapper`} className={styles.stateUpdateWrapper} data-testid={`state-update-wrapper-${key}`}>
+    <div key={`${stateUpdateKey}-wrapper`} className={styles.stateUpdateWrapper} data-testid={`state-update-wrapper-${stateUpdateKey}`}>
       <div className={styles.stateUpdateOrderNumberAndTitleWrapper}>
         <div className={styles.stateUpdateOrderNumber}>{index + 1}</div>
-        <div className={styles.stateUpdateOrderKey} data-testid={`state-update-key-${index}`}>{key}</div>
+        <div className={styles.stateUpdateOrderKey} data-testid={`state-update-key-${index}`}>{stateUpdateKey}</div>
       </div>
       <div className={styles.stateUpdateValueWrapper} data-testid={`state-update-value-wrapper-${index}`}>
         <ValueRow
