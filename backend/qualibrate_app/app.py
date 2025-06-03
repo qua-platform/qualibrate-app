@@ -9,6 +9,7 @@ from qualibrate_app.api.exceptions.middleware import (
 )
 from qualibrate_app.config.resolvers import (
     get_config_path,
+    get_cors_origin,
     get_default_static_files_path,
     get_settings,
 )
@@ -25,18 +26,12 @@ app = FastAPI(
     docs_url="/app_docs",
 )
 _settings = get_settings(get_config_path())
-
-origins = [
-    "http://localhost:8002",
-    "http://localhost:8001",
-    "http://127.0.0.1:8002",
-    "http://127.0.0.1:8001",
-]
+cors_origins = get_cors_origin()
 
 app.add_middleware(QualibrateCatchExcMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
