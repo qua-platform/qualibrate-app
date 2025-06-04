@@ -27,7 +27,8 @@ const Project = () => {
   }, [allProjects, setListedProjects]);
 
   const handleSubmit = () => {
-    selectActiveProject(selectedProject!);
+    const fallbackProject = allProjects[0];
+    selectActiveProject(selectedProject || fallbackProject);
     openTab("data");
   };
 
@@ -35,7 +36,7 @@ const Project = () => {
     return <LoaderPage />;
   }
 
-  const heading: string = activeProject ? `Currently active project is ${activeProject}` : "Welcome to QUAlibrate";
+  const heading: string = activeProject?.name? `Currently active project is ${activeProject.name}` : "Welcome to QUAlibrate";
 
   return (
     <>

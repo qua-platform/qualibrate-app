@@ -16,7 +16,7 @@ interface Props {
   name?: string;
 }
 
-const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: Props) => {
+const Project = ({ showRuntime = false, isActive = false, onClick, name = "", projectId }: Props) => {
   const handleOnClick = useCallback(() => {
     if (!onClick) {
       return;
@@ -25,13 +25,27 @@ const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: 
     onClick(name);
   }, [onClick, name]); // TODO Possible BUG
 
+  const colorPalette = ["#AC51BD", "#5175BD", "#268A50", "#097F8C", "#986800", "#7351BD", "#1268D0"];
+
+  const getColorIndex = (name: string): number => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash) % colorPalette.length;
+  };
+
+  const color = getColorIndex(name || "");
+  const projectColor = colorPalette[color];
+
+
   return (
     <button
       className={classNames(styles.project, isActive && styles.project_active)}
       onClick={handleOnClick}
       data-cy={cyKeys.projects.PROJECT}
     >
-      <ProjectInfo name={name} />
+      <ProjectInfo name={name} color={projectColor} />
       <div className={styles.projectActions}>{showRuntime && SelectRuntime}</div>
     </button>
   );

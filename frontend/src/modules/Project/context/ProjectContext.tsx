@@ -25,28 +25,45 @@ export function ProjectContextProvider(props: ProjectContextProviderProps): Reac
   const [activeProject, setActiveProject] = useState<ProjectDTO | undefined>(undefined);
   const [allProjects, setAllProjects] = useState<ProjectDTO[]>([]);
 
-  const fetchAllProjects = useCallback(async () => {
-    const { isOk, error, result } = await ProjectViewApi.fetchAllProjects();
-    if (isOk) {
-      setAllProjects(result!);
-    } else if (error) {
-      console.log(error);
-    }
-  }, []);
+const fetchActiveProject = useCallback(async () => {
+  const { isOk, result } = await ProjectViewApi.fetchActiveProject();
+  if (isOk && result) {
+    setActiveProject(result);
+    return result;
+  }
+  return undefined;
+}, []);
 
-  const fetchActiveProject = useCallback(async () => {
-    const { isOk, error, result } = await ProjectViewApi.fetchActiveProject();
-    if (isOk) {
-      setActiveProject(result!);
-    } else if (error) {
-      console.log(error);
-    }
-  }, []);
+const fetchAllProjects = useCallback(async () => {
+  const { isOk, result } = await ProjectViewApi.fetchAllProjects();
+  if (isOk && result) {
+    setAllProjects(result);
+    return result;
+  }
+  return [];
+}, []);
 
-  useEffect(() => {
-    fetchActiveProject();
-    fetchAllProjects();
-  }, []);
+useEffect(() => {
+  const init = async () => {
+    await fetchActiveProject();
+    await fetchAllProjects();
+
+    setTimeout(() => {
+      if (!activeProject && (!allProjects || allProjects.length === 0)) {
+        const fallback: ProjectDTO = {
+          name: "My Project",
+          created_at: new Date().toISOString(),
+          last_modified_at: new Date().toISOString(),
+          nodes_number: 1,
+        };
+        setActiveProject(fallback);
+        setAllProjects([fallback]);
+      }
+    }, 0);
+  };
+  init();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   const selectActiveProject = useCallback((project: ProjectDTO) => {
     setActiveProject(project);

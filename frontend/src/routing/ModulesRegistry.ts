@@ -34,7 +34,8 @@ export type ModuleKey =
   | "graph-library"
   | "graph-status"
   | "help"
-  | "toggle";
+  | "toggle"
+  | "active-project";
 
 export type Module = {
   keyId: ModuleKey;
