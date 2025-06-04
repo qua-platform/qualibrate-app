@@ -12,11 +12,10 @@ interface Props {
   showRuntime?: boolean;
   isActive?: boolean;
   onClick?: (name: string) => void;
-  projectId?: number;
   name?: string;
 }
 
-const Project = ({ showRuntime = false, isActive = false, onClick, name = "", projectId }: Props) => {
+const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: Props) => {
   const handleOnClick = useCallback(() => {
     if (!onClick) {
       return;

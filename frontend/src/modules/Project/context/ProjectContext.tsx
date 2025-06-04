@@ -62,7 +62,6 @@ useEffect(() => {
     }, 0);
   };
   init();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
 
   const selectActiveProject = useCallback((project: ProjectDTO) => {
