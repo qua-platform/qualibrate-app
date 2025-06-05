@@ -15,12 +15,15 @@ import { ProjectDTO } from "./ProjectDTO";
 import PageName from "../../common/ui-components/common/Page/PageName";
 import PageSection from "../../common/ui-components/common/Page/PageSection";
 import InputField from "../../common/ui-components/common/Input/InputField";
+import CreateNewProjectIcon from "../../ui-lib/Icons/NewProjectButtonIcon";
+import CreateNewProjectPanel from "./CreateNewProjectPanel/CreateNewProjectPanel";
 
 const Project = () => {
   const { openTab } = useFlexLayoutContext();
   const { allProjects, activeProject, selectActiveProject } = useProjectContext();
   const [listedProjects, setListedProjects] = useState<ProjectDTO[] | undefined>(allProjects);
   const [selectedProject, setSelectedProject] = useState<ProjectDTO | undefined>(undefined);
+  const [showCreatePanel, setShowCreatePanel] = useState(false);
 
   useEffect(() => {
     setListedProjects(allProjects);
@@ -36,11 +39,27 @@ const Project = () => {
     return <LoaderPage />;
   }
 
-  const heading: string = activeProject?.name? `Currently active project is ${activeProject.name}` : "Welcome to QUAlibrate";
+  const heading: string = activeProject?.name ? `Currently active project is ${activeProject.name}` : "Welcome to QUAlibrate";
 
   return (
     <>
       <div className={styles.projectPageLayout}>
+        <div className={styles.createProjectWrapper}>
+          <button
+            title="Create new project"
+            onClick={() => setShowCreatePanel(prev => !prev)}
+            className={styles.createProjectButton}
+          >
+            <CreateNewProjectIcon />
+          </button>
+
+          {showCreatePanel && (
+            <div className={styles.createProjectPanelWrapper}>
+              <CreateNewProjectPanel />
+            </div>
+          )}
+        </div>
+
         <PageName>{heading}</PageName>
         <div className={styles.pageWrapper}>
           <PageSection sectionName="Please select a Project">

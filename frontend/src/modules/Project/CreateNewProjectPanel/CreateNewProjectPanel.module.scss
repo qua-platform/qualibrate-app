@@ -1,0 +1,141 @@
+.createProjectPanel {
+  display: flex;
+  flex-direction: column;
+  background-color: #2f3136;
+  padding: 24px;
+  border-radius: 12px;
+  gap: 12px;
+  width: 320px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+  .header {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 8px;
+  }
+
+  label {
+    font-size: 13px;
+    color: #a0a0a0;
+    margin-top: 6px;
+  }
+
+  input {
+    background-color: #1e1f22;
+    border: 1px solid #3a3d40;
+    border-radius: 6px;
+    padding: 8px;
+    color: white;
+    font-size: 14px;
+
+    &::placeholder {
+      color: #6b6b6b;
+    }
+  }
+
+  .optional {
+    font-style: italic;
+    color: #6b6b6b;
+  }
+
+  .memberInputWrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .memberInputFields {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+
+      input {
+        width: 100%;
+      }
+    }
+
+    .plusButton {
+      background-color: transparent;
+      border: 1px solid #2898cc;
+      color: #2898cc;
+      border-radius: 4px;
+      padding: 4px;
+      cursor: pointer;
+      min-width: 32px;
+      min-height: 32px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        background-color: rgba(40, 152, 204, 0.1);
+      }
+    }
+  }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1f2a2e;
+    color: #47d7ff;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+
+    .remove {
+      font-weight: normal;
+      font-size: 16px;
+      cursor: pointer;
+      margin-left: 4px;
+      color: #47d7ff;
+      line-height: 1;
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+
+    .cancel {
+      background: transparent;
+      border: 1px solid #2898cc;
+      color: #2898cc;
+      border-radius: 999px;
+      padding: 8px 20px;
+      font-weight: 500;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(40, 152, 204, 0.1);
+      }
+    }
+
+    .create {
+      background: #2898cc;
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 8px 20px;
+      font-weight: 500;
+      cursor: pointer;
+
+      &:hover {
+        background: #1d84b3;
+      }
+    }
+  }
+}
