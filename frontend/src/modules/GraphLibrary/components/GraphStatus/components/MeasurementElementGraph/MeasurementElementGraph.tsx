@@ -64,17 +64,6 @@ export const MeasurementElementGraph: React.FC<IProps> = ({ workflowGraphElement
 
       <div className={styles.insideWrapper}>
         <div className={styles.lowerContainer}>
-          <div className={styles.lowerUpperContainer}>
-            <div className={styles.lowerUpperLeftContainer}>
-              <div>Status: {statusMessage}</div>
-              <div>Run duration: {runDurationMessage ?? <CircularProgress size="2rem" />}</div>
-              <div>Graph progress: {graphProgressMessage ?? <CircularProgress size="2rem" />}</div>
-              {lastRunInfo?.error && <ErrorStatusWrapper error={lastRunInfo?.error} />}
-            </div>
-            <div className={styles.lowerUpperRightContainer}>
-              {lastRunInfo?.active && <BlueButton onClick={handleStopClick}>Stop</BlueButton>}
-            </div>
-          </div>
           <div className={styles.lowerLowerContainer}>
             <CytoscapeGraph elements={workflowGraphElements} onNodeClick={onCytoscapeNodeClick} />
           </div>
