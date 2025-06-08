@@ -1,141 +1,144 @@
 .createProjectPanel {
   display: flex;
   flex-direction: column;
-  background-color: #2f3136;
+  background-color: var(--popup-background);
   padding: 24px;
-  border-radius: 12px;
   gap: 12px;
-  width: 320px;
+  width: 287px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
 
-  .header {
-    font-size: 18px;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 8px;
-  }
+.header {
+  font-size: 19px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 8px;
+  font-family: Roboto, sans-serif;
+}
 
-  label {
-    font-size: 13px;
-    color: #a0a0a0;
-    margin-top: 6px;
-  }
+label {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #A5ACB6;
+  margin-top: 6px;
+}
 
-  input {
-    background-color: #1e1f22;
-    border: 1px solid #3a3d40;
-    border-radius: 6px;
-    padding: 8px;
-    color: white;
-    font-size: 14px;
+input {
+  background-color: #2A2B31;
+  border: 1px solid #42424C;
+  border-radius: 6px;
+  padding: 8px;
+  color: white;
+  font-size: 14px;
 
     &::placeholder {
-      color: #6b6b6b;
+      color: rgba(165, 172, 182, 0.6);
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
     }
+}
+
+
+.optional {
+  font-style: italic;
+  color: #6b6b6b;
+}
+
+.memberInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.memberInputFields {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  
+  input {
+    width: 100%;
   }
+}
 
-  .optional {
-    font-style: italic;
-    color: #6b6b6b;
-  }
 
-  .memberInputWrapper {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.plusButton {
+  padding: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .memberInputFields {
-      display: flex;
-      gap: 6px;
-      flex: 1;
-
-      input {
-        width: 100%;
-      }
-    }
-
-    .plusButton {
-      background-color: transparent;
-      border: 1px solid #2898cc;
-      color: #2898cc;
-      border-radius: 4px;
-      padding: 4px;
-      cursor: pointer;
-      min-width: 32px;
-      min-height: 32px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      &:hover {
-        background-color: rgba(40, 152, 204, 0.1);
-      }
-    }
-  }
+.plusButton:hover {
+  background-color: rgba(40, 152, 204, 0.1);
+}
 
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  gap: 6px;
+  border-radius: 6px;
+  background: rgba(44, 203, 229, 0.10);
+  font-family: Roboto, sans-serif;
+  color: #3CDEF8;
+  cursor: default;
 
   span {
+    padding: 4px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: #1f2a2e;
-    color: #47d7ff;
-    border-radius: 999px;
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: 600;
+    justify-content: center;
 
-    .remove {
-      font-weight: normal;
-      font-size: 16px;
-      cursor: pointer;
-      margin-left: 4px;
-      color: #47d7ff;
-      line-height: 1;
-
-      &:hover {
-        color: #ffffff;
-      }
+    &:hover {
+      background-color: rgba(60, 223, 248, 0.1);
+      border-radius: 3px;
     }
   }
 }
 
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
 
-    .cancel {
-      background: transparent;
-      border: 1px solid #2898cc;
-      color: #2898cc;
-      border-radius: 999px;
-      padding: 8px 20px;
-      font-weight: 500;
-      cursor: pointer;
+.cancel {
+  width: 136px;
+  height: 34px;
+  background: transparent;
+  border: 1px solid rgba(60, 223, 248, 0.3);
+  color: #3CDEF8;
+  border-radius: 999px;
+  padding: 8px 46px;
+  font-weight: 500;
+  cursor: pointer;
 
-      &:hover {
-        background: rgba(40, 152, 204, 0.1);
-      }
-    }
+  &:hover {
+    background: rgba(60, 223, 248, 0.08);
+  }
+}
 
-    .create {
-      background: #2898cc;
-      color: white;
-      border: none;
-      border-radius: 999px;
-      padding: 8px 20px;
-      font-weight: 500;
-      cursor: pointer;
+.create {
+  width: 136px;
+  height: 34px;
+  background: rgba(44, 203, 229, 0.6);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 46px;
+  font-weight: 500;
+  cursor: pointer;
 
-      &:hover {
-        background: #1d84b3;
-      }
-    }
+  &:hover {
+    background: rgba(44, 203, 229, 0.7);
   }
 }

@@ -32,6 +32,7 @@ const Project = () => {
   const handleSubmit = () => {
     const fallbackProject = allProjects[0];
     selectActiveProject(selectedProject || fallbackProject);
+    // in future maybe expand project details instead of just opening data tab
     openTab("data");
   };
 
@@ -45,17 +46,12 @@ const Project = () => {
     <>
       <div className={styles.projectPageLayout}>
         <div className={styles.createProjectWrapper}>
-          <button
-            title="Create new project"
-            onClick={() => setShowCreatePanel(prev => !prev)}
-            className={styles.createProjectButton}
-          >
+          <button title="Create new project" onClick={() => setShowCreatePanel(prev => !prev)} className={styles.createProjectButton}>
             <CreateNewProjectIcon />
           </button>
-
           {showCreatePanel && (
             <div className={styles.createProjectPanelWrapper}>
-              <CreateNewProjectPanel />
+              <CreateNewProjectPanel onCancel={() => setShowCreatePanel(false)} />
             </div>
           )}
         </div>
