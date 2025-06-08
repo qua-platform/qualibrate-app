@@ -5,7 +5,7 @@
   padding: 24px;
   gap: 12px;
   width: 287px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 30%);
 }
 
 .header {
@@ -32,7 +32,7 @@ input {
   font-size: 14px;
 
     &::placeholder {
-      color: rgba(165, 172, 182, 0.6);
+      color: rgb(165 172 182 / 60%);
       font-family: Roboto, sans-serif;
       font-size: 14px;
     }
@@ -71,7 +71,7 @@ input {
 }
 
 .plusButton:hover {
-  background-color: rgba(40, 152, 204, 0.1);
+  background-color: rgb(40 152 204 / 10%);
 }
 
 .chips {
@@ -86,7 +86,7 @@ input {
   padding: 2px 4px;
   gap: 6px;
   border-radius: 6px;
-  background: rgba(44, 203, 229, 0.10);
+  background: rgb(44 203 229 / 10%);
   font-family: Roboto, sans-serif;
   color: #3CDEF8;
   cursor: default;
@@ -99,7 +99,7 @@ input {
     justify-content: center;
 
     &:hover {
-      background-color: rgba(60, 223, 248, 0.1);
+      background-color: rgb(60 223 248 / 10%);
       border-radius: 3px;
     }
   }
@@ -115,7 +115,7 @@ input {
   width: 136px;
   height: 34px;
   background: transparent;
-  border: 1px solid rgba(60, 223, 248, 0.3);
+  border: 1px solid rgb(60 223 248 / 30%);
   color: #3CDEF8;
   border-radius: 999px;
   padding: 8px 46px;
@@ -123,14 +123,14 @@ input {
   cursor: pointer;
 
   &:hover {
-    background: rgba(60, 223, 248, 0.08);
+    background: rgb(60 223 248 / 8%);
   }
 }
 
 .create {
   width: 136px;
   height: 34px;
-  background: rgba(44, 203, 229, 0.6);
+  background: rgb(44 203 229 / 60%);
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -139,6 +139,6 @@ input {
   cursor: pointer;
 
   &:hover {
-    background: rgba(44, 203, 229, 0.7);
+    background: rgb(44 203 229 / 70%);
   }
 }
