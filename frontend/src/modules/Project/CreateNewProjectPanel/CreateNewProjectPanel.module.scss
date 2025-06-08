@@ -68,10 +68,15 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
-.plusButton:hover {
-  background-color: rgb(40 152 204 / 10%);
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:hover {
+    background-color: rgb(40 152 204 / 10%);
+  }
 }
 
 .chips {

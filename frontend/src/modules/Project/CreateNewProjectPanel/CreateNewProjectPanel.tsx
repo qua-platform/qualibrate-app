@@ -66,7 +66,9 @@ const CreateNewProjectPanel: React.FC<Props> = ({ onCancel }) => {
           <input type="text" placeholder="Member name" value={memberName} onChange={(e) => setMemberName(e.target.value)} />
           <input type="email" placeholder="Member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} />
         </div>
-        <button type="button" onClick={addMember} className={styles.plusButton} title="Add member"> <PlusSignSquareIcon /> </button>
+        <button type="button" onClick={addMember} className={styles.plusButton} title="Add member" disabled={!memberName || !memberEmail}>
+            <PlusSignSquareIcon />
+        </button>
       </div>
 
       <div className={styles.chips}>
