@@ -110,6 +110,10 @@ input {
   }
 }
 
+.chips:not(:empty) {
+  margin-bottom: 16px;
+}
+
 .actions {
   display: inline-flex;
   align-items: center;
