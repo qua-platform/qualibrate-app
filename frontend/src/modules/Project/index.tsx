@@ -80,7 +80,5 @@ const Project = () => {
 };
 
 export default () => (
-  <ProjectContextProvider>
     <Project />
-  </ProjectContextProvider>
 );
