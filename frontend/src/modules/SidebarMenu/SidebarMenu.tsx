@@ -33,7 +33,6 @@ const SidebarMenu: React.FunctionComponent = () => {
   }; 
 
   const { activeProject } = useProjectContext();
-  // console.log("Sidebar sees active project:", activeProject);
 
   const extractInitials = (name?: string): string => {
     if (!name) return "";
@@ -80,10 +79,10 @@ const SidebarMenu: React.FunctionComponent = () => {
           {activeProject?.name && (
             <MenuItem
               menuItem={{
-                title: activeProject.name,
+                title: activeProject.name.length > 15 ? activeProject.name.slice(0, 17) + "…" : activeProject.name,
                 icon: () => (
                   <ProjectFolderIcon
-                    initials={extractInitials(activeProject?.name)}
+                    initials={extractInitials(activeProject.name)}
                     fillColor={projectColor}
                     width={28}
                     height={28}
@@ -93,6 +92,7 @@ const SidebarMenu: React.FunctionComponent = () => {
                 dataCy: "active-project",
               }}
               keyId={"active-project"}
+              key={`active-project-${activeProject.name}`}
               hideText={minify}
               onClick={handleProjectClick}
             />

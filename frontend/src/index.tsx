@@ -10,6 +10,7 @@ import { GlobalThemeContextProvider } from "./modules/themeModule/GlobalThemeCon
 import { createRoot } from "react-dom/client";
 import { AuthContextProvider } from "./modules/Login/context/AuthContext";
 import { SnapshotsContextProvider } from "./modules/Snapshots/context/SnapshotsContext";
+import { ProjectContextProvider } from "./modules/Project/context/ProjectContext";
 
 type ProviderComponent = React.FC<PropsWithChildren<ReactNode>>;
 
@@ -25,13 +26,15 @@ const Application: React.FunctionComponent = () => {
   useEffect(updateColorTheme, []);
   return (
     <GlobalThemeContextProvider>
-      {contextProviders.reduce(
-        (Comp, Provider) => {
-          const TempProvider = Provider as unknown as React.FC<PropsWithChildren<object>>;
-          return <TempProvider>{Comp}</TempProvider>;
-        },
-        <AppRoutes />
-      )}
+      <ProjectContextProvider>
+        {contextProviders.reduce(
+          (Comp, Provider) => {
+            const TempProvider = Provider as unknown as React.FC<PropsWithChildren<object>>;
+            return <TempProvider>{Comp}</TempProvider>;
+          },
+          <AppRoutes />
+        )}
+      </ProjectContextProvider>
     </GlobalThemeContextProvider>
   );
 };
