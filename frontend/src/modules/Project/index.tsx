@@ -7,7 +7,7 @@ import { IconType } from "../../common/interfaces/InputProps";
 import { SearchIcon } from "../../ui-lib/Icons/SearchIcon";
 import React, { useEffect, useState } from "react";
 import ProjectList from "./components/ProjectList";
-import { ProjectContextProvider, useProjectContext } from "./context/ProjectContext";
+import { useProjectContext } from "./context/ProjectContext";
 import cyKeys from "../../utils/cyKeys";
 import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
 import LoaderPage from "../../ui-lib/loader/LoaderPage";
