@@ -72,11 +72,16 @@ const Project = () => {
               <div className={styles.IconsWrapper}>
                 <button className={styles.iconButton} title="Calendar" onClick={() => {
                   // TODO: handle calendar icon click
+                  // This could open a calendar view and select a date range for the project
+                    // This searches for projects based on the selected date range by last modified date
                 }}>
                   <CalandarProjectIcon />
                 </button>
                 <button className={styles.iconButton} title="Favorite" onClick={() => {
                   // TODO: handle favorite icon click
+                  // This could toggle the favorite status of a selected project
+                  // and filter the project list to show only favorites
+                    // This searches for projects based on the favorite status
                 }}>
                   <FavoriteIcon />
                 </button>
