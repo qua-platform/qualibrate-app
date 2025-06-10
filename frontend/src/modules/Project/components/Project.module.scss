@@ -1,4 +1,17 @@
 .projectActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 24px;
+  transition: opacity 0.2s ease;
+}
+
+.checkWrapper {
+  width: 19px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 0;
 }
 
@@ -10,11 +23,19 @@
   }
 }
 
+.project:hover .projectActions {
+  opacity: 1;
+}
+
+.project_checked .checkWrapper {
+  opacity: 1;
+}
+
 .project {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  width: 910px;
   font-size: 16px;
   height: 70px;
   padding-right: 16px;
@@ -28,6 +49,10 @@
   }
 }
 
+.project_checked .projectActions {
+  opacity: 1;
+}
+
 .projectInfo {
   display: flex;
   column-gap: 18px;
@@ -37,18 +62,21 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  row-gap: 8px;
+  row-gap: 2px;
+  align-items: flex-start;
 }
 
 .projectName {
-  color: var(--active-text);
-  font-weight: 500;
+  color: #FFF;
+  font-size: 18px;
+  font-weight: 400;
 }
 
 .projectDate {
   font-weight: 400;
   font-size: 12px;
   color: var(--sub-text-color);
+  opacity: 0.8;
 }
 
 .projectThumbnail {
@@ -71,4 +99,22 @@
 
 .splash {
   height: 100%;
+}
+
+.projectDate {
+  font-size: 12px;
+  color: #A5ACB6;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.projectDivider {
+  height: 1px;
+  width: 100%;
+  background-color: #42424C;
+  opacity: 1;
+  width: 855px;
+  margin-left: 55px;
+  margin-top: 1px;
+  margin-bottom: 1px;
 }

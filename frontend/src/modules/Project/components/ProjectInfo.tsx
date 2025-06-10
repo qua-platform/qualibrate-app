@@ -23,7 +23,11 @@ const ProjectInfo = ({ name, date, color }: Props) => {
       </div>
       <div className={styles.projectDetails}>
         <div className={styles.projectName}>{name || ""}</div>
-        {PROJECT_LAST_UPDATES_VISIBLE && <div className={styles.projectDate}>Last updates {date?.toLocaleDateString() || "unknown"}</div>}
+        {PROJECT_LAST_UPDATES_VISIBLE && date && (
+          <div className={styles.projectDate}>
+            Last updates: {date.toLocaleDateString()} {date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"})}
+          </div>
+        )}
       </div>
     </div>
   );

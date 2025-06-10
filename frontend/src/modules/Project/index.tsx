@@ -1,4 +1,4 @@
-import styles from "./Project.module.scss";
+import styles from "./Index.module.scss";
 import { NEW_PROJECT_BUTTON_VISIBLE } from "../../dev.config";
 import { ACTIVE_TEXT } from "../../utils/colors";
 import { AddIcon } from "../../ui-lib/Icons/AddIcon";
@@ -17,6 +17,8 @@ import PageSection from "../../common/ui-components/common/Page/PageSection";
 import InputField from "../../common/ui-components/common/Input/InputField";
 import CreateNewProjectIcon from "../../ui-lib/Icons/NewProjectButtonIcon";
 import CreateNewProjectPanel from "./CreateNewProjectPanel/CreateNewProjectPanel";
+import CalandarProjectIcon from "../../ui-lib/Icons/CalandarProjectIcon";
+import FavoriteIcon from "../../ui-lib/Icons/FavoriteIcon";
 
 const Project = () => {
   const { openTab } = useFlexLayoutContext();
@@ -40,7 +42,7 @@ const Project = () => {
     return <LoaderPage />;
   }
 
-  const heading: string = activeProject?.name ? `Currently active project is ${activeProject.name}` : "Welcome to QUAlibrate";
+  const heading: string = activeProject?.name ? "" : "Welcome to QUAlibrate";
 
   return (
     <>
@@ -59,13 +61,28 @@ const Project = () => {
         <PageName>{heading}</PageName>
         <div className={styles.pageWrapper}>
           <PageSection sectionName="Please select a Project">
-            <InputField
-              iconType={IconType.INNER}
-              placeholder="Project Name"
-              className={styles.searchProjectField}
-              onChange={(f) => setListedProjects(allProjects.filter((p) => p.name.startsWith(f)))}
-              icon={<SearchIcon height={18} width={18} />}
-            />
+            <div className={styles.searchWithIconsWrapper}>
+              <InputField
+                iconType={IconType.INNER}
+                placeholder="Project Name"
+                className={styles.searchProjectField}
+                onChange={(f) => setListedProjects(allProjects.filter((p) => p.name.startsWith(f)))}
+                icon={<SearchIcon height={18} width={18} />}
+              />
+              <div className={styles.IconsWrapper}>
+                <button className={styles.iconButton} title="Calendar" onClick={() => {
+                  // TODO: handle calendar icon click
+                }}>
+                  <CalandarProjectIcon />
+                </button>
+                <button className={styles.iconButton} title="Favorite" onClick={() => {
+                  // TODO: handle favorite icon click
+                }}>
+                  <FavoriteIcon />
+                </button>
+              </div>
+            </div>
+            <div className={styles.projectSearchBarDivider} />
             {listedProjects && (
               <ProjectList projects={listedProjects} selectedProject={selectedProject} setSelectedProject={setSelectedProject} />
             )}

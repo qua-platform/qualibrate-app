@@ -1,11 +1,19 @@
 import React from "react";
-import { ACCENT_COLOR_LIGHT } from "../../utils/colors";
 import { IconProps } from "../../common/interfaces/IconProps";
 
-export const SearchIcon: React.FunctionComponent<IconProps> = ({ width = 24, height = 24, color = ACCENT_COLOR_LIGHT }) => (
-  <svg width={width} height={height} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+export const SearchIcon: React.FunctionComponent<IconProps> = ({
+  width = 18,
+  height = 18,
+  color = "#A0A0A5", // Slightly lighter gray from Figma
+}) => (
+  <svg
+    width={width}
+    height={height}
+    viewBox="0 0 18 18"
+    fill="none"
+  >
     <path
-      d="m21.878 20.7-5.81-5.81a7.876 7.876 0 0 0 1.765-4.973C17.833 5.55 14.282 2 9.917 2 5.55 2 2 5.551 2 9.917c0 4.365 3.551 7.916 7.917 7.916a7.876 7.876 0 0 0 4.973-1.765l5.81 5.81a.417.417 0 0 0 .589 0l.589-.59a.417.417 0 0 0 0-.588ZM9.917 16.166a6.257 6.257 0 0 1-6.25-6.25 6.257 6.257 0 0 1 6.25-6.25 6.257 6.257 0 0 1 6.25 6.25 6.257 6.257 0 0 1-6.25 6.25Z"
+      d="M17.0303 16.4697L12.3686 11.8079C13.4471 10.5498 14.0632 8.93442 14.0625 7.25C14.0625 3.24561 10.8169 0 6.8125 0C2.80811 0 -0.4375 3.24561 -0.4375 7.25C-0.4375 11.2544 2.80811 14.5 6.8125 14.5C8.49692 14.5008 10.1123 13.8847 11.3703 12.8062L16.032 17.468C16.1758 17.6118 16.3842 17.6917 16.6 17.6917C16.8158 17.6917 17.0242 17.6118 17.168 17.468C17.4567 17.1793 17.4567 16.7011 17.168 16.4124L17.0303 16.4697ZM6.8125 12.8125C3.92599 12.8125 1.5 10.3865 1.5 7.5C1.5 4.61348 3.92599 2.1875 6.8125 2.1875C9.69901 2.1875 12.125 4.61348 12.125 7.5C12.125 10.3865 9.69901 12.8125 6.8125 12.8125Z"
       fill={color}
     />
   </svg>

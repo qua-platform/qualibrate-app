@@ -5,6 +5,8 @@ import { classNames } from "../../../utils/classnames";
 import styles from "./Project.module.scss";
 import cyKeys from "../../../utils/cyKeys";
 import SelectField from "../../../common/ui-components/common/Input/SelectField";
+import ProjectCheckIcon from "../../../ui-lib/Icons/ProjectCheckIcon";
+import { useProjectContext } from "../context/ProjectContext";
 
 const SelectRuntime = <SelectField options={["Localhost"]} onChange={() => {}} />;
 
@@ -13,9 +15,14 @@ interface Props {
   isActive?: boolean;
   onClick?: (name: string) => void;
   name?: string;
+  lastModifiedAt?: string;
 }
 
-const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: Props) => {
+const Project = ({ showRuntime = false, isActive = false, onClick, name = "", lastModifiedAt }: Props) => {
+
+  const { activeProject } = useProjectContext();
+  const isCurrentProject = activeProject?.name === name;
+
   const handleOnClick = useCallback(() => {
     if (!onClick) {
       return;
@@ -40,12 +47,21 @@ const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: 
 
   return (
     <button
-      className={classNames(styles.project, isActive && styles.project_active)}
+      className={classNames(
+        styles.project,
+        isActive && styles.project_active,
+        isCurrentProject && styles.project_checked
+      )}
       onClick={handleOnClick}
       data-cy={cyKeys.projects.PROJECT}
     >
-      <ProjectInfo name={name} color={projectColor} />
-      <div className={styles.projectActions}>{showRuntime && SelectRuntime}</div>
+      <ProjectInfo name={name} color={projectColor} date={lastModifiedAt ? new Date(lastModifiedAt) : undefined} />
+      <div className={styles.projectActions}>
+        <div className={styles.checkWrapper}>
+          {isCurrentProject && <ProjectCheckIcon />}
+        </div>
+        {showRuntime && SelectRuntime}
+      </div>
     </button>
   );
 };
