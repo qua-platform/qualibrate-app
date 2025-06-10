@@ -23,7 +23,9 @@ const ProjectList = ({ projects, selectedProject, setSelectedProject }: Props) =
 
   return (
     <div className={styles.splash}>
-      {projects.map((project, index) => (
+      {[...projects]
+        .sort((a, b) => new Date(b.last_modified_at).getTime() - new Date(a.last_modified_at).getTime())
+        .map((project, index) => (
         <React.Fragment key={index}>
           <Project
             isActive={selectedProject?.name === project.name}

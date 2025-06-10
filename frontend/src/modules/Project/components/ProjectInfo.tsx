@@ -25,7 +25,7 @@ const ProjectInfo = ({ name, date, color }: Props) => {
         <div className={styles.projectName}>{name || ""}</div>
         {PROJECT_LAST_UPDATES_VISIBLE && date && (
           <div className={styles.projectDate}>
-            Last updates: {date.toLocaleDateString()} {date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"})}
+            Last updated: {date.toLocaleDateString()} {date.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false})}
           </div>
         )}
       </div>
