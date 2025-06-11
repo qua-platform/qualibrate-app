@@ -82,6 +82,7 @@ const Project = () => {
                   // This could toggle the favorite status of a selected project
                   // and filter the project list to show only favorites
                     // This searches for projects based on the favorite status
+                  // flagging projects as favorites bubbles them to the top of the list (still sorted by last modified date)   
                 }}>
                   <FavoriteIcon />
                 </button>
