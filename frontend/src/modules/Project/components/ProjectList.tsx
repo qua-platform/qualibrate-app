@@ -3,7 +3,7 @@ import { NoItemsIcon } from "../../../ui-lib/Icons/NoItemsIcon";
 import Project from "./Project";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./Project.module.scss";
-import React from "react";
+import React, { useState } from "react";
 import { ProjectDTO } from "../ProjectDTO";
 
 interface Props {
@@ -21,6 +21,8 @@ const ProjectList = ({ projects, selectedProject, setSelectedProject }: Props) =
     );
   }
 
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
+
   return (
     <div className={styles.splash}>
       {[...projects]
@@ -32,6 +34,8 @@ const ProjectList = ({ projects, selectedProject, setSelectedProject }: Props) =
             name={project.name}
             onClick={() => setSelectedProject(project)}
             lastModifiedAt={project.last_modified_at}
+            isExpanded={expandedProject === project.name}
+            onToggleExpand={() => setExpandedProject(p => p === project.name ? null : project.name)}
           />
           {index < projects.length - 1 && <div className={styles.projectDivider} />}
         </React.Fragment>

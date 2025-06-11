@@ -111,3 +111,121 @@
 .splash {
   height: 100%;
 }
+
+.projectExpandedContent {
+  padding: 32px;
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  width: 910px;
+  flex-shrink: 0;
+  justify-content: space-between;
+  background-color: rgba(198, 205, 214, 0.03);
+}
+
+.expandedPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionLabel {
+  font-weight: bold;
+  font-size: 14px;
+  color: #444;
+}
+
+.fakeContributors,
+.fakeApiData {
+  font-size: 13px;
+  margin-left: 8px;
+  color: #666;
+}
+
+.projectStart {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.expandedStartButton {
+  width: fit-content;
+}
+
+.teamInfoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  min-width: 200px;
+  padding: 8px 12px;
+  margin-top: 38px;
+  border-radius: 4px;
+  background-color: rgb(165, 172, 182, 0.1);
+}
+
+.teamRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teamLabel {
+  min-width: 110px;
+  font-weight: 500;
+  color: #d1d5db;
+}
+
+.avatarWithName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.creatorName {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.contributorsGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contributor {
+  cursor: pointer;
+}
+
+.avatar {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.projectDetailsGrid {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  row-gap: 12px;
+  column-gap: 12px;
+  font-size: 13px;
+  color: #e5e7eb;
+}
+
+.detailLabel {
+  color: #9ca3af;
+}
+
+.detailValue {
+  color: #f3f4f6;
+  word-break: break-word;
+}
