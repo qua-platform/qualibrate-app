@@ -7,33 +7,7 @@ import { StateUpdateElement } from "./StateUpdateElement";
 import { Button } from "@mui/material";
 import Popper from "@mui/material/Popper";
 import EllipsesIcon from "../../../../ui-lib/Icons/EllipsesIcon";
-import { RightArrowIcon } from "../../../../ui-lib/Icons/RightArrowIcon";
-
-const StateUpdatesPreview: React.FC<{
-  runningNodeInfo: RunningNodeInfo | undefined;
-  setRunningNodeInfo: (a: RunningNodeInfo) => void;
-  updateAllButtonPressed: boolean;
-}> = ({ runningNodeInfo }) => {
-  return (
-    <div className={styles.stateUpdatesTopWrapper}>
-      {Object.entries(runningNodeInfo?.state_updates ?? {}).map(([key, stateUpdateObject], index) => (
-        <div key={`${key}-preview`} className={styles.stateUpdatePreviewRow}>
-          <div className={styles.previewKey}>
-            {index + 1}&nbsp;&nbsp;<span className={styles.previewPath}>{key}</span>
-          </div>
-          <div className={styles.previewValues}>
-            <span className={styles.valueContainer}>{JSON.stringify(stateUpdateObject.old)}</span>
-            <RightArrowIcon />
-            <span className={styles.valueContainerHovered}>
-              {JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new)}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
+import StateUpdatesListPreview from "./StateUpdatesListPreview";
 
 export const StateUpdates: React.FC<{
   runningNodeInfo: RunningNodeInfo | undefined;
@@ -43,7 +17,7 @@ export const StateUpdates: React.FC<{
   isExpanded: boolean;
 }> = ({ isExpanded, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [open, setOpen] = useState(false);
+  const [stateOpen, setStateOpen] = useState(false);
   let timer: NodeJS.Timeout | null = null;
 
   const handleClick = async (stateUpdates: StateUpdate) => {
@@ -62,11 +36,11 @@ export const StateUpdates: React.FC<{
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     if (timer) clearTimeout(timer);
     setAnchorEl(event.currentTarget);
-    setOpen(true);
+    setStateOpen(true);
   };
 
   const handleMouseLeave = () => {
-    timer = setTimeout(() => setOpen(false), 100);
+    timer = setTimeout(() => setStateOpen(false), 100);
   };
 
   return (
@@ -83,7 +57,7 @@ export const StateUpdates: React.FC<{
             <span className={styles.tooltipWrapper} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
               <span className={styles.tooltipIcon}>&nbsp;<EllipsesIcon /></span>
               <Popper
-                open={open}
+                open={stateOpen}
                 anchorEl={anchorEl}
                 placement="bottom-start"
                 disablePortal
@@ -92,11 +66,7 @@ export const StateUpdates: React.FC<{
                 style={{ zIndex: 9999 }}
               >
                 <div className={styles.StateUpdatesTooltipBox}>
-                  <StateUpdatesPreview
-                    runningNodeInfo={runningNodeInfo}
-                    setRunningNodeInfo={setRunningNodeInfo}
-                    updateAllButtonPressed={updateAllButtonPressed}
-                  />
+                  <StateUpdatesListPreview runningNodeInfo={runningNodeInfo} />
                 </div>
               </Popper>
             </span>

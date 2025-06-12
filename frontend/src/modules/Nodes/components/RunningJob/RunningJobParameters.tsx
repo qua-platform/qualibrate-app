@@ -1,37 +1,23 @@
 import React, { useState } from "react";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./RunningJob.module.scss";
-import { useNodesContext } from "../../context/NodesContext";
 import EllipsesIcon from "../../../../ui-lib/Icons/EllipsesIcon";
 import Popper from "@mui/material/Popper";
-
-export const ParameterPreview: React.FC = () => {
-  const { runningNode } = useNodesContext();
-  return (
-    <div className={styles.parameterContent} data-testid="parameters-list">
-      {Object.entries(runningNode?.parameters ?? {}).map(([key, parameter]) => (
-        <div key={key} className={styles.parameterValues} data-testid={`parameter-item-${key}`}>
-          <div className={styles.parameterLabel} data-testid={`parameter-label-${key}`}> {parameter.title}:</div>
-          <div className={styles.parameterValue} data-testid={`parameter-value-${key}`}> {parameter.default?.toString()}</div>
-        </div>
-      ))}
-    </div>
-  );
-};
+import ParameterListPreview from "./ParameterListPreview";
 
 export const RunningJobParameters: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
-  const [open, setOpen] = useState(false);
+  const [stateOpen, setStateOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   let timer: NodeJS.Timeout | null = null;
 
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     if (timer) clearTimeout(timer);
     setAnchorEl(event.currentTarget);
-    setOpen(true);
+    setStateOpen(true);
   };
 
   const handleMouseLeave = () => {
-    timer = setTimeout(() => setOpen(false), 100);
+    timer = setTimeout(() => setStateOpen(false), 100);
   };
 
   return (
@@ -42,7 +28,7 @@ export const RunningJobParameters: React.FC<{ isExpanded: boolean }> = ({ isExpa
           <span className={styles.tooltipWrapper} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} >
             <span className={styles.tooltipIcon}> &nbsp;<EllipsesIcon /> </span>
             <Popper
-              open={open}
+              open={stateOpen}
               anchorEl={anchorEl}
               placement="bottom-start"
               disablePortal
@@ -50,13 +36,13 @@ export const RunningJobParameters: React.FC<{ isExpanded: boolean }> = ({ isExpa
               modifiers={[{ name: "offset", options: { offset: [0, 10] } }]}
               style={{ zIndex: 9999 }}
             >
-              <div className={styles.parameterTooltipBox}> <ParameterPreview /> </div>
+              <div className={styles.parameterTooltipBox}> <ParameterListPreview /> </div>
             </Popper>
           </span>
         )}
       </div>
       {/*)}*/}
-      {isExpanded && <ParameterPreview />}
+      {isExpanded && <ParameterListPreview />}
     </div>
   );
 };
