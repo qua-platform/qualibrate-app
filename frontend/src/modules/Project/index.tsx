@@ -15,6 +15,7 @@ import { ProjectDTO } from "./ProjectDTO";
 import PageName from "../../common/ui-components/common/Page/PageName";
 import PageSection from "../../common/ui-components/common/Page/PageSection";
 import InputField from "../../common/ui-components/common/Input/InputField";
+import { heading } from "./constants";
 
 const Project = () => {
   const { openTab } = useFlexLayoutContext();
@@ -27,8 +28,12 @@ const Project = () => {
   }, [allProjects, setListedProjects]);
 
   const handleSubmit = () => {
-    const fallbackProject = allProjects[0];
-    selectActiveProject(selectedProject || fallbackProject);
+    const fallbackProject = allProjects.length > 0 ? allProjects[0] : undefined;
+    const projectToSelect = selectedProject || fallbackProject;
+
+    if (!projectToSelect) return;
+    
+    selectActiveProject(projectToSelect);
     openTab("data");
   };
 
@@ -36,12 +41,10 @@ const Project = () => {
     return <LoaderPage />;
   }
 
-  const heading: string = activeProject?.name? `Currently active project is ${activeProject.name}` : "Welcome to QUAlibrate";
-
   return (
     <>
       <div className={styles.projectPageLayout}>
-        <PageName>{heading}</PageName>
+        {!activeProject?.name && <PageName>{heading}</PageName>}
         <div className={styles.pageWrapper}>
           <PageSection sectionName="Please select a Project">
             <InputField
