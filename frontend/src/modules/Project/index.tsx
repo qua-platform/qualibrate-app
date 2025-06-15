@@ -15,6 +15,8 @@ import { ProjectDTO } from "./ProjectDTO";
 import PageName from "../../common/ui-components/common/Page/PageName";
 import PageSection from "../../common/ui-components/common/Page/PageSection";
 import InputField from "../../common/ui-components/common/Input/InputField";
+import CreateNewProjectIcon from "../../ui-lib/Icons/NewProjectButtonIcon";
+import CreateNewProjectPanel from "./CreateNewProjectPanel/CreateNewProjectPanel";
 import { heading } from "./constants";
 
 const Project = () => {
@@ -45,6 +47,17 @@ const Project = () => {
   return (
     <>
       <div className={styles.projectPageLayout}>
+        <div className={styles.createProjectWrapper}>
+          <button title="Create new project" onClick={() => setShowCreatePanel(prev => !prev)} className={styles.createProjectButton}>
+            <CreateNewProjectIcon />
+          </button>
+          {showCreatePanel && (
+            <div className={styles.createProjectPanelWrapper}>
+              <CreateNewProjectPanel onCancel={() => setShowCreatePanel(false)} />
+            </div>
+          )}
+        </div>
+
         {!activeProject?.name && <PageName>{heading}</PageName>}
         <div className={styles.pageWrapper}>
           <PageSection sectionName="Please select a Project">
