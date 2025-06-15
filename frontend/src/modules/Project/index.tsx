@@ -58,7 +58,7 @@ const Project = () => {
             <CreateNewProjectIcon />
           </button>
           {showCreatePanel && (
-            <div className={styles.createProjectPanelWrapper}>
+            <div className={styles.createProjectFormWrapper}>
               <CreateNewProjectForm onCancel={() => setShowCreatePanel(false)} />
             </div>
           )}

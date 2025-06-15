@@ -62,13 +62,10 @@
 }
 
 .iconButton {
-  background: none;
-  border: none;
   margin-left: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 
   &:hover svg {
     opacity: 0.8;
@@ -96,7 +93,7 @@
   cursor: pointer;
 }
 
-.createProjectPanelWrapper {
+.createProjectFormWrapper {
   position: absolute;
   top: 100%;
   right: 0;
