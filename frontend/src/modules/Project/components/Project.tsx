@@ -4,8 +4,8 @@ import { classNames } from "../../../utils/classnames";
 import styles from "./Project.module.scss";
 import cyKeys from "../../../utils/cyKeys";
 import SelectField from "../../../common/ui-components/common/Input/SelectField";
-import { getProjectColor, createClickHandler } from "../helpers";
-
+import { getColorIndex, createClickHandler } from "../helpers";
+import { colorPalette } from "../constants";
 const SelectRuntime = <SelectField options={["Localhost"]} onChange={() => {}} />;
 
 interface ProjectPropsDTO {
@@ -18,7 +18,8 @@ interface ProjectPropsDTO {
 
 const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: ProjectPropsDTO) => {
   const handleOnClick = createClickHandler(onClick, name);
-  const projectColor = getProjectColor(name || "");
+  const index = getColorIndex(name || "");
+  const projectColor = colorPalette[index];
 
   return (
     <button

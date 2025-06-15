@@ -15,7 +15,8 @@ import CollapseSideMenuIcon from "../../ui-lib/Icons/CollapseSideMenuIcon";
 import ProjectFolderIcon from "../../ui-lib/Icons/ProjectFolderIcon";
 import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
 import { useProjectContext } from "../Project/context/ProjectContext";
-import { getProjectColor, extractInitials } from "../Project/helpers";
+import { getColorIndex, extractInitials } from "../Project/helpers";
+import { colorPalette } from "../Project/constants";
 
 const SidebarMenu: React.FunctionComponent = () => {
   const { pinSideMenu } = useContext(GlobalThemeContext) as GlobalThemeContextState;
@@ -24,7 +25,7 @@ const SidebarMenu: React.FunctionComponent = () => {
   const containerClassName = classNames(styles.sidebarMenu, minify ? styles.collapsed : styles.expanded);
 
   const { activeProject } = useProjectContext();
-  const projectColor = getProjectColor(activeProject?.name || "");
+  const projectColor = colorPalette[getColorIndex(activeProject?.name || "")];
 
   useEffect(() => {
     setMinify(!pinSideMenu);
