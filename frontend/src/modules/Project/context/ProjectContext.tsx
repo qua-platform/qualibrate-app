@@ -17,11 +17,7 @@ const ProjectContext = React.createContext<IProjectContext>({
 
 export const useProjectContext = (): IProjectContext => useContext<IProjectContext>(ProjectContext);
 
-interface ProjectContextProviderProps {
-  children: React.ReactNode;
-}
-
-export function ProjectContextProvider(props: ProjectContextProviderProps): React.ReactNode {
+export const ProjectContextProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const [activeProject, setActiveProject] = useState<ProjectDTO | undefined>(undefined);
   const [allProjects, setAllProjects] = useState<ProjectDTO[]>([]);
 
@@ -62,16 +58,10 @@ export function ProjectContextProvider(props: ProjectContextProviderProps): Reac
   }, []);
 
   return (
-    <ProjectContext.Provider
-      value={{
-        allProjects,
-        activeProject,
-        selectActiveProject,
-      }}
-    >
-      {props.children}
+    <ProjectContext.Provider value={{ allProjects, activeProject, selectActiveProject }}>
+      {children}
     </ProjectContext.Provider>
   );
-}
+};
 
 export default ProjectContext;

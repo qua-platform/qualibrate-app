@@ -16,9 +16,10 @@ import PageName from "../../common/ui-components/common/Page/PageName";
 import PageSection from "../../common/ui-components/common/Page/PageSection";
 import InputField from "../../common/ui-components/common/Input/InputField";
 import CreateNewProjectIcon from "../../ui-lib/Icons/NewProjectButtonIcon";
-import CreateNewProjectPanel from "./CreateNewProjectPanel/CreateNewProjectPanel";
+import CreateNewProjectForm from "./CreateNewProjectForm/CreateNewProjectForm";
 import CalandarProjectIcon from "../../ui-lib/Icons/CalandarProjectIcon";
 import FavoriteIcon from "../../ui-lib/Icons/FavoriteIcon";
+import { heading } from "./constants";
 
 const Project = () => {
   const { openTab } = useFlexLayoutContext();
@@ -29,12 +30,15 @@ const Project = () => {
 
   useEffect(() => {
     setListedProjects(allProjects);
-  }, [allProjects, setListedProjects]);
+  }, [allProjects]);
 
   const handleSubmit = () => {
-    const fallbackProject = allProjects[0];
-    selectActiveProject(selectedProject || fallbackProject);
-    // in future maybe expand project details instead of just opening data tab
+    const fallbackProject = allProjects.length > 0 ? allProjects[0] : undefined;
+    const projectToSelect = selectedProject || fallbackProject;
+
+    if (!projectToSelect) return;
+
+    selectActiveProject(projectToSelect);
     openTab("data");
   };
 
@@ -42,23 +46,26 @@ const Project = () => {
     return <LoaderPage />;
   }
 
-  const heading: string = activeProject?.name ? "" : "Welcome to QUAlibrate";
-
   return (
     <>
       <div className={styles.projectPageLayout}>
         <div className={styles.createProjectWrapper}>
-          <button title="Create new project" onClick={() => setShowCreatePanel(prev => !prev)} className={styles.createProjectButton}>
+          <button
+            title="Create new project"
+            onClick={() => setShowCreatePanel(prev => !prev)}
+            className={styles.createProjectButton}
+          >
             <CreateNewProjectIcon />
           </button>
           {showCreatePanel && (
             <div className={styles.createProjectPanelWrapper}>
-              <CreateNewProjectPanel onCancel={() => setShowCreatePanel(false)} />
+              <CreateNewProjectForm onCancel={() => setShowCreatePanel(false)} />
             </div>
           )}
         </div>
 
-        <PageName>{heading}</PageName>
+        {!activeProject?.name && <PageName>{heading}</PageName>}
+
         <div className={styles.pageWrapper}>
           <PageSection sectionName="Please select a Project">
             <div className={styles.searchWithIconsWrapper}>
@@ -72,17 +79,11 @@ const Project = () => {
               <div className={styles.IconsWrapper}>
                 <button className={styles.iconButton} title="Calendar" onClick={() => {
                   // TODO: handle calendar icon click
-                  // This could open a calendar view and select a date range for the project
-                    // This searches for projects based on the selected date range by last modified date
                 }}>
                   <CalandarProjectIcon />
                 </button>
                 <button className={styles.iconButton} title="Favorite" onClick={() => {
                   // TODO: handle favorite icon click
-                  // This could toggle the favorite status of a selected project
-                  // and filter the project list to show only favorites
-                    // This searches for projects based on the favorite status
-                  // flagging projects as favorites bubbles them to the top of the list (still sorted by last modified date)   
                 }}>
                   <FavoriteIcon />
                 </button>
@@ -90,11 +91,16 @@ const Project = () => {
             </div>
             <div className={styles.projectSearchBarDivider} />
             {listedProjects && (
-              <ProjectList projects={listedProjects} selectedProject={selectedProject} setSelectedProject={setSelectedProject} />
+              <ProjectList
+                projects={listedProjects}
+                selectedProject={selectedProject}
+                setSelectedProject={setSelectedProject}
+              />
             )}
           </PageSection>
         </div>
       </div>
+
       <div className={styles.pageActions}>
         <BlueButton
           onClick={handleSubmit}
@@ -117,6 +123,4 @@ const Project = () => {
   );
 };
 
-export default () => (
-    <Project />
-);
+export default () => <Project />;
