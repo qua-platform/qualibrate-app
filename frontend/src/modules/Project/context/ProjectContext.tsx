@@ -62,6 +62,6 @@ export const ProjectContextProvider: React.FC<{ children?: React.ReactNode }> = 
       {children}
     </ProjectContext.Provider>
   );
-}
+};
 
 export default ProjectContext;

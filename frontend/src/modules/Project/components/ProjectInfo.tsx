@@ -3,7 +3,7 @@ import React from "react";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./Project.module.scss";
 import ProjectFolderIcon from "../../../ui-lib/Icons/ProjectFolderIcon";
-import { extractInitials } from "../helpers"
+import { extractInitials } from "../helpers";
 
 interface ProjectInfoPropsDTO {
   date?: Date;
