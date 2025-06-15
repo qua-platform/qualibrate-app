@@ -15,12 +15,17 @@ import CollapseSideMenuIcon from "../../ui-lib/Icons/CollapseSideMenuIcon";
 import ProjectFolderIcon from "../../ui-lib/Icons/ProjectFolderIcon";
 import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
 import { useProjectContext } from "../Project/context/ProjectContext";
+import { getColorIndex, extractInitials } from "../Project/helpers";
+import { colorPalette } from "../Project/constants";
 
 const SidebarMenu: React.FunctionComponent = () => {
   const { pinSideMenu } = useContext(GlobalThemeContext) as GlobalThemeContextState;
   const [minify, setMinify] = useState(true);
 
   const containerClassName = classNames(styles.sidebarMenu, minify ? styles.collapsed : styles.expanded);
+
+  const { activeProject } = useProjectContext();
+  const projectColor = colorPalette[getColorIndex(activeProject?.name || "")];
 
   useEffect(() => {
     setMinify(!pinSideMenu);
@@ -32,26 +37,6 @@ const SidebarMenu: React.FunctionComponent = () => {
     );
   }; 
 
-  const { activeProject } = useProjectContext();
-
-  const extractInitials = (name?: string): string => {
-    if (!name) return "";
-    const parts = name.trim().split(" ");
-    return (parts[0]?.[0] || "") + (parts[1]?.[0] || "");
-  };
-
-  const colorPalette = ["#AC51BD", "#5175BD", "#268A50", "#097F8C", "#986800", "#7351BD", "#1268D0"];
-  const getColorIndex = (name: string): number => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return Math.abs(hash) % colorPalette.length;
-  };
-
-  const color = getColorIndex(activeProject?.name || "");
-  const projectColor = colorPalette[color];
-
   const { openTab } = useFlexLayoutContext();
 
   const handleProjectClick = () => {
@@ -62,7 +47,7 @@ const SidebarMenu: React.FunctionComponent = () => {
     <>
     <div className={containerClassName}>
       <button className={styles.qualibrateLogo} data-cy={cyKeys.HOME_PAGE}>
-        {minify ? <QUAlibrateLogoSmallIcon /> : <QUAlibrateLogoIcon />}
+        {minify ? <QUAlibrateLogoSmallIcon /> : <QUAlibrateLogoIcon /> }
       </button>
 
       <div className={styles.menuContent}>

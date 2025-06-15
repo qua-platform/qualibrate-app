@@ -5,7 +5,6 @@ import MainModularPage from "../mainPage/MainModularPage";
 import { Login } from "../modules/Login";
 import { useAuthContext } from "../modules/Login/context/AuthContext";
 import LoaderPage from "../ui-lib/loader/LoaderPage";
-import { ProjectContextProvider } from "../modules/Project/context/ProjectContext";
 
 const ProtectedRoute = ({ children }: { children: React.JSX.Element }): React.JSX.Element => {
   const { isAuthorized, triedLoginWithEmptyString } = useAuthContext();
@@ -28,9 +27,7 @@ const AppRoutes = () => {
           path={HOME_URL}
           element={
             <ProtectedRoute>
-              <ProjectContextProvider>
                 <MainModularPage />
-              </ProjectContextProvider>
             </ProtectedRoute>
           }
         />

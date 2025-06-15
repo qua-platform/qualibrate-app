@@ -3,23 +3,19 @@ import React from "react";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./Project.module.scss";
 import ProjectFolderIcon from "../../../ui-lib/Icons/ProjectFolderIcon";
+import { extractInitials } from "../helpers";
 
-interface Props {
+interface ProjectInfoPropsDTO {
   date?: Date;
   name: string;
-  color?: string;
+  colorIcon?: string;
 }
 
-function extractAbr(text: string): string {
-  const parts = [...text.split(" "), "", ""];
-  return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
-}
-
-const ProjectInfo = ({ name, date, color }: Props) => {
+const ProjectInfo = ({ name, date, colorIcon }: ProjectInfoPropsDTO) => {
   return (
     <div className={styles.projectInfo}>
       <div className={styles.projectThumbnail}>
-        <ProjectFolderIcon initials={extractAbr(name)} fillColor={color || "#4A90E2"} width={36} height={36} fontSize={14} />
+        <ProjectFolderIcon initials={extractInitials(name)} fillColor={colorIcon || "#4A90E2"} width={36} height={36} fontSize={14} />
       </div>
       <div className={styles.projectDetails}>
         <div className={styles.projectName}>{name || ""}</div>
