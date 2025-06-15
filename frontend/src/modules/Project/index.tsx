@@ -16,7 +16,7 @@ import PageName from "../../common/ui-components/common/Page/PageName";
 import PageSection from "../../common/ui-components/common/Page/PageSection";
 import InputField from "../../common/ui-components/common/Input/InputField";
 import CreateNewProjectIcon from "../../ui-lib/Icons/NewProjectButtonIcon";
-import CreateNewProjectPanel from "./CreateNewProjectForm/CreateNewProjectForm";
+import CreateNewProjectForm from "./CreateNewProjectForm/CreateNewProjectForm";
 import { heading } from "./constants";
 
 const Project = () => {
@@ -53,7 +53,7 @@ const Project = () => {
           </button>
           {showCreatePanel && (
             <div className={styles.createProjectPanelWrapper}>
-              <CreateNewProjectPanel onCancel={() => setShowCreatePanel(false)} />
+              <CreateNewProjectForm onCancel={() => setShowCreatePanel(false)} />
             </div>
           )}
         </div>

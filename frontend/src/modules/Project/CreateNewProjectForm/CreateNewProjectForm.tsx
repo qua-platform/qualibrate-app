@@ -14,7 +14,7 @@ interface CreateNewProjectPanelPropsDTO {
   onCancel: () => void;
 }
 
-const CreateNewProjectPanel: React.FC<CreateNewProjectPanelPropsDTO> = ({ onCancel }) => {
+const CreateNewProjectForm: React.FC<CreateNewProjectPanelPropsDTO> = ({ onCancel }) => {
   const [dataPath, setDataPath] = useState("");
   const [quamPath, setQuamPath] = useState("");
   const [calibrationPath, setCalibrationPath] = useState("");
@@ -89,4 +89,4 @@ const CreateNewProjectPanel: React.FC<CreateNewProjectPanelPropsDTO> = ({ onCanc
   );
 };
 
-export default CreateNewProjectPanel;
+export default CreateNewProjectForm;
