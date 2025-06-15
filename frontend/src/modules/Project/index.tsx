@@ -16,7 +16,7 @@ import PageName from "../../common/ui-components/common/Page/PageName";
 import PageSection from "../../common/ui-components/common/Page/PageSection";
 import InputField from "../../common/ui-components/common/Input/InputField";
 import CreateNewProjectIcon from "../../ui-lib/Icons/NewProjectButtonIcon";
-import CreateNewProjectPanel from "./CreateNewProjectPanel/CreateNewProjectPanel";
+import CreateNewProjectPanel from "./CreateNewProjectForm/CreateNewProjectForm";
 import { heading } from "./constants";
 
 const Project = () => {
