@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-// import styles from "./CreateNewProjectForm.module.scss";
+// eslint-disable-next-line css-modules/no-unused-class
 import styles from "./CreateNewProjectForm.module.scss";
 import InputField from "../../../common/ui-components/common/Input/InputField";
 // import PlusSignSquareIcon from "../../../ui-lib/Icons/PlusSignSquareIcon";
 // import XIcon from "../../../ui-lib/Icons/XIcon";
 
-interface Member {
-  name: string;
-  email: string;
-}
+// interface Member {
+//   name: string;
+//   email: string;
+// }
 
 interface CreateNewProjectPanelPropsDTO {
   onCancel: () => void;
