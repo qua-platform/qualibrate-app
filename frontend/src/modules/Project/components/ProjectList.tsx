@@ -23,14 +23,18 @@ const ProjectList = ({ projects, selectedProject, setSelectedProject }: ProjectL
 
   return (
     <div className={styles.splash}>
-      {projects?.map((project: ProjectDTO, index: number) => (
-        <Project
-          key={index}
-          isActive={selectedProject?.name === project.name}
-          projectId={index}
-          name={project.name}
-          onClick={() => setSelectedProject(project)}
-        />
+      {[...projects]
+        .sort((a, b) => new Date(b.last_modified_at).getTime() - new Date(a.last_modified_at).getTime())
+        .map((project, index) => (
+        <React.Fragment key={index}>
+          <Project
+            isActive={selectedProject?.name === project.name}
+            name={project.name}
+            onClick={() => setSelectedProject(project)}
+            lastModifiedAt={project.last_modified_at}
+          />
+          {index < projects.length - 1 && <div className={styles.projectDivider} />}
+        </React.Fragment>
       ))}
     </div>
   );

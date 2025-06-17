@@ -19,7 +19,11 @@ const ProjectInfo = ({ name, date, colorIcon }: ProjectInfoPropsDTO) => {
       </div>
       <div className={styles.projectDetails}>
         <div className={styles.projectName}>{name || ""}</div>
-        {PROJECT_LAST_UPDATES_VISIBLE && <div className={styles.projectDate}>Last updates {date?.toLocaleDateString() || "unknown"}</div>}
+        {PROJECT_LAST_UPDATES_VISIBLE && date && (
+          <div className={styles.projectDate}>
+            Last updated: {date.toLocaleDateString("en-GB")} {date.toLocaleTimeString("en-GB", {hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false})}
+          </div>
+        )}
       </div>
     </div>
   );

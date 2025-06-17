@@ -4,8 +4,11 @@ import { classNames } from "../../../utils/classnames";
 import styles from "./Project.module.scss";
 import cyKeys from "../../../utils/cyKeys";
 import SelectField from "../../../common/ui-components/common/Input/SelectField";
+import ProjectCheckIcon from "../../../ui-lib/Icons/ProjectCheckIcon";
+import { useProjectContext } from "../context/ProjectContext";
 import { getColorIndex, createClickHandler } from "../helpers";
 import { colorPalette } from "../constants";
+
 const SelectRuntime = <SelectField options={["Localhost"]} onChange={() => {}} />;
 
 interface ProjectPropsDTO {
@@ -14,21 +17,33 @@ interface ProjectPropsDTO {
   onClick?: (name: string) => void;
   projectId?: number;
   name?: string;
+  lastModifiedAt?: string;
 }
 
-const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: ProjectPropsDTO) => {
+const Project = ({ showRuntime = false, isActive = false, onClick, name = "", lastModifiedAt }: ProjectPropsDTO) => {
+  const { activeProject } = useProjectContext();
+  const isCurrentProject = activeProject?.name === name;
+
   const handleOnClick = createClickHandler(onClick, name);
-  const index = getColorIndex(name || "");
-  const projectColor = colorPalette[index];
+  const projectColor = colorPalette[getColorIndex(name)];
 
   return (
     <button
-      className={classNames(styles.project, isActive && styles.project_active)}
+      className={classNames(
+        styles.project,
+        isActive && styles.project_active,
+        isCurrentProject && styles.project_checked
+      )}
       onClick={handleOnClick}
       data-cy={cyKeys.projects.PROJECT}
     >
-      <ProjectInfo name={name} colorIcon={projectColor} />
-      <div className={styles.projectActions}>{showRuntime && SelectRuntime}</div>
+      <ProjectInfo name={name} colorIcon={projectColor} date={lastModifiedAt ? new Date(lastModifiedAt) : undefined} />
+      <div className={styles.projectActions}>
+        <div className={styles.checkWrapper}>
+          {isCurrentProject && <ProjectCheckIcon />}
+        </div>
+        {showRuntime && SelectRuntime}
+      </div>
     </button>
   );
 };
