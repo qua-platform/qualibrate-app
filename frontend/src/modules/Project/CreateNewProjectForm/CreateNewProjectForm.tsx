@@ -18,6 +18,8 @@ const CreateNewProjectForm: React.FC<CreateNewProjectPanelPropsDTO> = ({ onCance
   const [dataPath, setDataPath] = useState("");
   const [quamPath, setQuamPath] = useState("");
   const [calibrationPath, setCalibrationPath] = useState("");
+  const [projectPath, setProjectPath] = useState("");
+
   // const [memberEmail, setMemberEmail] = useState("");
   // const [memberName, setMemberName] = useState("");
   // const [members, setMembers] = useState<Member[]>([]);
@@ -51,6 +53,9 @@ const CreateNewProjectForm: React.FC<CreateNewProjectPanelPropsDTO> = ({ onCance
   return (
     <div className={styles.createProjectPanel}>
       <h3 className={styles.header}>Create New Project</h3>
+
+      <label>Project name</label>
+      <InputField type="text" placeholder="Enter project name" value={projectPath} onChange={(val: string) => setProjectPath(val)} />
 
       <label>Data path</label>
       <InputField type="text" placeholder="Enter data path" value={dataPath} onChange={(val: string) => setDataPath(val)} />
