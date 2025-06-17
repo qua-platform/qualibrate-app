@@ -1,0 +1,155 @@
+.createProjectPanel {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--popup-background);
+  padding: 24px;
+  gap: 12px;
+  width: 300px;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 30%);
+}
+
+.header {
+  font-size: 19px;
+  font-weight: 500;
+  color: #fff;
+  opacity: 0.8;
+  margin-bottom: 8px;
+  font-family: Roboto, sans-serif;
+}
+
+label {
+  font-family: Roboto, sans-serif;
+  font-size: 14px;
+  color: #A5ACB6;
+  margin-top: 6px;
+}
+
+input {
+  background-color: #2A2B31;
+  border: 1px solid #42424C;
+  border-radius: 6px;
+  padding: 8px;
+  color: white;
+  font-size: 14px;
+
+    &::placeholder {
+      color: rgb(165 172 182 / 60%);
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
+    }
+}
+
+
+.optional {
+  font-style: italic;
+  color: #6b6b6b;
+}
+
+.memberInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.memberInputFields {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  
+  input {
+    width: 100%;
+  }
+}
+
+
+.plusButton {
+  padding: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:hover {
+    background-color: rgb(40 152 204 / 10%);
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  gap: 6px;
+  border-radius: 6px;
+  background: rgb(44 203 229 / 10%);
+  font-family: Roboto, sans-serif;
+  color: #3CDEF8;
+  cursor: default;
+
+  span {
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: rgb(60 223 248 / 10%);
+      border-radius: 3px;
+    }
+  }
+}
+
+.chips:not(:empty) {
+  margin-bottom: 16px;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 20px;
+  gap: 16px;
+}
+
+.cancel {
+  width: 136px;
+  height: 34px;
+  background: transparent;
+  border: 1px solid rgb(60 223 248 / 30%);
+  color: #3CDEF8;
+  border-radius: 999px;
+  padding: 8px 46px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(60 223 248 / 8%);
+  }
+}
+
+.create {
+  width: 136px;
+  height: 34px;
+  background: rgb(44 203 229 / 60%);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 46px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(44 203 229 / 70%);
+  }
+}
