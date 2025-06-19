@@ -8,23 +8,34 @@ import { CheckMarkBeforeIcon } from "../../../../ui-lib/Icons/CheckMarkBeforeIco
 import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 import { CheckMarkAfterIcon } from "../../../../ui-lib/Icons/CheckMarkAfterIcon";
 import { UndoIcon } from "../../../../ui-lib/Icons/UndoIcon";
+import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
 
 export interface StateUpdateProps {
-  key: string;
+  stateUpdateKey: string; // renamed from `key` to avoid React stripping it
   index: number;
   stateUpdateObject: StateUpdateObject;
   runningNodeInfo?: RunningNodeInfo;
   setRunningNodeInfo?: (a: RunningNodeInfo) => void;
   updateAllButtonPressed: boolean;
-  stateUpdateKey: string;
 }
 
 export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
-  const { index, stateUpdateObject, stateUpdateKey, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed } = props;
-  const [runningUpdate, setRunningUpdate] = React.useState<boolean>(false);
+  const {
+    stateUpdateKey,
+    index,
+    stateUpdateObject,
+    runningNodeInfo,
+    setRunningNodeInfo,
+    updateAllButtonPressed,
+  } = props;
+
+  const [runningUpdate, setRunningUpdate] = useState<boolean>(false);
   const [parameterUpdated, setParameterUpdated] = useState<boolean>(false);
-  const [customValue, setCustomValue] = useState<string | number>(JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? ""));
+  const [customValue, setCustomValue] = useState<string | number>(
+    JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? "")
+  );
   const previousValue = JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? "");
+  const { secondId, fetchOneSnapshot, trackLatestSidePanel, latestSnapshotId } = useSnapshotsContext();
 
   const ValueComponent = ({
     stateUpdateValue,
@@ -59,7 +70,11 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
     }, [stateUpdateValue, adjustWidth]);
 
     if (!onClick) {
-      return <div className={styles.valueContainer} data-testid="value-container">{stateUpdateValue}</div>;
+      return (
+        <div className={styles.valueContainer} data-testid="value-container">
+          {stateUpdateValue}
+        </div>
+      );
     }
 
     return (
@@ -69,6 +84,8 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
             ref={inputRef}
             className={isHovered ? styles.valueContainerHovered : disabled ? styles.valueContainerDisabled : styles.valueContainerEditable}
             data-testid="value-input"
+            title="Edit value"
+            placeholder="Enter value"
             onMouseEnter={() => {
               if (tooltipText === undefined) {
                 setTooltipText("Edit");
@@ -148,6 +165,9 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
       const response = await SnapshotsApi.updateState(runningNodeInfo?.idx, stateUpdateKey, stateUpdateValue);
 
       const stateUpdate = { ...stateUpdateObject, stateUpdated: response.result! };
+      if (response.isOk && response.result && trackLatestSidePanel) {
+        fetchOneSnapshot(Number(latestSnapshotId), Number(secondId), false, true);
+      }
       if (setRunningNodeInfo) {
         setRunningNodeInfo({
           ...runningNodeInfo,
@@ -166,7 +186,9 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
     <div key={`${stateUpdateKey}-wrapper`} className={styles.stateUpdateWrapper} data-testid={`state-update-wrapper-${stateUpdateKey}`}>
       <div className={styles.stateUpdateOrderNumberAndTitleWrapper}>
         <div className={styles.stateUpdateOrderNumber}>{index + 1}</div>
-        <div className={styles.stateUpdateOrderKey} data-testid={`state-update-key-${index}`}>{stateUpdateKey}</div>
+        <div className={styles.stateUpdateOrderKey} data-testid={`state-update-key-${index}`}>
+          {stateUpdateKey}
+        </div>
       </div>
       <div className={styles.stateUpdateValueWrapper} data-testid={`state-update-value-wrapper-${index}`}>
         <ValueRow

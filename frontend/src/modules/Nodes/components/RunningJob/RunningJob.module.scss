@@ -55,7 +55,7 @@
 .greenDot {
   width: 12px;
   height: 12px;
-  background-color: #00D59A;
+  background-color: var(--status-color-finished);
   border-radius: 50%;
   display: inline-block;
 }
@@ -63,7 +63,7 @@
 .redDot {
   width: 12px;
   height: 12px;
-  background-color: #FF6173;
+  background-color: var(--status-color-error);
   border-radius: 50%;
   display: inline-block;
 }
@@ -71,7 +71,7 @@
 .greyDot {
   width: 12px;
   height: 12px;
-  background-color: #A5ACB6;
+  background-color: var(--status-color-pending);
   border-radius: 50%;
   display: inline-block;
 }
@@ -88,8 +88,6 @@
 }
 
 .stopButton {
-  background: none;
-  border: none;
   border-radius: 50%;
   padding: 1px;
   cursor: pointer;
@@ -534,7 +532,6 @@ input:focus {
 }
 
 .nodeText {
-  color: gray;
   font-family: Roboto, sans-serif;
   font-weight: 400;
   font-size: 22px;
@@ -543,7 +540,6 @@ input:focus {
 .nodeName {
   color: white;
   font-family: Roboto, sans-serif;
-  font-weight: 400 bold;
   margin-left: 4px;
 }
 
@@ -554,11 +550,7 @@ input:focus {
 }
 
 .percentage {
-  color: #a5acb6;
-  font-family: Roboto, sans-serif;
   font-size: 22px;
-  font-weight: 400;
-  line-height: normal;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -577,9 +569,25 @@ input:focus {
 }
 
 .errorText {
-  color: #FF6173;
+  color: var(--status-color-error);
   opacity: 0.6;
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.bar_running {
+  --progress-color: var(--status-color-running);
+}
+
+.bar_pending {
+  --progress-color: var(--status-color-pending);
+}
+
+.bar_finished {
+  --progress-color: var(--status-color-finished);
+}
+
+.bar_error {
+  --progress-color: var(--status-color-error);
 }

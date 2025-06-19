@@ -8,6 +8,8 @@ import { Button } from "@mui/material";
 import Popper from "@mui/material/Popper";
 import EllipsesIcon from "../../../../ui-lib/Icons/EllipsesIcon";
 import StateUpdatesListPreview from "./StateUpdatesListPreview";
+// import { ErrorStatusWrapper } from "../../../common/Error/ErrorStatusWrapper";
+import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
 
 export const StateUpdates: React.FC<{
   runningNodeInfo: RunningNodeInfo | undefined;
@@ -19,6 +21,7 @@ export const StateUpdates: React.FC<{
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [stateOpen, setStateOpen] = useState(false);
   let timer: NodeJS.Timeout | null = null;
+  const { trackLatestSidePanel, fetchOneSnapshot, latestSnapshotId, secondId } = useSnapshotsContext();
 
   const handleClick = async (stateUpdates: StateUpdate) => {
     const listOfUpdates = Object.entries(stateUpdates ?? {})
@@ -30,6 +33,9 @@ export const StateUpdates: React.FC<{
     const result = await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", listOfUpdates);
     if (result.isOk) {
       setUpdateAllButtonPressed(result.result!);
+      if (result.result && trackLatestSidePanel) {
+        fetchOneSnapshot(Number(latestSnapshotId), Number(secondId), false, true);
+      }
     }
   };
 
@@ -91,12 +97,13 @@ export const StateUpdates: React.FC<{
           {Object.entries(runningNodeInfo.state_updates).map(([key, stateUpdateObject], index) => (
             <StateUpdateElement
               key={`${key}-expanded`}
+              stateUpdateKey={key}
               index={index}
+
               stateUpdateObject={stateUpdateObject}
               runningNodeInfo={runningNodeInfo}
               setRunningNodeInfo={setRunningNodeInfo}
               updateAllButtonPressed={updateAllButtonPressed}
-              stateUpdateKey={key}
             />
           ))}
         </div>
