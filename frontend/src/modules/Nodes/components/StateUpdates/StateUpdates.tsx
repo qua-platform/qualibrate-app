@@ -99,7 +99,6 @@ export const StateUpdates: React.FC<{
               key={`${key}-expanded`}
               stateUpdateKey={key}
               index={index}
-
               stateUpdateObject={stateUpdateObject}
               runningNodeInfo={runningNodeInfo}
               setRunningNodeInfo={setRunningNodeInfo}
