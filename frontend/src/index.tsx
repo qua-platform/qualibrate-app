@@ -9,6 +9,7 @@ import { updateColorTheme } from "./modules/themeModule/themeHelper";
 import { GlobalThemeContextProvider } from "./modules/themeModule/GlobalThemeContext";
 import { createRoot } from "react-dom/client";
 import { AuthContextProvider } from "./modules/Login/context/AuthContext";
+import { NodesContextProvider } from "./modules/Nodes/context/NodesContext";
 import { SnapshotsContextProvider } from "./modules/Snapshots/context/SnapshotsContext";
 
 type ProviderComponent = React.FC<PropsWithChildren<ReactNode>>;
@@ -18,6 +19,7 @@ const contextProviders: ProviderComponent[] = [
   AuthContextProvider,
   FlexLayoutContextProvider,
   BrowserRouter,
+  NodesContextProvider,
   SnapshotsContextProvider,
 ];
 
