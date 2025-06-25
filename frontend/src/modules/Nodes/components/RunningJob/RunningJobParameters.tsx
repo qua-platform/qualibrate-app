@@ -27,15 +27,7 @@ export const RunningJobParameters: React.FC<{ isExpanded: boolean }> = ({ isExpa
         {!isExpanded && (
           <span className={styles.tooltipWrapper} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} >
             <span className={styles.tooltipIcon}> &nbsp;<EllipsesIcon /> </span>
-            <Popper
-              open={tooltipOpen}
-              anchorEl={anchorEl}
-              placement="bottom-start"
-              disablePortal
-              transition={false}
-              modifiers={[{ name: "offset", options: { offset: [0, 10] } }]}
-              style={{ zIndex: 9999 }}
-            >
+            <Popper open={tooltipOpen} anchorEl={anchorEl} placement="bottom-start" disablePortal transition={false} modifiers={[{ name: "offset", options: { offset: [0, 10] } }]} style={{ zIndex: 9999 }} >
               <div className={styles.parameterTooltipBox}> <ParameterListPreview /> </div>
             </Popper>
           </span>
