@@ -19,11 +19,11 @@ export const StateUpdates: React.FC<{
   isExpanded: boolean;
 }> = ({ isExpanded, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [stateOpen, setStateOpen] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   let timer: NodeJS.Timeout | null = null;
   const { trackLatestSidePanel, fetchOneSnapshot, latestSnapshotId, secondId } = useSnapshotsContext();
 
-  const handleClick = async (stateUpdates: StateUpdate) => {
+  const handleUpdateAllClick = async (stateUpdates: StateUpdate) => {
     const listOfUpdates = Object.entries(stateUpdates ?? {})
       .filter(([, obj]) => !obj.stateUpdated)
       .map(([key, obj]) => ({
@@ -42,11 +42,11 @@ export const StateUpdates: React.FC<{
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     if (timer) clearTimeout(timer);
     setAnchorEl(event.currentTarget);
-    setStateOpen(true);
+    setTooltipOpen(true);
   };
 
   const handleMouseLeave = () => {
-    timer = setTimeout(() => setStateOpen(false), 100);
+    timer = setTimeout(() => setTooltipOpen(false), 100);
   };
 
   return (
@@ -63,7 +63,7 @@ export const StateUpdates: React.FC<{
             <span className={styles.tooltipWrapper} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
               <span className={styles.tooltipIcon}>&nbsp;<EllipsesIcon /></span>
               <Popper
-                open={stateOpen}
+                open={tooltipOpen}
                 anchorEl={anchorEl}
                 placement="bottom-start"
                 disablePortal
@@ -71,7 +71,7 @@ export const StateUpdates: React.FC<{
                 modifiers={[{ name: "offset", options: { offset: [0, 10] } }]}
                 style={{ zIndex: 9999 }}
               >
-                <div className={styles.StateUpdatesTooltipBox}>
+                <div className={styles.stateUpdatesTooltipBox}>
                   <StateUpdatesListPreview runningNodeInfo={runningNodeInfo} />
                 </div>
               </Popper>
@@ -84,7 +84,7 @@ export const StateUpdates: React.FC<{
               className={styles.updateAllButton}
               data-testid="update-all-button"
               disabled={updateAllButtonPressed}
-              onClick={() => handleClick(runningNodeInfo?.state_updates ?? {})}
+              onClick={() => handleUpdateAllClick(runningNodeInfo?.state_updates ?? {})}
             >
               Accept All
             </Button>

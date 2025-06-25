@@ -11,7 +11,7 @@ import { UndoIcon } from "../../../../ui-lib/Icons/UndoIcon";
 import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
 
 export interface StateUpdateProps {
-  stateUpdateKey: string; // renamed from `key` to avoid React stripping it
+  stateUpdateKey: string;
   index: number;
   stateUpdateObject: StateUpdateObject;
   runningNodeInfo?: RunningNodeInfo;

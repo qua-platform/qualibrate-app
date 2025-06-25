@@ -6,18 +6,18 @@ import Popper from "@mui/material/Popper";
 import ParameterListPreview from "./ParameterListPreview";
 
 export const RunningJobParameters: React.FC<{ isExpanded: boolean }> = ({ isExpanded }) => {
-  const [stateOpen, setStateOpen] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   let timer: NodeJS.Timeout | null = null;
 
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     if (timer) clearTimeout(timer);
     setAnchorEl(event.currentTarget);
-    setStateOpen(true);
+    setTooltipOpen(true);
   };
 
   const handleMouseLeave = () => {
-    timer = setTimeout(() => setStateOpen(false), 100);
+    timer = setTimeout(() => setTooltipOpen(false), 100);
   };
 
   return (
@@ -28,7 +28,7 @@ export const RunningJobParameters: React.FC<{ isExpanded: boolean }> = ({ isExpa
           <span className={styles.tooltipWrapper} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} >
             <span className={styles.tooltipIcon}> &nbsp;<EllipsesIcon /> </span>
             <Popper
-              open={stateOpen}
+              open={tooltipOpen}
               anchorEl={anchorEl}
               placement="bottom-start"
               disablePortal
