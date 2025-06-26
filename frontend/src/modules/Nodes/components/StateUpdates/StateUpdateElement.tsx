@@ -20,20 +20,10 @@ export interface StateUpdateProps {
 }
 
 export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
-  const {
-    stateUpdateKey,
-    index,
-    stateUpdateObject,
-    runningNodeInfo,
-    setRunningNodeInfo,
-    updateAllButtonPressed,
-  } = props;
-
+  const { stateUpdateKey, index, stateUpdateObject, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed } = props;
   const [runningUpdate, setRunningUpdate] = useState<boolean>(false);
   const [parameterUpdated, setParameterUpdated] = useState<boolean>(false);
-  const [customValue, setCustomValue] = useState<string | number>(
-    JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? "")
-  );
+  const [customValue, setCustomValue] = useState<string | number>(JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? ""));
   const previousValue = JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? "");
   const { secondId, fetchOneSnapshot, trackLatestSidePanel, latestSnapshotId } = useSnapshotsContext();
 
