@@ -37,9 +37,9 @@ export const RunningJob: React.FC = () => {
         </div>
       </div>
 
-      <div className={styles.toggleIconWrapper} onClick={() => setIsExpanded((prev) => !prev)}>
+      <button className={styles.toggleIconWrapper} onClick={() => setIsExpanded((prev) => !prev)} title={isExpanded ? "Collapse run info" : "Expand run info"} >
         <ExpandCollapseIcon direction={isExpanded ? "up" : "down"} />
-      </div>
+      </button>
     </div>
   );
 };
