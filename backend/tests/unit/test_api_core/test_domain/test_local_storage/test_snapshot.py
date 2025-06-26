@@ -5,6 +5,7 @@ import pytest
 
 from qualibrate_app.api.core.domain.bases.snapshot import SnapshotLoadTypeFlag
 from qualibrate_app.api.core.domain.local_storage import snapshot
+from qualibrate_app.api.core.types import PageFilter, SearchFilter
 from qualibrate_app.api.exceptions.classes.values import QValueException
 
 
@@ -144,10 +145,14 @@ class TestSnapshotLocalStorage:
         find_latest_patched.assert_called_once_with(settings.storage.location)
         find_n_latest_patched.assert_called_once_with(
             settings.storage.location,
-            1,
-            2,
-            settings.project,
-            max_node_id=2,
+            pages_filter=PageFilter(
+                page=1,
+                per_page=2,
+            ),
+            search_filter=SearchFilter(
+                max_node_id=2,
+            ),
+            project_name=settings.project,
         )
 
     def test_compare_by_id_same_snapshot(self, mocker):

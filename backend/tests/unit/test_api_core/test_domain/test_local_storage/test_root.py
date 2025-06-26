@@ -1,6 +1,9 @@
+from typing import Optional
+
 import pytest
 
 from qualibrate_app.api.core.domain.local_storage.root import RootLocalStorage
+from qualibrate_app.api.core.types import PageFilter, SearchFilter
 from qualibrate_app.api.exceptions.classes.storage import QFileNotFoundException
 
 
@@ -23,9 +26,8 @@ class TestLocalStorageRoot:
         assert ex.value.args == ("There is no msg",)
         patched_find_latest.assert_called_once_with(
             settings.storage.location,
-            1,
-            1,
-            settings.project,
+            pages_filter=PageFilter(page=1, per_page=1),
+            project_name=settings.project,
         )
 
     def test__get_latest_node_id_valid(self, mocker, settings):
@@ -39,9 +41,8 @@ class TestLocalStorageRoot:
         assert self.root._get_latest_node_id("msg") == 1
         patched_find_latest.assert_called_once_with(
             settings.storage.location,
-            1,
-            1,
-            settings.project,
+            pages_filter=PageFilter(page=1, per_page=1),
+            project_name=settings.project,
         )
 
     def test_get_snapshot_latest(self, mocker, settings):
@@ -106,11 +107,15 @@ class TestLocalStorageRoot:
 
     def test_get_latest_snapshots(self, mocker, settings):
         class _Branch:
-            def get_latest_snapshots(self, page, per_page, reverse):
-                assert page == 1
-                assert per_page == 2
+            def get_latest_snapshots(
+                self,
+                pages_filter: PageFilter,
+                search_filter: Optional[SearchFilter] = None,
+                reverse: bool = False,
+            ):
+                assert pages_filter == PageFilter(page=1, per_page=2)
                 assert reverse is False
-                return [1, 2]
+                return 2, [1, 2]
 
         patched_branch = mocker.patch(
             (
@@ -119,5 +124,7 @@ class TestLocalStorageRoot:
             ),
             return_value=_Branch(),
         )
-        assert self.root.get_latest_snapshots(1, 2, False) == [1, 2]
+        assert self.root.get_latest_snapshots(
+            PageFilter(page=1, per_page=2), descending=False
+        ) == (2, [1, 2])
         patched_branch.assert_called_once_with("main", settings=settings)

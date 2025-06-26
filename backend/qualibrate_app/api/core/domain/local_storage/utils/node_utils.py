@@ -7,7 +7,14 @@ from typing import Any, Callable, Optional
 from qualibrate_app.api.core.domain.local_storage._id_to_local_path import (
     IdToLocalPath,
 )
-from qualibrate_app.api.core.types import IdType
+from qualibrate_app.api.core.domain.local_storage.snapshot_ids_storage import (
+    get_storage_by_project,
+)
+from qualibrate_app.api.core.types import (
+    IdType,
+    PageFilter,
+    SearchFilter,
+)
 from qualibrate_app.api.core.utils.path.node import NodePath
 from qualibrate_app.api.core.utils.path.node_date import NodesDatePath
 
@@ -52,30 +59,45 @@ def _validate_node_id(
     return id_ is not None and (min_id <= id_ <= max_id)
 
 
+def find_n_latest_nodes_ids_new(
+    base_path: Path,
+    *,
+    search_filter: Optional[SearchFilter] = None,
+    project_name: str,
+    descending: bool = False,
+) -> Generator[IdType, None, None]:
+    storage = get_storage_by_project(project_name, base_path)
+    yield from sorted(storage.get_ids(search_filter), reverse=descending)
+    return None
+
+
 def find_n_latest_nodes_ids(
     base_path: Path,
-    page: int,
-    per_page: int,
+    *,
+    pages_filter: PageFilter,
+    search_filter: Optional[SearchFilter] = None,
     project_name: str,
-    max_node_id: Optional[int] = None,
 ) -> Generator[IdType, None, None]:
     """
     Generator of n latest nodes ids
     """
-    n = per_page
+    n = pages_filter.per_page
+    page = pages_filter.page
     page -= 1
 
     max_node_id = (
-        max_node_id
-        if max_node_id is not None
+        search_filter.max_node_id
+        if search_filter is not None and search_filter.max_node_id is not None
         else find_latest_node_id(base_path)
     )
-    node_id_max_val = max(0, max_node_id - page * per_page)
+    node_id_max_val = max(0, max_node_id - page * pages_filter.per_page)
     if node_id_max_val == 0:
         return None
-    node_id_min_val = max(1, node_id_max_val - per_page + 1)
+    node_id_min_val = max(
+        (search_filter.min_node_id if search_filter is not None else 1),
+        node_id_max_val - pages_filter.per_page + 1,
+    )
 
-    next_ = None
     paths_mapping = IdToLocalPath()
     get_node_path = partial(
         paths_mapping.get,
@@ -86,17 +108,39 @@ def find_n_latest_nodes_ids(
     min_node_path_date = (
         min_node_path.date if min_node_path is not None else None
     )
+    min_node_date = max(
+        min_node_path_date or date.min,
+        (
+            search_filter.min_date
+            if search_filter is not None and search_filter.min_date is not None
+            else date.min
+        ),
+    )
     max_node_path = get_node_path(id=node_id_max_val)
     max_node_path_date = (
         max_node_path.date if max_node_path is not None else None
+    )
+    max_node_date = min(
+        max_node_path_date or date.max,
+        (
+            search_filter.max_date
+            if search_filter is not None and search_filter.max_date is not None
+            else date.max
+        ),
     )
     date_filters: list[
         tuple[Callable[[NodesDatePath], bool], tuple[Any, ...]]
     ] = [
         (Path.is_dir, tuple()),
-        (_validate_date_range, (min_node_path_date, max_node_path_date)),
+        (_validate_date_range, (min_node_date, max_node_date)),
     ]
     node_filters = [(_validate_node_id, (node_id_min_val, node_id_max_val))]
+    name_pattern = (
+        f"#*{search_filter.name_part}*"
+        if search_filter is not None and search_filter.name_part is not None
+        else "#*"
+    )
+    next_ = None
     for node_date in sorted(
         filter(
             lambda p: all(filter_(p, *args) for filter_, args in date_filters),
@@ -106,7 +150,7 @@ def find_n_latest_nodes_ids(
     ):
         node_paths = filter(
             lambda p: all(filter_(p, *args) for filter_, args in node_filters),
-            map(NodePath, node_date.glob("#*")),
+            map(NodePath, node_date.glob(name_pattern)),
         )
         node_path_ids = {
             int(path.stem[1:].split("_")[0]): path for path in node_paths

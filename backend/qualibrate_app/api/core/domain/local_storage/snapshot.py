@@ -37,6 +37,8 @@ from qualibrate_app.api.core.types import (
     DocumentSequenceType,
     DocumentType,
     IdType,
+    PageFilter,
+    SearchFilter,
 )
 from qualibrate_app.api.core.utils.find_utils import get_subpath_value
 from qualibrate_app.api.core.utils.path.node import NodePath
@@ -192,10 +194,14 @@ class SnapshotLocalStorage(SnapshotBase):
             return total, [self]
         ids = find_n_latest_nodes_ids(
             storage_location,
-            page,
-            per_page,
-            self._settings.project,
-            max_node_id=(self.id or total) - 1,
+            pages_filter=PageFilter(
+                page=page,
+                per_page=per_page,
+            ),
+            search_filter=SearchFilter(
+                max_node_id=(self.id or total) - 1,
+            ),
+            project_name=self._settings.project,
         )
         snapshots = [
             SnapshotLocalStorage(id, settings=self._settings) for id in ids
