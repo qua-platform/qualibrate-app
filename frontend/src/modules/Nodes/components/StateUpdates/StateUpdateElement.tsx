@@ -11,7 +11,7 @@ import { UndoIcon } from "../../../../ui-lib/Icons/UndoIcon";
 import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
 
 export interface StateUpdateProps {
-  key: string;
+  stateUpdateKey: string;
   index: number;
   stateUpdateObject: StateUpdateObject;
   runningNodeInfo?: RunningNodeInfo;
@@ -20,8 +20,8 @@ export interface StateUpdateProps {
 }
 
 export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
-  const { key, index, stateUpdateObject, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed } = props;
-  const [runningUpdate, setRunningUpdate] = React.useState<boolean>(false);
+  const { stateUpdateKey, index, stateUpdateObject, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed } = props;
+  const [runningUpdate, setRunningUpdate] = useState<boolean>(false);
   const [parameterUpdated, setParameterUpdated] = useState<boolean>(false);
   const [customValue, setCustomValue] = useState<string | number>(JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? ""));
   const previousValue = JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? "");
@@ -74,6 +74,8 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
             ref={inputRef}
             className={isHovered ? styles.valueContainerHovered : disabled ? styles.valueContainerDisabled : styles.valueContainerEditable}
             data-testid="value-input"
+            title="Edit value"
+            placeholder="Enter value"
             onMouseEnter={() => {
               if (tooltipText === undefined) {
                 setTooltipText("Edit");
@@ -149,8 +151,8 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
   const handleUpdateClick = async () => {
     if (runningNodeInfo && runningNodeInfo.idx && stateUpdateObject && ("val" in stateUpdateObject || "new" in stateUpdateObject)) {
       setRunningUpdate(true);
-      const stateUpdateValue = customValue ? customValue : (stateUpdateObject.val ?? stateUpdateObject.new!);
-      const response = await SnapshotsApi.updateState(runningNodeInfo?.idx, key, stateUpdateValue);
+      const stateUpdateValue = customValue ? customValue : stateUpdateObject.val ?? stateUpdateObject.new!;
+      const response = await SnapshotsApi.updateState(runningNodeInfo?.idx, stateUpdateKey, stateUpdateValue);
 
       const stateUpdate = { ...stateUpdateObject, stateUpdated: response.result! };
       if (response.isOk && response.result && trackLatestSidePanel) {
@@ -159,7 +161,7 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
       if (setRunningNodeInfo) {
         setRunningNodeInfo({
           ...runningNodeInfo,
-          state_updates: { ...runningNodeInfo.state_updates, [key]: stateUpdate },
+          state_updates: { ...runningNodeInfo.state_updates, [stateUpdateKey]: stateUpdate },
         });
       }
       setParameterUpdated(response.result!);
@@ -171,11 +173,11 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
   };
   return (
     // {!runningUpdate && !parameterUpdated && (
-    <div key={`${key}-wrapper`} className={styles.stateUpdateWrapper} data-testid={`state-update-wrapper-${key}`}>
+    <div key={`${stateUpdateKey}-wrapper`} className={styles.stateUpdateWrapper} data-testid={`state-update-wrapper-${stateUpdateKey}`}>
       <div className={styles.stateUpdateOrderNumberAndTitleWrapper}>
         <div className={styles.stateUpdateOrderNumber}>{index + 1}</div>
         <div className={styles.stateUpdateOrderKey} data-testid={`state-update-key-${index}`}>
-          {key}
+          {stateUpdateKey}
         </div>
       </div>
       <div className={styles.stateUpdateValueWrapper} data-testid={`state-update-value-wrapper-${index}`}>
