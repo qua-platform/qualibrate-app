@@ -14,6 +14,7 @@ class SnapshotMetadata(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     status: Optional[str] = None
+    name: Optional[str] = None
     description: Optional[str] = None
     run_start: Optional[AwareDatetime] = None
     run_end: Optional[AwareDatetime] = None
@@ -34,6 +35,7 @@ class SnapshotData(BaseModel):
 
     quam: Optional[dict[str, Any]] = None
     parameters: Optional[dict[str, Any]] = None
+    results: Optional[dict[str, Any]] = None
     outcomes: Optional[dict[str, Any]] = None
 
 

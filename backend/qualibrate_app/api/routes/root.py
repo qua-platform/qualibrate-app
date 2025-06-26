@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import Annotated, Any, Union
+from typing import Annotated, Any, Optional, Union
 
 from fastapi import APIRouter, Depends, Query
 from qualibrate_config.models import QualibrateConfig, StorageType
@@ -7,7 +7,11 @@ from qualibrate_config.models import QualibrateConfig, StorageType
 from qualibrate_app.api.core.domain.bases.branch import BranchLoadType
 from qualibrate_app.api.core.domain.bases.node import NodeLoadType
 from qualibrate_app.api.core.domain.bases.root import RootBase
-from qualibrate_app.api.core.domain.bases.snapshot import SnapshotLoadType
+from qualibrate_app.api.core.domain.bases.snapshot import (
+    SnapshotLoadType,
+    SnapshotLoadTypeFlag,
+    SnapshotLoadTypeToLoadTypeFlag,
+)
 from qualibrate_app.api.core.domain.local_storage.root import RootLocalStorage
 from qualibrate_app.api.core.domain.timeline_db.root import RootTimelineDb
 from qualibrate_app.api.core.models.branch import Branch as BranchModel
@@ -19,6 +23,9 @@ from qualibrate_app.api.core.models.snapshot import (
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
 from qualibrate_app.api.core.types import IdType
 from qualibrate_app.api.dependencies.search import get_search_path
+from qualibrate_app.api.routes.utils.snapshot_load_type import (
+    parse_load_type_flag,
+)
 from qualibrate_app.config import (
     get_settings,
 )
@@ -48,7 +55,7 @@ def get_branch(
     return branch.dump()
 
 
-@root_router.get("/node")
+@root_router.get("/node", deprecated=True)
 def get_node_by_id(
     *,
     id: IdType,
@@ -60,7 +67,7 @@ def get_node_by_id(
     return node.dump()
 
 
-@root_router.get("/node/latest")
+@root_router.get("/node/latest", deprecated=True)
 def get_latest_node(
     *,
     load_type: NodeLoadType = NodeLoadType.Full,
@@ -75,22 +82,36 @@ def get_latest_node(
 def get_snapshot_by_id(
     *,
     id: IdType,
-    load_type: SnapshotLoadType = SnapshotLoadType.Metadata,
+    load_type: Annotated[
+        Optional[SnapshotLoadType], Query(deprecated="use load_type_flag")
+    ] = None,
+    load_type_flag: Annotated[
+        SnapshotLoadTypeFlag, Depends(parse_load_type_flag)
+    ] = SnapshotLoadTypeFlag.Metadata,
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> SnapshotModel:
     snapshot = root.get_snapshot(id)
-    snapshot.load(load_type)
+    if load_type is not None:
+        load_type_flag = SnapshotLoadTypeToLoadTypeFlag[load_type]
+    snapshot.load_from_flag(load_type_flag)
     return snapshot.dump()
 
 
 @root_router.get("/snapshot/latest")
 def get_latest_snapshot(
     *,
-    load_type: SnapshotLoadType = SnapshotLoadType.Metadata,
+    load_type: Annotated[
+        Optional[SnapshotLoadType], Query(deprecated=True)
+    ] = None,
+    load_type_flag: Annotated[
+        SnapshotLoadTypeFlag, Depends(parse_load_type_flag)
+    ],
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> SnapshotModel:
     snapshot = root.get_snapshot()
-    snapshot.load(load_type)
+    if load_type is not None:
+        load_type_flag = SnapshotLoadTypeToLoadTypeFlag[load_type]
+    snapshot.load_from_flag(load_type_flag)
     return snapshot.dump()
 
 
@@ -118,7 +139,7 @@ def get_snapshots_history(
     )
 
 
-@root_router.get("/nodes_history")
+@root_router.get("/nodes_history", deprecated=True)
 def get_nodes_history(
     *,
     page: int = Query(1, gt=0),
