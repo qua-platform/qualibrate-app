@@ -3,33 +3,26 @@ import styles from "./styles/TitleBarMenu.module.scss";
 import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
 import modulesMap from "../../routing/ModulesRegistry";
 import PageName from "../../common/ui-components/common/Page/PageName";
-import TitleBarMenuCard from "./TitleBarMenuCard";
 import { NodesApi } from "../Nodes/api/NodesAPI";
-
-export interface LastRunStatusNodeResponseDTO {
-  status: string;
-  run_start: string;
-  run_duration: number;
-  name: string;
-  id?: number;
-  percentage_complete: number;
-  current_action?: string | null;
-  time_remaining: number | null;
-}
+import TitleBarGraphCard from "./TitleBarGraphCard/TitleBarGraphCard";
+import { LastRunStatusNodeResponseDTO, LastRunStatusGraphResponseDTO, fallbackNode, fallbackGraph } from "./constants";
 
 const TitleBarMenu: React.FC = () => {
   const { activeTab, topBarAdditionalComponents } = useFlexLayoutContext();
   const [node, setNode] = useState<LastRunStatusNodeResponseDTO | null>(null);
+  const [graph, setGraph] = useState<LastRunStatusGraphResponseDTO | null>(null);
+  const graphToUse = graph ?? fallbackGraph;
 
   const fetchStatus = async () => {
     const res = await NodesApi.fetchLastRunStatusInfo();
-    if (res.isOk && res.result?.node) {
-      setNode(res.result.node);
+    if (res.isOk && res.result) {
+      setNode(res.result.node ?? null);
+      setGraph(res.result.graph ?? null);
     }
   };
 
   useEffect(() => {
-    const interval = setInterval(async () => fetchStatus(), 1000);
+    const interval = setInterval(fetchStatus, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -37,20 +30,8 @@ const TitleBarMenu: React.FC = () => {
     <div className={styles.wrapper}>
       <PageName>{modulesMap[activeTab ?? ""]?.menuItem?.title ?? ""}</PageName>
       {topBarAdditionalComponents && topBarAdditionalComponents[activeTab ?? ""]}
-
       <div className={styles.menuCardsWrapper}>
-        <TitleBarMenuCard
-          node={
-            node ?? {
-              status: "pending",
-              run_start: "",
-              run_duration: 0,
-              name: "",
-              percentage_complete: 0,
-              time_remaining: 0,
-            }
-          }
-        />
+        <TitleBarGraphCard graph={graphToUse} node={node ?? fallbackNode} />
       </div>
     </div>
   );
