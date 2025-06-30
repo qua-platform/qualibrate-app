@@ -5,7 +5,7 @@ import { GraphContextProvider, useGraphContext } from "./context/GraphContext";
 import { GraphList } from "./components/GraphList";
 import { SelectionContextProvider } from "../common/context/SelectionContext";
 import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
-import BlueButton from "../../ui-lib/components/Button/BlueButton";
+import RefreshIcon from "../../ui-lib/Icons/RefreshIcon";
 
 export const GraphLibrary = () => {
   const { fetchAllCalibrationGraphs } = useGraphContext();
@@ -13,7 +13,7 @@ export const GraphLibrary = () => {
   const GraphLibraryTopBarRefreshButton = () => {
     return (
       <div className={styles.buttonWrapper}>
-        <BlueButton onClick={() => fetchAllCalibrationGraphs(true)}>Refresh</BlueButton>
+        <button onClick={() => fetchAllCalibrationGraphs(true)} title="Refresh graph parameters"> <RefreshIcon /> </button>
       </div>
     );
   };

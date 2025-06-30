@@ -12,11 +12,12 @@ import QUAlibrateLogoSmallIcon from "../../ui-lib/Icons/QualibrateLogoSmall";
 import { HelpIcon } from "../../ui-lib/Icons/HelpIcon";
 import ExpandSideMenuIcon from "../../ui-lib/Icons/ExpandSideMenuIcon";
 import CollapseSideMenuIcon from "../../ui-lib/Icons/CollapseSideMenuIcon";
+import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
 
 const SidebarMenu: React.FunctionComponent = () => {
   const { pinSideMenu } = useContext(GlobalThemeContext) as GlobalThemeContextState;
   const [minify, setMinify] = useState(true);
-
+  const { openTab, graphTab } = useFlexLayoutContext();
   const containerClassName = classNames(styles.sidebarMenu, minify ? styles.collapsed : styles.expanded);
 
   useEffect(() => {
@@ -38,9 +39,16 @@ const SidebarMenu: React.FunctionComponent = () => {
 
       <div className={styles.menuContent}>
         <div className={styles.menuUpperContent}>
-          {menuItems.map((item, index) => (
-            <MenuItem {...item} key={index} hideText={minify} data-testid={`menu-item-${index}`} />
-          ))}
+          {menuItems.filter((item) => !item.hidden).map((item, index) => {
+            const isGraphMenu = item.keyId === "graph-library";
+
+            const handleClick = () => {
+              if (isGraphMenu) { openTab(graphTab === "run" ? "graph-library" : "graph-status"); }
+            };
+            return (
+              <MenuItem {...item} key={index} hideText={minify} data-testid={`menu-item-${index}`} onClick={isGraphMenu ? handleClick : undefined} />
+            );
+          })}
         </div>
 
         <div className={styles.menuBottomContent}>
