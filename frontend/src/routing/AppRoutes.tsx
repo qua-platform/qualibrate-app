@@ -27,7 +27,7 @@ const AppRoutes = () => {
           path={HOME_URL}
           element={
             <ProtectedRoute>
-              <MainModularPage />
+                <MainModularPage />
             </ProtectedRoute>
           }
         />

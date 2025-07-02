@@ -6,13 +6,13 @@ import styles from "./Project.module.scss";
 import React from "react";
 import { ProjectDTO } from "../ProjectDTO";
 
-interface Props {
+interface ProjectListPropsDTO {
   projects: ProjectDTO[];
   selectedProject: ProjectDTO | undefined;
   setSelectedProject: React.Dispatch<React.SetStateAction<ProjectDTO | undefined>>;
 }
 
-const ProjectList = ({ projects, selectedProject, setSelectedProject }: Props) => {
+const ProjectList = ({ projects, selectedProject, setSelectedProject }: ProjectListPropsDTO) => {
   if (!projects?.length) {
     return (
       <div className={styles.splash}>

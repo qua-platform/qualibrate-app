@@ -12,12 +12,20 @@ import QUAlibrateLogoSmallIcon from "../../ui-lib/Icons/QualibrateLogoSmall";
 import { HelpIcon } from "../../ui-lib/Icons/HelpIcon";
 import ExpandSideMenuIcon from "../../ui-lib/Icons/ExpandSideMenuIcon";
 import CollapseSideMenuIcon from "../../ui-lib/Icons/CollapseSideMenuIcon";
+import ProjectFolderIcon from "../../ui-lib/Icons/ProjectFolderIcon";
+import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
+import { useProjectContext } from "../Project/context/ProjectContext";
+import { getColorIndex, extractInitials } from "../Project/helpers";
+import { colorPalette } from "../Project/constants";
 
 const SidebarMenu: React.FunctionComponent = () => {
   const { pinSideMenu } = useContext(GlobalThemeContext) as GlobalThemeContextState;
   const [minify, setMinify] = useState(true);
 
   const containerClassName = classNames(styles.sidebarMenu, minify ? styles.collapsed : styles.expanded);
+
+  const { activeProject } = useProjectContext();
+  const projectColor = colorPalette[getColorIndex(activeProject?.name || "")];
 
   useEffect(() => {
     setMinify(!pinSideMenu);
@@ -29,11 +37,17 @@ const SidebarMenu: React.FunctionComponent = () => {
     );
   }; 
 
+  const { openTab } = useFlexLayoutContext();
+
+  const handleProjectClick = () => {
+    openTab("project");
+  };
+
   return (
     <>
     <div className={containerClassName}>
       <button className={styles.qualibrateLogo} data-cy={cyKeys.HOME_PAGE}>
-        {minify ? <QUAlibrateLogoSmallIcon /> : <QUAlibrateLogoIcon />}
+        {minify ? <QUAlibrateLogoSmallIcon /> : <QUAlibrateLogoIcon /> }
       </button>
 
       <div className={styles.menuContent}>
@@ -47,6 +61,27 @@ const SidebarMenu: React.FunctionComponent = () => {
           {bottomMenuItems.map((item) => (
             <MenuItem {...item} key={item.keyId} hideText={minify} onClick={() => {}} />
           ))}
+          {activeProject?.name && (
+            <MenuItem
+              menuItem={{
+                title: activeProject.name.length > 15 ? activeProject.name.slice(0, 17) + "…" : activeProject.name,
+                icon: () => (
+                  <ProjectFolderIcon
+                    initials={extractInitials(activeProject.name)}
+                    fillColor={projectColor}
+                    width={28}
+                    height={28}
+                    fontSize={13}
+                  />
+                ),
+                dataCy: "active-project",
+              }}
+              keyId={"active-project"}
+              key={`active-project-${activeProject.name}`}
+              hideText={minify}
+              onClick={handleProjectClick}
+            />
+          )}
           <MenuItem 
             menuItem={{ title: "Help", icon: HelpIcon, dataCy: "help-btn" }} 
             keyId="help" 

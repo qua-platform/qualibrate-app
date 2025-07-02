@@ -51,6 +51,8 @@ export function FlexLayoutContextProvider(props: PropsWithChildren<ReactNode | R
       setSelectedPageName("nodes");
     } else if (tab === "data") {
       setSelectedPageName("data");
+    } else if (tab === "project") {
+      setSelectedPageName("project");
     } else {
       setSelectedPageName(null);
     }
