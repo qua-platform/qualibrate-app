@@ -125,7 +125,19 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
       }}
     >
       {!toggleSwitch && <h1 style={{ paddingTop: "10px", paddingBottom: "5px" }}>{title}</h1>}
-      {toggleSwitch && <ToggleSwitch title={title} activeTab={activeTab} setActiveTab={setActiveTab} />}
+      {toggleSwitch && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "10px", paddingBottom: "5px" }}>
+          <h1 style={{ margin: 0 }}>{title}</h1>
+          <ToggleSwitch
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            options={[
+              { label: "Live", value: "live" },
+              { label: "Final", value: "final" },
+            ]}
+          />
+        </div>
+      )}
       {showSearch && (
         <InputField value={searchTerm} title={"Search"} onChange={(_e, event) => handleSearch(event.target.value, event)}></InputField>
       )}

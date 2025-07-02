@@ -57,6 +57,14 @@
   display: flex;
   background-color: #28292F;
   align-self: center;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:active {
+    opacity: 0.6;
+  }
 }
 
 .nodeElementListWrapper {

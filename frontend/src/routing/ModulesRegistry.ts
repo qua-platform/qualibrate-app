@@ -49,6 +49,7 @@ export type Module = {
     path?: string;
     dataCy?: string;
   };
+  hidden?: boolean;
   // onClick?: () => void;
 };
 
@@ -83,7 +84,7 @@ export const ModulesRegistry: Array<Module> = [
     Component: CalibrationGraph,
     menuItem: {
       sideBarTitle: "Graph Library",
-      title: "Run calibration graph",
+      title: "Calibration graph",
       icon: GraphLibraryIcon,
       dataCy: cyKeys.CALIBRATION_TAB,
     },
@@ -94,10 +95,11 @@ export const ModulesRegistry: Array<Module> = [
     Component: GraphStatus,
     menuItem: {
       sideBarTitle: "Graph Status",
-      title: "Graph Status",
+      title: "Calibration graph",
       icon: GraphStatusIcon,
       dataCy: cyKeys.NODES_TAB,
     },
+    hidden: true,
   },
   {
     keyId: DATA_KEY,

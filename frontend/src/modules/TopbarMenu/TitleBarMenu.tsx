@@ -5,6 +5,7 @@ import modulesMap from "../../routing/ModulesRegistry";
 import PageName from "../../common/ui-components/common/Page/PageName";
 import TitleBarMenuCard from "./TitleBarMenuCard";
 import { NodesApi } from "../Nodes/api/NodesAPI";
+import ToggleSwitch from "../../common/ui-components/common/ToggleSwitch/ToggleSwitch";
 
 export interface LastRunStatusNodeResponseDTO {
   status: string;
@@ -18,8 +19,14 @@ export interface LastRunStatusNodeResponseDTO {
 }
 
 const TitleBarMenu: React.FC = () => {
-  const { activeTab, topBarAdditionalComponents } = useFlexLayoutContext();
+  const { activeTab, topBarAdditionalComponents, openTab, graphTab, setGraphTab } = useFlexLayoutContext();
   const [node, setNode] = useState<LastRunStatusNodeResponseDTO | null>(null);
+
+  const handleTabChange = (value: string) => {
+    setGraphTab(value);
+    if (value === "run") openTab("graph-library");
+    else openTab("graph-status");
+  };
 
   const fetchStatus = async () => {
     const res = await NodesApi.fetchLastRunStatusInfo();
@@ -36,7 +43,21 @@ const TitleBarMenu: React.FC = () => {
   return (
     <div className={styles.wrapper}>
       <PageName>{modulesMap[activeTab ?? ""]?.menuItem?.title ?? ""}</PageName>
+      
+    <div className={styles.ToggleSwitchAndRefreshWrapper}>
+      {(activeTab === "graph-library" || activeTab === "graph-status") && (
+        <ToggleSwitch
+          activeTab={graphTab}
+          setActiveTab={handleTabChange}
+          options={[
+            { label: "Run graph", value: "run" },
+            { label: "Active graph", value: "active" },
+          ]}
+        />
+      )}
+
       {topBarAdditionalComponents && topBarAdditionalComponents[activeTab ?? ""]}
+    </div>
 
       <div className={styles.menuCardsWrapper}>
         <TitleBarMenuCard
