@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
+import styles from "./JSONEditor.module.scss";
 import jp from "jsonpath";
 import { defineDataType, JsonViewer, Path } from "@textea/json-viewer";
 import InputField from "../../../common/ui-components/common/Input/InputField";
@@ -126,8 +127,8 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
     >
       {!toggleSwitch && <h1 style={{ paddingTop: "10px", paddingBottom: "5px" }}>{title}</h1>}
       {toggleSwitch && (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "10px", paddingBottom: "5px" }}>
-          <h1 style={{ margin: 0 }}>{title}</h1>
+      <div className={styles.titleRow}>
+        <h1 className={styles.titleNoMargin}>{title}</h1>
           <ToggleSwitch
             activeTab={activeTab}
             setActiveTab={setActiveTab}
