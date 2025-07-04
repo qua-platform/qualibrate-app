@@ -1,4 +1,4 @@
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from typing import Any, Optional, Union
 
 from qualibrate_app.api.core.domain.bases.branch import BranchBase
@@ -15,7 +15,10 @@ from qualibrate_app.api.core.domain.local_storage.snapshot import (
 from qualibrate_app.api.core.domain.local_storage.utils.node_utils import (
     find_n_latest_nodes_ids,
 )
-from qualibrate_app.api.core.types import IdType
+from qualibrate_app.api.core.domain.local_storage.utils.snapshot_content import (  # noqa: E501
+    search_snapshots_data_with_filter,
+)
+from qualibrate_app.api.core.types import IdType, PageSearchFilter
 from qualibrate_app.api.exceptions.classes.storage import QFileNotFoundException
 
 __all__ = ["RootLocalStorage"]
@@ -29,8 +32,7 @@ class RootLocalStorage(RootBase):
         id = next(
             find_n_latest_nodes_ids(
                 self._settings.storage.location,
-                1,
-                1,
+                PageSearchFilter(page=1, per_page=1),
                 self._settings.project,
             ),
             None,
@@ -51,25 +53,36 @@ class RootLocalStorage(RootBase):
 
     def get_latest_snapshots(
         self,
-        page: int = 1,
-        per_page: int = 50,
+        filters: PageSearchFilter,
         reverse: bool = False,
     ) -> tuple[int, Sequence[SnapshotBase]]:
         return BranchLocalStorage(
             "main", settings=self._settings
-        ).get_latest_snapshots(page, per_page, reverse)
+        ).get_latest_snapshots(filters, reverse)
 
     def get_latest_nodes(
         self,
-        page: int = 1,
-        per_page: int = 50,
+        filters: PageSearchFilter,
         reverse: bool = False,
     ) -> tuple[int, Sequence[NodeBase]]:
         return BranchLocalStorage(
             "main", settings=self._settings
-        ).get_latest_nodes(page, per_page, reverse)
+        ).get_latest_nodes(filters, reverse)
 
     def search_snapshot(
         self, snapshot_id: IdType, data_path: Sequence[Union[str, int]]
     ) -> Any:
         return self.get_snapshot(snapshot_id).search(data_path, load=True)
+
+    def search_snapshots_data(
+        self,
+        filters: PageSearchFilter,
+        data_path: Sequence[Union[str, int]],
+        filter_no_change: bool,
+    ) -> Mapping[IdType, Any]:
+        _, snapshots = BranchLocalStorage(
+            "main", settings=self._settings
+        ).get_latest_snapshots(filters)
+        return search_snapshots_data_with_filter(
+            snapshots, data_path, filter_no_change
+        )
