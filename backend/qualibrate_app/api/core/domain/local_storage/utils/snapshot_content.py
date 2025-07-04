@@ -13,9 +13,13 @@ from typing import (
 from qualibrate_config.models import QualibrateConfig
 
 from qualibrate_app.api.core.domain.bases.snapshot import (
-    SnapshotLoadType,
+    SnapshotLoadTypeFlag,
 )
-from qualibrate_app.api.core.domain.local_storage._id_to_local_path import (
+from qualibrate_app.api.core.domain.bases.storage import (
+    DataFileStorage,
+    StorageLoadTypeFlag,
+)
+from qualibrate_app.api.core.domain.local_storage.utils.local_path_id import (
     IdToLocalPath,
 )
 from qualibrate_app.api.core.types import (
@@ -29,16 +33,22 @@ from qualibrate_app.config.vars import METADATA_OUT_PATH
 
 logger = logging.getLogger(__name__)
 
-
 __all__ = [
     "SnapshotContentLoaderType",
     "SnapshotContentUpdaterType",
-    "default_snapshot_content_loader",
+    "default_snapshot_content_loader_from_flag",
     "default_snapshot_content_updater",
 ]
 
 SnapshotContentLoaderType = Callable[
-    [NodePath, SnapshotLoadType, QualibrateConfig], DocumentType
+    [
+        NodePath,
+        SnapshotLoadTypeFlag,
+        QualibrateConfig,
+        bool,
+        Optional[dict[str, Any]],
+    ],
+    DocumentType,
 ]
 SnapshotContentUpdaterType = Callable[
     [
@@ -53,21 +63,21 @@ SnapshotContentUpdaterType = Callable[
 
 def read_minified_node_content(
     node_info: Mapping[str, Any],
-    f_node_id: Optional[int],
     node_filepath: Path,
+    snapshot_path: NodePath,
     settings: QualibrateConfig,
 ) -> dict[str, Any]:
     """
     Args:
         node_info: content of node file
-        f_node_id: node id got from node path
-        node_filepath: path to file with node info
+        node_filepath: path to file that contains node info
+        snapshot_path: Node root
         settings: qualbirate settings
 
     Returns:
         Minified content on node
     """
-    node_id = node_info.get("id", f_node_id or -1)
+    node_id = node_info.get("id", snapshot_path.id or -1)
     parents = node_info.get(
         "parents", [node_id - 1] if node_id and node_id > 0 else []
     )
@@ -76,7 +86,8 @@ def read_minified_node_content(
     user_storage = settings.storage.location
     parents = list(
         filter(
-            lambda p_id: id_local_path.get(project, p_id, user_storage), parents
+            lambda p_id: id_local_path.get_path(project, p_id, user_storage),
+            parents,
         )
     )
     created_at_str = node_info.get("created_at")
@@ -108,14 +119,14 @@ def read_minified_node_content(
 
 def read_metadata_node_content(
     node_info: Mapping[str, Any],
-    f_node_name: str,
-    snapshot_path: Path,
+    node_path: Path,
+    snapshot_path: NodePath,
     settings: QualibrateConfig,
 ) -> dict[str, Any]:
     """
     Args:
         node_info: content of node file
-        f_node_name: node name got from node path
+        node_path: path to file that contains node info
         snapshot_path: path to common node directory
         settings: qualbirate settings
 
@@ -123,7 +134,7 @@ def read_metadata_node_content(
         Minified content on node
     """
     node_metadata = dict(node_info.get("metadata", {}))
-    node_metadata.setdefault("name", f_node_name)
+    node_metadata.setdefault("name", snapshot_path.node_name)
     node_metadata.setdefault(
         METADATA_OUT_PATH,
         str(snapshot_path.relative_to(settings.storage.location)),
@@ -139,20 +150,13 @@ def get_data_node_path(
     node_info: Mapping[str, Any], node_filepath: Path, snapshot_path: Path
 ) -> Optional[Path]:
     node_data = dict(node_info.get("data", {}))
-    quam_relative_path = node_data.get("quam")
+    quam_relative_path = node_data.get("quam") or node_data.get("machine")
     if quam_relative_path is None:
         return None
     quam_abs_path = node_filepath.parent.joinpath(quam_relative_path).resolve()
     if not quam_abs_path.is_relative_to(snapshot_path):
         raise QFileNotFoundException("Unknown quam data path")
     return quam_abs_path
-
-
-def get_data_node_dir(
-    snapshot_path: Path, quam_dir_name: str = "quam_state"
-) -> Optional[Path]:
-    quam_state_dir = snapshot_path / quam_dir_name
-    return quam_state_dir if quam_state_dir.is_dir() else None
 
 
 def update_state_file(state_file: Path, new_quam: Mapping[str, Any]) -> None:
@@ -230,27 +234,6 @@ def read_quam_content(quam_path: Path) -> dict[str, Any]:
     return quam
 
 
-def read_data_node_content(
-    node_info: Mapping[str, Any], node_filepath: Path, snapshot_path: Path
-) -> dict[str, Any]:
-    """Read quam data based on node info.
-
-    Args:
-        node_info: Node content
-        node_filepath: path to file that contains node info
-        snapshot_path: Node root
-    """
-    quam_path = get_data_node_path(node_info, node_filepath, snapshot_path)
-    node_data = dict(node_info.get("data", {}))
-    other_data = {
-        "parameters": dict(node_data.get("parameters", {})).get("model"),
-        "outcomes": node_data.get("outcomes"),
-    }
-    if quam_path is None:
-        return {"quam": None, **other_data}
-    return {"quam": read_quam_content(quam_path), **other_data}
-
-
 def default_snapshot_content_updater(
     snapshot_path: NodePath,
     new_snapshot: Mapping[str, Any],
@@ -260,8 +243,8 @@ def default_snapshot_content_updater(
     node_filepath = get_node_filepath(snapshot_path)
     if not node_filepath.is_file():
         return False
-    node_info = default_snapshot_content_loader(
-        snapshot_path, SnapshotLoadType.Empty, settings, raw=True
+    node_info = default_snapshot_content_loader_from_flag(
+        snapshot_path, SnapshotLoadTypeFlag.DataWithMachine, settings, raw=True
     )
     quam_path = get_data_node_path(node_info, node_filepath, snapshot_path)
     if quam_path is None:
@@ -290,34 +273,148 @@ def default_snapshot_content_updater(
     return True
 
 
-def default_snapshot_content_loader(
+def _node_info_from_node_filename(node_filepath: Path) -> DocumentType:
+    if not node_filepath.is_file():
+        return {}
+    with node_filepath.open("r") as f:
+        try:
+            return dict(json.load(f))
+        except json.JSONDecodeError:
+            return {}
+
+
+def load_minified_from_node_content(
+    node_info: Mapping[str, Any],
+    node_filepath: Path,
     snapshot_path: NodePath,
-    load_type: SnapshotLoadType,
+    settings: QualibrateConfig,
+    snapshot_info: dict[str, Any],
+) -> None:
+    snapshot_info.update(
+        read_minified_node_content(
+            node_info, node_filepath, snapshot_path, settings
+        )
+    )
+
+
+def load_snapshot_metadata_from_node_content(
+    node_info: Mapping[str, Any],
+    node_filepath: Path,
+    snapshot_path: NodePath,
+    settings: QualibrateConfig,
+    snapshot_info: dict[str, Any],
+) -> None:
+    metadata = read_metadata_node_content(
+        node_info,
+        node_filepath,
+        snapshot_path,
+        settings,
+    )
+    snapshot_info.update({"metadata": metadata})
+
+
+def load_snapshot_data_without_refs_from_node_content(
+    node_info: Mapping[str, Any],
+    node_filepath: Path,
+    snapshot_path: NodePath,
+    settings: QualibrateConfig,
+    snapshot_info: dict[str, Any],
+) -> None:
+    data = dict(node_info.get("data", {}))
+    data.pop("quam", None)
+    data.pop("machine", None)
+    data.pop("results", None)
+    snapshot_info.update({"data": data})
+
+
+def load_snapshot_data_machine_from_node_content(
+    node_info: Mapping[str, Any],
+    node_filepath: Path,
+    snapshot_path: NodePath,
+    settings: QualibrateConfig,
+    snapshot_info: dict[str, Any],
+) -> None:
+    quam_path = get_data_node_path(node_info, node_filepath, snapshot_path)
+    # TODO: expected behaviour?
+    quam_data = read_quam_content(quam_path) if quam_path else None
+    # TODO: use both quam and machine
+    snapshot_info["data"]["quam"] = quam_data
+
+
+def load_snapshot_data_results_from_node_content(
+    node_info: Mapping[str, Any],
+    node_filepath: Path,
+    snapshot_path: NodePath,
+    settings: QualibrateConfig,
+    snapshot_info: dict[str, Any],
+) -> None:
+    storage = DataFileStorage(snapshot_path, settings)
+    storage.load_from_flag(StorageLoadTypeFlag.DataFileWithoutRefs)
+    snapshot_info["data"]["results"] = storage.data
+
+
+def load_snapshot_data_results_with_imgs_from_node_content(
+    node_info: Mapping[str, Any],
+    node_filepath: Path,
+    snapshot_path: NodePath,
+    settings: QualibrateConfig,
+    snapshot_info: dict[str, Any],
+) -> None:
+    storage = DataFileStorage(snapshot_path, settings)
+    storage.load_from_flag(StorageLoadTypeFlag.DataFileWithImgs)
+    snapshot_info["data"]["results"] = storage.data
+
+
+LOAD_SNAPSHOT_FLAG_FUNC_TYPE = Callable[
+    [Mapping[str, Any], Path, NodePath, QualibrateConfig, dict[str, Any]], None
+]
+LOADERS: dict[SnapshotLoadTypeFlag, LOAD_SNAPSHOT_FLAG_FUNC_TYPE] = {
+    SnapshotLoadTypeFlag.Empty: lambda *args, **kwargs: None,
+    SnapshotLoadTypeFlag.Minified: load_minified_from_node_content,
+    SnapshotLoadTypeFlag.Metadata: load_snapshot_metadata_from_node_content,
+    SnapshotLoadTypeFlag.DataWithoutRefs: (
+        load_snapshot_data_without_refs_from_node_content
+    ),
+    SnapshotLoadTypeFlag.DataWithMachine: (
+        load_snapshot_data_machine_from_node_content
+    ),
+    SnapshotLoadTypeFlag.DataWithResults: (
+        load_snapshot_data_results_from_node_content
+    ),
+    SnapshotLoadTypeFlag.DataWithResultsWithImgs: (
+        load_snapshot_data_results_with_imgs_from_node_content
+    ),
+}
+
+
+def default_snapshot_content_loader_from_flag(
+    snapshot_path: NodePath,
+    load_type: SnapshotLoadTypeFlag,
     settings: QualibrateConfig,
     raw: bool = False,
+    snapshot_content: Optional[dict[str, Any]] = None,
 ) -> DocumentType:
+    if snapshot_content is None:
+        snapshot_content = {}
+    if load_type == SnapshotLoadTypeFlag.Empty:
+        return snapshot_content
     node_filepath = get_node_filepath(snapshot_path)
-    if node_filepath.is_file():
-        with node_filepath.open("r") as f:
-            try:
-                node_info = json.load(f)
-            except json.JSONDecodeError:
-                node_info = {}
-    else:
-        node_info = {}
+    node_info = _node_info_from_node_filename(node_filepath)
     if raw:
         return cast(DocumentType, node_info)
-    content = read_minified_node_content(
-        node_info, snapshot_path.id, node_filepath, settings
-    )
-    if load_type < SnapshotLoadType.Metadata:
-        return content
-    content["metadata"] = read_metadata_node_content(
-        node_info, snapshot_path.node_name, snapshot_path, settings
-    )
-    if load_type < SnapshotLoadType.Data:
-        return content
-    content["data"] = read_data_node_content(
-        node_info, node_filepath, snapshot_path
-    )
-    return content
+    # TODO: Issue: Iterate over flag use only Minified value if qualibrate-app
+    #  is part of qualibrate
+    for lt in SnapshotLoadTypeFlag.__members__.values():
+        if (
+            load_type.is_set(lt)
+            and lt <= load_type
+            and (loader := LOADERS.get(lt))
+        ):
+            loader(
+                node_info,
+                node_filepath,
+                snapshot_path,
+                settings,
+                snapshot_content,
+            )
+    return snapshot_content

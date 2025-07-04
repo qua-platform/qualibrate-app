@@ -1,4 +1,5 @@
-from typing import Annotated, Any, Optional
+from collections.abc import Sequence
+from typing import Annotated, Any, Optional, Union
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, computed_field
 
@@ -14,6 +15,7 @@ class SnapshotMetadata(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     status: Optional[str] = None
+    name: Optional[str] = None
     description: Optional[str] = None
     run_start: Optional[AwareDatetime] = None
     run_end: Optional[AwareDatetime] = None
@@ -34,7 +36,12 @@ class SnapshotData(BaseModel):
 
     quam: Optional[dict[str, Any]] = None
     parameters: Optional[dict[str, Any]] = None
+    results: Optional[dict[str, Any]] = None
     outcomes: Optional[dict[str, Any]] = None
+
+    @computed_field
+    def machine(self) -> Optional[dict[str, Any]]:
+        return self.quam
 
 
 class Snapshot(SimplifiedSnapshot):
@@ -42,3 +49,13 @@ class Snapshot(SimplifiedSnapshot):
         SnapshotMetadata, Field(default_factory=SnapshotMetadata)
     ]
     data: Optional[SnapshotData] = None
+
+
+class MachineSearchResults(BaseModel):
+    key: Optional[Sequence[Union[str, int]]] = None
+    value: Any
+
+
+class SnapshotSearchResult(MachineSearchResults):
+    snapshot: SimplifiedSnapshot
+    value: Any = None

@@ -10,17 +10,24 @@ from qualibrate_app.api.core.domain.bases.base_with_settings import (
     DomainWithConfigBase,
 )
 from qualibrate_app.api.core.domain.bases.i_dump import IDump
+from qualibrate_app.api.core.domain.bases.load_type_flag import LoadTypeFlag
+from qualibrate_app.api.core.models.snapshot import MachineSearchResults
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
 from qualibrate_app.api.core.types import (
-    DocumentSequenceType,
     DocumentType,
     IdType,
+    PageFilter,
 )
 from qualibrate_app.api.core.utils.find_utils import (
     get_subpath_value_on_any_depth,
 )
 
-__all__ = ["SnapshotBase", "SnapshotLoadType"]
+__all__ = [
+    "SnapshotBase",
+    "SnapshotLoadType",
+    "SnapshotLoadTypeFlag",
+    "SnapshotLoadTypeToLoadTypeFlag",
+]
 
 
 class SnapshotLoadType(IntEnum):
@@ -29,6 +36,42 @@ class SnapshotLoadType(IntEnum):
     Metadata = 2
     Data = 3
     Full = 4
+
+
+class SnapshotLoadTypeFlag(LoadTypeFlag):
+    Empty = 0
+    Minified = Empty | 2**0
+    Metadata = Minified | 2**1
+    DataWithoutRefs = Minified | 2**2
+    DataWithMachine = DataWithoutRefs | 2**3
+    DataWithResults = DataWithoutRefs | 2**4
+    DataWithResultsWithImgs = DataWithResults | 2**5
+
+    Full = (
+        2**9
+        | Empty
+        | Minified
+        | Metadata
+        | DataWithoutRefs
+        | DataWithMachine
+        | DataWithResults
+    )
+
+    def is_set(self, field: "SnapshotLoadTypeFlag") -> bool:
+        return self._is_set(field)
+
+
+SnapshotLoadTypeToLoadTypeFlag = {
+    SnapshotLoadType.Empty: SnapshotLoadTypeFlag.Empty,
+    SnapshotLoadType.Minified: SnapshotLoadTypeFlag.Minified,
+    SnapshotLoadType.Metadata: SnapshotLoadTypeFlag.Metadata,
+    SnapshotLoadType.Data: (
+        SnapshotLoadTypeFlag.Metadata
+        | SnapshotLoadTypeFlag.DataWithMachine
+        | SnapshotLoadTypeFlag.DataWithResultsWithImgs
+    ),
+    SnapshotLoadType.Full: SnapshotLoadTypeFlag.Full,
+}
 
 
 class SnapshotBase(DomainWithConfigBase, IDump, ABC):
@@ -44,30 +87,39 @@ class SnapshotBase(DomainWithConfigBase, IDump, ABC):
         super().__init__(settings)
         self._id = id
         if content is None:
-            self._load_type = SnapshotLoadType.Empty
+            self._load_type_flag = SnapshotLoadTypeFlag.Empty
             self.content = {}
             return
-        specified_items_keys = {
-            key: key in content for key in self.__class__._items_keys
-        }
-        if any(specified_items_keys.values()):
-            if all(specified_items_keys.values()):
-                self._load_type = SnapshotLoadType.Full
-            elif specified_items_keys["data"]:
-                self._load_type = SnapshotLoadType.Data
-            else:
-                self._load_type = SnapshotLoadType.Metadata
-        else:
-            self._load_type = SnapshotLoadType.Minified
+        self._load_type_flag = self._load_type_flag_from_content(content)
         self.content = dict(content)
 
+    def _load_type_flag_from_content(
+        self, content: DocumentType
+    ) -> SnapshotLoadTypeFlag:
+        load_type_flag = SnapshotLoadTypeFlag.Empty
+        if "id" in content:
+            load_type_flag |= SnapshotLoadTypeFlag.Minified
+        if content.get("metadata"):
+            load_type_flag |= SnapshotLoadTypeFlag.Metadata
+        if data := content.get("data"):
+            load_type_flag |= SnapshotLoadTypeFlag.DataWithoutRefs
+            if not isinstance(data, Mapping):
+                return load_type_flag
+            if isinstance(data.get("quam"), dict) or isinstance(
+                data.get("machine"), dict
+            ):
+                load_type_flag |= SnapshotLoadTypeFlag.DataWithMachine
+            if isinstance(data.get("results"), dict):
+                load_type_flag |= SnapshotLoadTypeFlag.DataWithResults
+        return load_type_flag
+
     @abstractmethod
-    def load(self, load_type: SnapshotLoadType) -> None:
+    def load_from_flag(self, load_type_flag: SnapshotLoadTypeFlag) -> None:
         pass
 
     @property
-    def load_type(self) -> SnapshotLoadType:
-        return self._load_type
+    def load_type_flag(self) -> SnapshotLoadTypeFlag:
+        return self._load_type_flag
 
     @property
     def id(self) -> Optional[IdType]:
@@ -96,15 +148,20 @@ class SnapshotBase(DomainWithConfigBase, IDump, ABC):
         self,
         search_path: Sequence[Union[str, int]],
         load: bool = False,
-    ) -> Optional[DocumentSequenceType]:
+    ) -> Optional[Sequence[MachineSearchResults]]:
         pass
 
     def search_recursive(
         self, target_key: str, load: bool = False
-    ) -> Optional[DocumentSequenceType]:
-        if self._load_type < SnapshotLoadType.Data and not load:
+    ) -> Optional[Sequence[MachineSearchResults]]:
+        if (
+            not self._load_type_flag.is_set(
+                SnapshotLoadTypeFlag.DataWithMachine
+            )
+            and not load
+        ):
             return None
-        self.load(SnapshotLoadType.Data)
+        self.load_from_flag(SnapshotLoadTypeFlag.DataWithMachine)
         # TODO: update logic; not use quam
         data = (self.data or {}).get("quam")
         if data is None:
@@ -113,7 +170,7 @@ class SnapshotBase(DomainWithConfigBase, IDump, ABC):
 
     @abstractmethod
     def get_latest_snapshots(
-        self, page: int = 1, per_page: int = 50, reverse: bool = False
+        self, pages_filter: PageFilter, descending: bool = False
     ) -> tuple[int, Sequence["SnapshotBase"]]:
         pass
 
@@ -145,3 +202,9 @@ class SnapshotBase(DomainWithConfigBase, IDump, ABC):
     @abstractmethod
     def update_entry(self, updates: Mapping[str, Any]) -> bool:
         pass
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}"
+            f"(id={self.id!r}, load_type={self.load_type_flag!r})"
+        )

@@ -2,6 +2,11 @@ from datetime import datetime
 
 import pytest
 
+import tests.api.local_storage._utils as _utils_test
+from qualibrate_app.api.routes.utils.snapshot_load_type import (
+    SnapshotLoadTypeStr,
+)
+
 
 @pytest.mark.parametrize("load_type", (0, 1))
 def test_branch_get(
@@ -30,7 +35,95 @@ def test_branch_get_snapshot_default(
         "/api/branch/main/snapshot", params={"snapshot_id": snapshot_id}
     )
     snapshot = snapshots_history[len(snapshots_history) - snapshot_id]
-    snapshot.update({"data": None})
+    snapshot = _utils_test.update_snapshot_minified_response(snapshot)
+    assert response.status_code == 200
+    assert response.json() == snapshot
+
+
+@pytest.mark.parametrize(
+    "load_type_flag, to_update",
+    (
+        (
+            SnapshotLoadTypeStr.Minified,
+            {
+                "metadata": _utils_test.EMPTY_METADATA,
+                "data": None,
+            },
+        ),
+        (SnapshotLoadTypeStr.Metadata, {"data": None}),
+        (
+            SnapshotLoadTypeStr.DataWithoutRefs,
+            {
+                "metadata": _utils_test.EMPTY_METADATA,
+                "data": {
+                    "quam": None,
+                    "machine": None,
+                    "parameters": None,
+                    "outcomes": None,
+                    "results": None,
+                },
+            },
+        ),
+        (
+            SnapshotLoadTypeStr.DataWithMachine,
+            {
+                "metadata": _utils_test.EMPTY_METADATA,
+                "data": {
+                    "quam": {"quam": {"node": 3}, "info": "snapshot"},
+                    "machine": {"quam": {"node": 3}, "info": "snapshot"},
+                    "parameters": None,
+                    "outcomes": None,
+                    "results": None,
+                },
+            },
+        ),
+        (
+            SnapshotLoadTypeStr.DataWithResults,
+            {
+                "metadata": _utils_test.EMPTY_METADATA,
+                "data": {
+                    "quam": None,
+                    "machine": None,
+                    "parameters": None,
+                    "outcomes": None,
+                    "results": {
+                        "info": "out data",
+                        "result": "node_3",
+                    },
+                },
+            },
+        ),
+        (
+            SnapshotLoadTypeStr.Full,
+            {
+                "data": {
+                    "quam": {"quam": {"node": 3}, "info": "snapshot"},
+                    "machine": {"quam": {"node": 3}, "info": "snapshot"},
+                    "parameters": None,
+                    "outcomes": None,
+                    "results": {
+                        "info": "out data",
+                        "result": "node_3",
+                    },
+                }
+            },
+        ),
+    ),
+)
+def test_branch_get_snapshot_load_type_flag(
+    client_custom_settings,
+    default_local_storage_project,
+    snapshots_history,
+    load_type_flag,
+    to_update,
+):
+    snapshot_id = 3
+    response = client_custom_settings.get(
+        "/api/branch/main/snapshot",
+        params={"snapshot_id": 3, "load_type_flag": load_type_flag.value},
+    )
+    snapshot = snapshots_history[len(snapshots_history) - snapshot_id]
+    snapshot.update(to_update)
     assert response.status_code == 200
     assert response.json() == snapshot
 
@@ -41,13 +134,7 @@ def test_branch_get_snapshot_default(
         (
             1,
             {
-                "metadata": {
-                    "description": None,
-                    "run_end": None,
-                    "run_start": None,
-                    "run_duration": None,
-                    "status": None,
-                },
+                "metadata": _utils_test.EMPTY_METADATA,
                 "data": None,
             },
         ),
@@ -57,8 +144,13 @@ def test_branch_get_snapshot_default(
             {
                 "data": {
                     "quam": {"quam": {"node": 3}, "info": "snapshot"},
+                    "machine": {"quam": {"node": 3}, "info": "snapshot"},
                     "parameters": None,
                     "outcomes": None,
+                    "results": {
+                        "info": "out data",
+                        "result": "node_3",
+                    },
                 }
             },
         ),
@@ -67,8 +159,13 @@ def test_branch_get_snapshot_default(
             {
                 "data": {
                     "quam": {"quam": {"node": 3}, "info": "snapshot"},
+                    "machine": {"quam": {"node": 3}, "info": "snapshot"},
                     "parameters": None,
                     "outcomes": None,
+                    "results": {
+                        "info": "out data",
+                        "result": "node_3",
+                    },
                 }
             },
         ),
@@ -97,6 +194,7 @@ def test_branch_get_latest_snapshot_default(
 ):
     response = client_custom_settings.get("/api/branch/main/snapshot/latest")
     snapshot = snapshots_history[0]
+    snapshot = _utils_test.update_snapshot_minified_response(snapshot)
     snapshot.update({"data": None})
     assert response.status_code == 200
     assert response.json() == snapshot
@@ -108,13 +206,7 @@ def test_branch_get_latest_snapshot_default(
         (
             1,
             {
-                "metadata": {
-                    "description": None,
-                    "run_end": None,
-                    "run_start": None,
-                    "run_duration": None,
-                    "status": None,
-                },
+                "metadata": _utils_test.EMPTY_METADATA,
                 "data": None,
             },
         ),
@@ -124,9 +216,14 @@ def test_branch_get_latest_snapshot_default(
             {
                 "data": {
                     "quam": {"quam": {"node": 9}, "info": "snapshot"},
+                    "machine": {"quam": {"node": 9}, "info": "snapshot"},
                     "parameters": None,
                     "outcomes": None,
-                }
+                    "results": {
+                        "info": "out data",
+                        "result": "node_9",
+                    },
+                },
             },
         ),
         (
@@ -134,8 +231,13 @@ def test_branch_get_latest_snapshot_default(
             {
                 "data": {
                     "quam": {"quam": {"node": 9}, "info": "snapshot"},
+                    "machine": {"quam": {"node": 9}, "info": "snapshot"},
                     "parameters": None,
                     "outcomes": None,
+                    "results": {
+                        "info": "out data",
+                        "result": "node_9",
+                    },
                 }
             },
         ),
@@ -150,6 +252,93 @@ def test_branch_get_latest_snapshot_load_type(
 ):
     response = client_custom_settings.get(
         "/api/branch/main/snapshot/latest", params={"load_type": load_type}
+    )
+    snapshot = snapshots_history[0]
+    snapshot.update(to_update)
+    assert response.status_code == 200
+    assert response.json() == snapshot
+
+
+@pytest.mark.parametrize(
+    "load_type_flag, to_update",
+    (
+        (
+            SnapshotLoadTypeStr.Minified,
+            {
+                "metadata": _utils_test.EMPTY_METADATA,
+                "data": None,
+            },
+        ),
+        (SnapshotLoadTypeStr.Metadata, {"data": None}),
+        (
+            SnapshotLoadTypeStr.DataWithoutRefs,
+            {
+                "metadata": _utils_test.EMPTY_METADATA,
+                "data": {
+                    "quam": None,
+                    "machine": None,
+                    "parameters": None,
+                    "outcomes": None,
+                    "results": None,
+                },
+            },
+        ),
+        (
+            SnapshotLoadTypeStr.DataWithMachine,
+            {
+                "metadata": _utils_test.EMPTY_METADATA,
+                "data": {
+                    "quam": {"quam": {"node": 9}, "info": "snapshot"},
+                    "machine": {"quam": {"node": 9}, "info": "snapshot"},
+                    "parameters": None,
+                    "outcomes": None,
+                    "results": None,
+                },
+            },
+        ),
+        (
+            SnapshotLoadTypeStr.DataWithResults,
+            {
+                "metadata": _utils_test.EMPTY_METADATA,
+                "data": {
+                    "quam": None,
+                    "machine": None,
+                    "parameters": None,
+                    "outcomes": None,
+                    "results": {
+                        "info": "out data",
+                        "result": "node_9",
+                    },
+                },
+            },
+        ),
+        (
+            SnapshotLoadTypeStr.Full,
+            {
+                "data": {
+                    "quam": {"quam": {"node": 9}, "info": "snapshot"},
+                    "machine": {"quam": {"node": 9}, "info": "snapshot"},
+                    "parameters": None,
+                    "outcomes": None,
+                    "results": {
+                        "info": "out data",
+                        "result": "node_9",
+                    },
+                }
+            },
+        ),
+    ),
+)
+def test_branch_get_latest_snapshot_load_type_flag(
+    client_custom_settings,
+    default_local_storage_project,
+    snapshots_history,
+    load_type_flag,
+    to_update,
+):
+    response = client_custom_settings.get(
+        "/api/branch/main/snapshot/latest",
+        params={"load_type_flag": load_type_flag.value},
     )
     snapshot = snapshots_history[0]
     snapshot.update(to_update)
@@ -246,15 +435,16 @@ def test_branch_snapshots_history_default(
         "per_page": 50,
         "total_items": 9,
         "total_pages": 1,
+        "has_next_page": False,
         "items": snapshots_history,
     }
 
 
-def test_branch_snapshots_history_reverse(
+def test_branch_snapshots_history_ascending(
     client_custom_settings, snapshots_history
 ):
     response = client_custom_settings.get(
-        "/api/branch/main/snapshots_history", params={"reverse": True}
+        "/api/branch/main/snapshots_history", params={"descending": False}
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -262,16 +452,17 @@ def test_branch_snapshots_history_reverse(
         "per_page": 50,
         "total_items": 9,
         "total_pages": 1,
+        "has_next_page": False,
         "items": snapshots_history[::-1],
     }
 
 
-def test_branch_snapshots_history_reverse_paged(
+def test_branch_snapshots_history_ascending_paged(
     client_custom_settings, snapshots_history
 ):
     response = client_custom_settings.get(
         "/api/branch/main/snapshots_history",
-        params={"reverse": True, "page": 2, "per_page": 2},
+        params={"descending": False, "page": 2, "per_page": 2},
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -279,55 +470,21 @@ def test_branch_snapshots_history_reverse_paged(
         "per_page": 2,
         "total_items": 9,
         "total_pages": 5,
-        "items": snapshots_history[3:1:-1],
-    }
-
-
-@pytest.mark.skip("Global reverse not implemented yet for local storage")
-def test_branch_snapshots_history_global_reverse(
-    client_custom_settings, snapshots_history
-):
-    response = client_custom_settings.get(
-        "/api/branch/main/snapshots_history", params={"global_reverse": True}
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "page": 1,
-        "per_page": 50,
-        "total_items": 9,
-        "total_pages": 1,
-        "items": snapshots_history[::-1],
-    }
-
-
-@pytest.mark.skip("Global reverse not implemented yet for local storage")
-def test_branch_snapshots_history_global_reverse_paged(
-    client_custom_settings, snapshots_history
-):
-    response = client_custom_settings.get(
-        "/api/branch/main/snapshots_history",
-        params={"global_reverse": True, "page": 2, "per_page": 2},
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "page": 2,
-        "per_page": 2,
-        "total_items": 9,
-        "total_pages": 5,
-        "items": snapshots_history[7:5:-1],
+        "has_next_page": True,
+        "items": snapshots_history[6:4:-1],
     }
 
 
 @pytest.mark.parametrize(
-    "page, per_page, total_pages, expected_range",
+    "page, per_page, total_pages, has_next_page, expected_range",
     (
-        (1, 3, 3, (0, 3)),
-        (2, 3, 3, (3, 6)),
-        (3, 3, 3, (6, 9)),
-        (4, 3, 3, (0, 0)),
-        (1, 2, 5, (0, 2)),
-        (5, 2, 5, (8, 9)),
-        (1, 9, 1, (0, 9)),
+        (1, 3, 3, True, (0, 3)),
+        (2, 3, 3, True, (3, 6)),
+        (3, 3, 3, False, (6, 9)),
+        (4, 3, 3, False, (0, 0)),
+        (1, 2, 5, True, (0, 2)),
+        (5, 2, 5, False, (8, 9)),
+        (1, 9, 1, False, (0, 9)),
     ),
 )
 def test_branch_snapshots_history_paged(
@@ -335,6 +492,7 @@ def test_branch_snapshots_history_paged(
     page,
     per_page,
     total_pages,
+    has_next_page,
     expected_range,
     snapshots_history,
 ):
@@ -349,6 +507,7 @@ def test_branch_snapshots_history_paged(
         "per_page": per_page,
         "total_items": 9,
         "total_pages": total_pages,
+        "has_next_page": has_next_page,
         "items": snapshots_history[expected_range[0] : expected_range[1]],
     }
 
@@ -363,6 +522,7 @@ def test_branch_nodes_history_default_args(
         "per_page": 50,
         "total_items": 9,
         "total_pages": 1,
+        "has_next_page": False,
         "items": [
             {"id": snapshot["id"], "snapshot": snapshot, "storage": dfs}
             for snapshot, dfs in zip(snapshots_history, dfss_history)
@@ -370,11 +530,11 @@ def test_branch_nodes_history_default_args(
     }
 
 
-def test_branch_nodes_history_reverse(
+def test_branch_nodes_history_ascending(
     client_custom_settings, snapshots_history, dfss_history
 ):
     response = client_custom_settings.get(
-        "/api/branch/main/nodes_history", params={"reverse": True}
+        "/api/branch/main/nodes_history", params={"descending": False}
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -382,6 +542,7 @@ def test_branch_nodes_history_reverse(
         "per_page": 50,
         "total_items": 9,
         "total_pages": 1,
+        "has_next_page": False,
         "items": [
             {"id": snapshot["id"], "snapshot": snapshot, "storage": dfs}
             for snapshot, dfs in zip(
@@ -391,12 +552,12 @@ def test_branch_nodes_history_reverse(
     }
 
 
-def test_branch_nodes_history_reverse_paged(
+def test_branch_nodes_history_ascending_paged(
     client_custom_settings, snapshots_history, dfss_history
 ):
     response = client_custom_settings.get(
         "/api/branch/main/nodes_history",
-        params={"reverse": True, "page": 2, "per_page": 2},
+        params={"descending": False, "page": 2, "per_page": 2},
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -404,70 +565,26 @@ def test_branch_nodes_history_reverse_paged(
         "per_page": 2,
         "total_items": 9,
         "total_pages": 5,
+        "has_next_page": True,
         "items": [
             {"id": snapshot["id"], "snapshot": snapshot, "storage": dfs}
             for snapshot, dfs in zip(
-                snapshots_history[3:1:-1], dfss_history[3:1:-1]
-            )
-        ],
-    }
-
-
-@pytest.mark.skip("Global reverse not implemented yet for local storage")
-def test_branch_nodes_history_global_reverse(
-    client_custom_settings, snapshots_history, dfss_history
-):
-    response = client_custom_settings.get(
-        "/api/branch/main/nodes_history", params={"global_reverse": True}
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "page": 1,
-        "per_page": 50,
-        "total_items": 9,
-        "total_pages": 1,
-        "items": [
-            {"id": snapshot["id"], "snapshot": snapshot, "storage": dfs}
-            for snapshot, dfs in zip(
-                snapshots_history[::-1], dfss_history[::-1]
-            )
-        ],
-    }
-
-
-@pytest.mark.skip("Global reverse not implemented yet for local storage")
-def test_branch_nodes_history_global_reverse_paged(
-    client_custom_settings, snapshots_history, dfss_history
-):
-    response = client_custom_settings.get(
-        "/api/branch/main/nodes_history",
-        params={"global_reverse": True, "page": 2, "per_page": 2},
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "page": 2,
-        "per_page": 2,
-        "total_items": 9,
-        "total_pages": 5,
-        "items": [
-            {"id": snapshot["id"], "snapshot": snapshot, "storage": dfs}
-            for snapshot, dfs in zip(
-                snapshots_history[7:5:-1], dfss_history[7:5:-1]
+                snapshots_history[6:4:-1], dfss_history[6:4:-1]
             )
         ],
     }
 
 
 @pytest.mark.parametrize(
-    "page, per_page, total_pages, expected_range",
+    "page, per_page, total_pages, has_next_page, expected_range",
     (
-        (1, 3, 3, (0, 3)),
-        (2, 3, 3, (3, 6)),
-        (3, 3, 3, (6, 9)),
-        (4, 3, 3, (0, 0)),
-        (1, 2, 5, (0, 2)),
-        (5, 2, 5, (8, 9)),
-        (1, 9, 1, (0, 9)),
+        (1, 3, 3, True, (0, 3)),
+        (2, 3, 3, True, (3, 6)),
+        (3, 3, 3, False, (6, 9)),
+        (4, 3, 3, False, (0, 0)),
+        (1, 2, 5, True, (0, 2)),
+        (5, 2, 5, False, (8, 9)),
+        (1, 9, 1, False, (0, 9)),
     ),
 )
 def test_branch_nodes_history_paged(
@@ -477,6 +594,7 @@ def test_branch_nodes_history_paged(
     page,
     per_page,
     total_pages,
+    has_next_page,
     expected_range,
 ):
     response = client_custom_settings.get(
@@ -492,6 +610,7 @@ def test_branch_nodes_history_paged(
         "per_page": per_page,
         "total_items": 9,
         "total_pages": total_pages,
+        "has_next_page": has_next_page,
         "items": [
             {"id": snapshot["id"], "snapshot": snapshot, "storage": dfs}
             for _, (snapshot, dfs) in filter(
