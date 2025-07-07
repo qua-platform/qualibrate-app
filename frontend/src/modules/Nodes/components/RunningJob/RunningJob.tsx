@@ -8,20 +8,13 @@ import { RunningJobParameters } from "./RunningJobParameters";
 import ExpandCollapseIcon from "../../../../ui-lib/Icons/ExpandCollapseIcon";
 
 export const RunningJob: React.FC = () => {
-  const {
-    runningNodeInfo,
-    setRunningNodeInfo,
-    updateAllButtonPressed,
-    setUpdateAllButtonPressed,
-    lastRunStatusNode,
-  } = useNodesContext();
+  const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed, runStatus } = useNodesContext();
 
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <div className={styles.wrapper} data-testid="running-job-wrapper">
-      {lastRunStatusNode !== null && <RunningJobNodeProgressTracker />}
-      
+      {runStatus?.node?.status !== undefined && <RunningJobNodeProgressTracker />}
       <div className={styles.parameterStatesWrapper}>
         <div className={styles.parameterColumnWrapper}>
           <RunningJobParameters isExpanded={isExpanded} />
