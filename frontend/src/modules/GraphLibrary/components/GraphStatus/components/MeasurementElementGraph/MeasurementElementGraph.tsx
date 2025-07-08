@@ -3,9 +3,6 @@ import styles from "./MeasurementElementGraph.module.scss";
 import CytoscapeGraph from "../../../CytoscapeGraph/CytoscapeGraph";
 import cytoscape from "cytoscape";
 import { LastRunInfo } from "../../../../context/GraphContext";
-import { CircularProgress } from "@mui/material";
-import { SnapshotsApi } from "../../../../../Snapshots/api/SnapshotsApi";
-import BlueButton from "../../../../../../ui-lib/components/Button/BlueButton";
 import { classNames } from "../../../../../../utils/classnames";
 
 interface IProps {
@@ -27,25 +24,6 @@ export const MeasurementElementGraph: React.FC<IProps> = ({ workflowGraphElement
   }, [lastRunInfo?.workflowName]);
 
   const isRunning = lastRunInfo?.active;
-
-  const graphProgressMessage =
-    lastRunInfo?.nodesCompleted !== undefined &&
-    lastRunInfo?.nodesCompleted !== null &&
-    lastRunInfo?.nodesTotal !== undefined &&
-    lastRunInfo?.nodesTotal !== null
-      ? `${lastRunInfo?.nodesCompleted}/${lastRunInfo?.nodesTotal} node${lastRunInfo?.nodesCompleted > 1 ? "s" : ""} completed`
-      : "";
-  const runDurationMessage = lastRunInfo?.runDuration ? `${lastRunInfo?.runDuration}s` : undefined;
-  const statusMessage = lastRunInfo?.error
-    ? "error"
-    : lastRunInfo?.active
-      ? "running"
-      : lastRunInfo?.status !== "error"
-        ? "finished"
-        : lastRunInfo.status;
-  const handleStopClick = () => {
-    SnapshotsApi.stopNodeRunning();
-  };
 
   return (
     <div className={styles.wrapper}>
