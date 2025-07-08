@@ -1,17 +1,16 @@
-@use "../../../assets/styles/variables.scss";
-@use "../../../assets/styles/_base.scss";
+@use "../../../../assets/styles/variables.scss";
+@use "../../../../assets/styles/_base.scss";
 
 .graphCardWrapper {
   display: flex;
   align-items: center;
   padding: 8px 0;
   border-radius: 46px;
-  width: 718px;
+  width: 782px;
   height: 50px;
   gap: 12px;
   font-family: Roboto, sans-serif;
   font-size: 14px;
-  font-weight: 500;
 }
 
 .defaultGraphCardContent {
@@ -42,7 +41,6 @@
 }
 
 .pending {
-  background-color: transparent;
   border: 1px solid #42424C;
 }
 
@@ -76,15 +74,15 @@
 
 .graphTitleDefault {
   color: #a0a0af;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .graphTitle {
-  font-size: 13px;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 240px; 
+  max-width: 245px; 
 }   
 
 .graphStatusRow {
@@ -94,7 +92,6 @@
 }
 
 .statusText {
-  font-size: 12px;
   border-radius: 6px;
   text-transform: capitalize;
 }
@@ -125,13 +122,10 @@
   font-family: Roboto, sans-serif;
   color: #3CDEF8;
   font-weight: 500;
-  font-size: 12px;
   margin-top: 2px;
 }
 
 .nodeCount {
-  font-size: 0.8rem;
-  font-size: 12px;
   font-weight: 400;
   color: #A5ACB6;
   font-family: Roboto, sans-serif;

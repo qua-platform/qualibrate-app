@@ -1,32 +1,22 @@
 import React from "react";
-import styles from "./styles/TitleBarTooltipContent.module.scss";
-import { LastRunStatusGraphResponseDTO } from "./TitleBarMenu";
-import { formatDate } from "../Nodes/components/NodeElement/NodeElement";
+import styles from "../styles/TitleBarTooltipContent.module.scss";
+import { capitalize, formatDate, formatTime } from "../helpers";
+import { GraphItem } from "../../../contexts/WebSocketContext";
 
 interface GraphTooltipContentProps {
-  graph: LastRunStatusGraphResponseDTO;
+  graph: GraphItem;
 }
-
-const formatTime = (sec: number | null) => {
-  if (sec === null) return "";
-  const h = Math.floor(sec / 3600);
-  const m = Math.floor((sec % 3600) / 60);
-  const s = Math.floor(sec % 60);
-  return `${h ? `${h}h ` : ""}${m ? `${m}m ` : ""}${s}s`;
-};
 
 const TitleBarGraphTooltipContent: React.FC<GraphTooltipContentProps> = ({ graph }) => {
   return (
     <div className={styles.tooltipContent}>
       <div className={styles.tooltipRow}>
         <div className={styles.tooltipLabel}>Run start:</div>
-        <div className={styles.tooltipValue}>
-          {graph.run_start ? formatDate(new Date(graph.run_start)) : "—"}
-        </div>
+        <div className={styles.tooltipValue}>{formatDate(graph.run_start)}</div>
       </div>
       <div className={styles.tooltipRow}>
         <div className={styles.tooltipLabel}>Status:</div>
-        <div className={styles.tooltipValue}>{graph.status.charAt(0).toUpperCase() + graph.status.slice(1)}</div>
+        <div className={styles.tooltipValue}>{capitalize(graph.status)}</div>
       </div>
       <div className={styles.tooltipRow}>
         <div className={styles.tooltipLabel}>Run duration:</div>
