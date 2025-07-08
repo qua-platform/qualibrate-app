@@ -34,7 +34,7 @@ export const MeasurementElementGraph: React.FC<IProps> = ({ workflowGraphElement
             isRunning ? styles.blinkingYellow : lastRunInfo?.active === false ? styles.solidGreen : styles.defaultBlue
           )}
         />
-        <span className={styles.label}>Active Calibration Graph:</span>
+        <span className={styles.label}>Graph:</span>
         <span className={styles.tuneUpName}>{tuneUpName || "Unknown Tune-up"}</span>
       </div>
 
