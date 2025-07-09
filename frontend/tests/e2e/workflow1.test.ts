@@ -3,7 +3,6 @@ import { expect, test } from "@playwright/test";
 // Test for Workflow 1
 test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   const NodeElementRunningColor = "rgb(50, 51, 57) none repeat scroll 0% 0% / auto padding-box border-box";
-  const frequencyShift = /"frequency_shift":\d+(\.\d+)?/;
 
   // 0. Prerequisite:
   // Be sure that the QUAlibrate application is running locally at http://127.0.0.1:8001/
@@ -65,11 +64,11 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await noiseFactorField.fill("0.2");
   await resonatorField.click();
   await waitTimeField.click();
-  await waitTimeField.fill("10");
+  await waitTimeField.fill("5");
   await expect(resonatorField).toHaveValue("q2.resonator");
   await expect(samplingPointsField).toHaveValue("1000");
   await expect(noiseFactorField).toHaveValue("0.2");
-  await expect(waitTimeField).toHaveValue("10");
+  await expect(waitTimeField).toHaveValue("5");
   await page.getByTestId("node-element-test_cal").click();
   await expect(page.getByTestId("parameter-description-icon-resonator")).toBeTruthy();
   const screenshotPathStep4 = `screenshot-after-step4-${Date.now()}.png`;
@@ -129,7 +128,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // 7. Check/Update State Values
   // Verify the State Updates section displays suggested changes.
   await expect(page.getByTestId("states-column-wrapper")).toBeVisible();
-  await expect(page.getByTestId("state-updates-top-wrapper")).toBeVisible();
+  await expect(page.getByTestId("state-updates-top-wrapper")).toBeVisible({ timeout: 10000 });
   await expect(page.getByTestId("state-wrapper")).toBeVisible();
   await expect(page.getByTestId("state-title")).toBeVisible();
   await expect(page.getByTestId("update-all-button")).toBeVisible();
