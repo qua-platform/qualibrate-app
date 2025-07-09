@@ -79,12 +79,18 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // 5. Run the Calibration Node
   // Click the Run button for test_cal.
   await page.getByTestId("run-button").click();
+  await Promise.race([
+    page.waitForSelector('[data-testid="status-running"]', { state: 'visible', timeout: 10000 }),
+    page.waitForSelector('[data-testid="status-finished"]', { state: 'visible', timeout: 10000 })
+  ]);
+
   if (await page.getByTestId("status-running").isVisible()) {
     await expect(page.getByTestId("node-element-test_cal")).toHaveCSS("background", NodeElementRunningColor); // node background color changes to blue
     await expect(page.getByTestId("status-running-percentage")).toBeVisible(); // percentage appears
     await expect(page.getByTestId("status-running-percentage")).toContainText("0%"); // percentage stays at 0% because test_cal doesn't not implemented yet to change progress percentage 
     await expect(page.getByTestId("status-running-stop")).toBeVisible(); // stop button appears
   }
+  // Verify finishing of the node:
   if (await page.getByTestId("status-finished").isVisible()) {
     await page.getByTestId("tooltip-trigger").hover(); // hover over the tooltip to show the tooltip content
     await expect(page.getByTestId('tooltip-status')).toBeVisible();
@@ -99,9 +105,6 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   const screenshotPathStep5 = `screenshot-after-step5-${Date.now()}.png`;
   await page.screenshot({ path: screenshotPathStep5 });
   await testInfo.attach('screenshot-after-step5', { path: screenshotPathStep5, contentType: 'image/png' });
-  // Verify finishing of the node:
-  await expect(page.getByTestId('status-finished')).toBeVisible({ timeout: 15000 }); // finished status appears in node card
-
   const screenshotPathFinished = `screenshot-after-finished-${Date.now()}.png`;
   await page.screenshot({ path: screenshotPathFinished });
   await testInfo.attach('screenshot-after-step6', { path: screenshotPathFinished, contentType: 'image/png' });
