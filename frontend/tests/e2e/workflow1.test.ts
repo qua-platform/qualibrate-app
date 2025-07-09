@@ -61,6 +61,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await samplingPointsField.fill("1000");
   await noiseFactorField.click();
   await noiseFactorField.fill("0.2");
+  await resonatorField.click();
   await expect(resonatorField).toHaveValue("q2.resonator");
   await expect(samplingPointsField).toHaveValue("1000");
   await expect(noiseFactorField).toHaveValue("0.2");
