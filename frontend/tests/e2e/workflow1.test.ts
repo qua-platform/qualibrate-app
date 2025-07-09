@@ -15,7 +15,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
 
   // 2. Verify Calibration Nodes
   // Check that at least one calibration node (e.g., test_cal) is displayed in the Node Library.
-  await expect(page.getByTestId("nodes-and-job-wrapper")).toBeVisible(); // Node page loaded sucessfully
+  await expect(page.getByTestId("nodes-and-job-wrapper")).toBeVisible({ timeout: 1000 }); // Node page loaded sucessfully
   await expect(page.getByTestId("nodes-page-wrapper")).toBeVisible(); // Node page loaded sucessfully
   // await expect(page.getByTestId('title-wrapper')).toBeVisible(); // title wrapper is visible
   // await expect(page.getByTestId('title-wrapper')).toContainText('Run calibration node'); // title is correct
@@ -23,7 +23,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await expect(page.getByTestId("menu-item-nodes")).toBeVisible(); // node library is showing as the landing page
   await expect(page.getByTestId("node-list-wrapper")).toBeVisible(); // node library list of nodes are visible
   await expect(page.getByTestId("node-element-test_cal")).toBeVisible(); // test_cal 'calibration node tab' is visible in the node library
-  await expect(page.getByTestId("title-or-name-test_cal")).toBeVisible(); // test_cal label is visible in the node library
+  await expect(page.getByTestId("title-or-name-test_cal")).toBeVisible({ timeout: 1000 }); // test_cal label is visible in the node library
   // Check that the test_cal node has no visible parameters
   const testCalNode = page.getByTestId("node-element-test_cal");
   await expect(testCalNode.getByTestId("node-parameters-wrapper")).toBeHidden();
@@ -36,7 +36,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await page.getByTestId("node-element-test_cal").click();
   await page.waitForTimeout(1000);
   // Check that the 3 different labels exist
-  await expect(testCalNode.getByTestId("node-parameters-wrapper")).toBeVisible();
+  await expect(testCalNode.getByTestId("node-parameters-wrapper")).toBeVisible({ timeout: 1000 });
   await expect(testCalNode.getByTestId("parameter-values-resonator")).toBeVisible();
   await expect(testCalNode.getByTestId("parameter-values-sampling_points")).toBeVisible();
   await expect(testCalNode.getByTestId("parameter-values-noise_factor")).toBeVisible();
@@ -74,7 +74,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // Click the Run button for test_cal.
   await page.getByTestId("run-button").click();
   await expect(page.getByTestId("node-element-test_cal")).toHaveCSS("background", NodeElementRunningColor); // node background color changes to blue
-  await expect(page.getByTestId("status-running")).toBeVisible(); // running status appears in node card
+  await expect(page.getByTestId("status-running")).toBeVisible({ timeout: 1000 }); // running status appears in node card
   await expect(page.getByTestId("status-running-percentage")).toBeVisible(); // percentage appears
   await expect(page.getByTestId("status-running-percentage")).toContainText("0%"); // percentage stays at 0% because test_cal doesn't not implemented yet to change progress percentage 
   await expect(page.getByTestId("status-running-stop")).toBeVisible(); // stop button appears
@@ -98,7 +98,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await page.screenshot({ path: screenshotPathFinished });
   await testInfo.attach('screenshot-after-step6', { path: screenshotPathFinished, contentType: 'image/png' });
   // parameters here match parameters in node parameter feilds
-  await expect(page.getByTestId("parameters-wrapper")).toBeVisible();
+  await expect(page.getByTestId("parameters-wrapper")).toBeVisible({ timeout: 1000 });
   await expect(page.getByTestId("parameter-title")).toContainText("Parameters");
   await expect(page.getByTestId("parameters-list")).toBeVisible();
   await expect(page.getByTestId("parameter-item-resonator")).toBeVisible();
@@ -140,7 +140,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await expect(page.getByTestId("state-update-wrapper-#/channels/ch2/intermediate_frequency")).toBeVisible();
   const ch1 = page.getByTestId("state-update-value-wrapper-0");
   const ch2 = page.getByTestId("state-update-value-wrapper-1");
-  await expect(ch1).toBeVisible();
+  await expect(ch1).toBeVisible({ timeout: 1000 });
   await expect(ch2).toBeVisible();
   // Update the state value for ch1 to 20000000
   await expect(ch1.getByTestId("value-container")).toContainText("100000000");
@@ -153,7 +153,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   ch1.getByTestId("update-before-icon").click(); // Click the icon to update the state
   await expect(ch1.getByTestId("update-after-icon")).toBeVisible(); 
   // Update the state value for ch2 to [1,2,4,5]
-  await expect(ch2.getByTestId("value-input")).toBeVisible();
+  await expect(ch2.getByTestId("value-input")).toBeVisible({ timeout: 1000 });
   await expect(ch2.getByTestId("value-container")).toContainText("80000000");
   await expect(ch2.getByTestId("value-input")).toHaveValue("[1,2,4]");
   ch2.getByTestId("value-input").click();
