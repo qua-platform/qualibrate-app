@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 // Test for Workflow 1
 test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
-  const NodeElementColorRunning = "linear-gradient(0deg, rgba(44, 203, 229, 0.06) 0%, rgba(44, 203, 229, 0.06) 100%) repeat scroll 0% 0% / auto padding-box border-box, rgb(50, 51, 57) none repeat scroll 0% 0% / auto padding-box border-box";
+  const NodeElementRunningColor = "rgb(50, 51, 57) none repeat scroll 0% 0% / auto padding-box border-box";
   const frequencyShift = /"frequency_shift":\d+(\.\d+)?/;
 
   // 0. Prerequisite:
@@ -73,7 +73,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // 5. Run the Calibration Node
   // Click the Run button for test_cal.
   await page.getByTestId("run-button").click();
-  await expect(page.getByTestId("node-element-test_cal")).toHaveCSS("background", NodeElementColorRunning); // node background color changes to blue
+  await expect(page.getByTestId("node-element-test_cal")).toHaveCSS("background", NodeElementRunningColor); // node background color changes to blue
   await expect(page.getByTestId("status-running")).toBeVisible(); // running status appears in node card
   await expect(page.getByTestId("status-running-percentage")).toBeVisible(); // percentage appears
   await expect(page.getByTestId("status-running-percentage")).toContainText("0%"); // percentage stays at 0% because test_cal doesn't not implemented yet to change progress percentage 
