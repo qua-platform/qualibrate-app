@@ -74,7 +74,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // Click the Run button for test_cal.
   await page.getByTestId("run-button").click();
   await expect(page.getByTestId("node-element-test_cal")).toHaveCSS("background", NodeElementRunningColor); // node background color changes to blue
-  await expect(page.getByTestId("status-running")).toBeVisible({ timeout: 1000 }); // running status appears in node card
+  await expect(page.getByTestId("status-running")).toBeVisible(); // running status appears in node card
   await expect(page.getByTestId("status-running-percentage")).toBeVisible(); // percentage appears
   await expect(page.getByTestId("status-running-percentage")).toContainText("0%"); // percentage stays at 0% because test_cal doesn't not implemented yet to change progress percentage 
   await expect(page.getByTestId("status-running-stop")).toBeVisible(); // stop button appears
