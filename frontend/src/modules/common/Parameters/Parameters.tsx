@@ -78,7 +78,7 @@ export const Parameters: React.FC<IProps> = ({
                       placement="left-start"
                       arrow
                     >
-                      <span>
+                      <span data-testid={`parameter-description-icon-${key}`}>
                         <InfoIcon />
                       </span>
                     </Tooltip>

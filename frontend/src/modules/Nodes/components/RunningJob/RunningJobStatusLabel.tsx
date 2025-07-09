@@ -13,8 +13,8 @@ export const RunningJobStatusLabel: React.FC<{ status?: string; percentage?: num
   } else if (status === "running") {
     return (
       <>
-        <div className={styles.percentage}>{Math.round(percentage)}%</div>
-        <button className={styles.stopButton} onClick={onStop} title="Stop Node"> <StopIcon /> </button>
+        <div className={styles.percentage} data-testid="status-running-percentage">{Math.round(percentage)}%</div>
+        <button className={styles.stopButton} onClick={onStop} title="Stop Node" data-testid="status-running-stop"> <StopIcon /> </button>
       </>
     );
   }

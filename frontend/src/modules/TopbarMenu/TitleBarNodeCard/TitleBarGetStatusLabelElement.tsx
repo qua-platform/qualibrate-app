@@ -7,14 +7,14 @@ export const getStatusLabelElement = (status: string | undefined, currentAction?
   const normalizedStatus = status?.toLowerCase();
   if (normalizedStatus === "running") {
     return (
-      <div className={classNames(styles.statusContainer, styles.statusRunning)}>
+      <div className={classNames(styles.statusContainer, styles.statusRunning)} data-testid="status-running">
         Running
         <span className={styles.statusRunningValue}>{currentAction ? `: ${currentAction}` : ""}</span>
       </div>
     );
   }
   if (normalizedStatus === "finished") {
-    return <div className={classNames(styles.statusContainer, styles.statusFinished)}>Finished</div>;
+    return <div className={classNames(styles.statusContainer, styles.statusFinished)} data-testid="status-finished">Finished</div>;
   }
   if (normalizedStatus === "error") {
     return <div className={classNames(styles.statusContainer, styles.statusError)}>Error</div>;

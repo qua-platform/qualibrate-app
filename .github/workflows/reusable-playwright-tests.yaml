@@ -186,7 +186,7 @@ jobs:
       # Step 16: Run Playwright tests
       - name: Run Playwright Tests
         working-directory: ./qualibrate-app/frontend/tests/e2e
-        run: npx playwright test
+        run: npx playwright test --workers=1
 
       # Step 17: Upload Playwright Report
       - name: Upload Playwright Report
