@@ -87,7 +87,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
     await expect(page.getByTestId("status-running-stop")).toBeVisible(); // stop button appears
   }
   // Verify finishing of the node:
-  if (await page.getByTestId("status-finished").isVisible()) {
+  if (await page.getByTestId("status-finished").isVisible({ timeout: 15000 })) {
     console.log("Finished status appeared");
     await page.getByTestId("tooltip-trigger").hover(); // hover over the tooltip to show the tooltip content
     await expect(page.getByTestId('tooltip-status')).toBeVisible();
@@ -128,6 +128,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // 7. Check/Update State Values
   // Verify the State Updates section displays suggested changes.
   await expect(page.getByTestId("states-column-wrapper")).toBeVisible();
+  await expect(page.getByTestId("status-finished")).toBeVisible({ timeout: 15000 });
   await expect(page.getByTestId("state-updates-top-wrapper")).toBeVisible({ timeout: 10000 });
   await expect(page.getByTestId("state-wrapper")).toBeVisible();
   await expect(page.getByTestId("state-title")).toBeVisible();
