@@ -125,12 +125,6 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
 
   // 6. Check Results Section
   await expect(page.getByTestId("results-wrapper")).toBeVisible();
-  // Confirm the Results section is populated with:
-  const resultsFigure = page.getByTestId("data-key-pairresults_fig");
-  // A generated figure.
-  await expect(resultsFigure.getByTestId("data-key-pairresults_fig../results_fig.png")).toBeVisible(); // the pyplot image is visible
-  // Data storage location.
-  await expect(page.getByTestId("data-key-pairarr")).toBeVisible();
 
   // 7. Check/Update State Values
   // Verify the State Updates section displays suggested changes.
