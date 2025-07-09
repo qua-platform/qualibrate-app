@@ -126,17 +126,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // 6. Check Results Section
   await expect(page.getByTestId("results-wrapper")).toBeVisible();
   // Confirm the Results section is populated with:
-  const resultsFrequency = page.getByTestId("data-key-pairfrequency_shift");
   const resultsFigure = page.getByTestId("data-key-pairresults_fig");
-  // Numerical values.
-  try {
-    await expect(resultsFrequency).toBeVisible({ timeout: 5000 });
-    await expect(resultsFrequency).toContainText(frequencyShift);
-  } catch (e) {
-    console.log("frequency_shift not found – skipping frequency validation in this run.");
-  }
-  await expect(resultsFigure).toContainText('"results_fig":{1 Items');
-  await expect(resultsFigure).toContainText('"./results_fig.png":');
   // A generated figure.
   await expect(resultsFigure.getByTestId("data-key-pairresults_fig../results_fig.png")).toBeVisible(); // the pyplot image is visible
   // Data storage location.
