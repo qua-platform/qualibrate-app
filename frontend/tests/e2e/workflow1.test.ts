@@ -129,6 +129,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   const resultsFrequency = page.getByTestId("data-key-pairfrequency_shift");
   const resultsFigure = page.getByTestId("data-key-pairresults_fig");
   // Numerical values.
+  await page.waitForSelector('[data-testid="data-key-pairfrequency_shift"]', { state: 'visible', timeout: 15000 });
   await expect(resultsFrequency).toBeVisible();
   await expect(resultsFrequency).toContainText(frequencyShift);
   await expect(resultsFigure).toContainText('"results_fig":{1 Items');
@@ -158,6 +159,8 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   ch1.getByTestId("value-input").fill("20000000");
   await expect(ch1.getByTestId("update-before-icon")).toBeVisible();
   await resonatorField.click(); // Clicking (anywhere) away from input feild to spawn undo button
+  await expect(ch1.getByTestId("undo-icon-wrapper")).toBeVisible();
+  await resonatorField.click(); // Clicking (anywhere) away from input feild to spawn undo button
   ch1.getByTestId("update-before-icon").click(); // Click the icon to update the state
   await expect(ch1.getByTestId("update-after-icon")).toBeVisible(); 
   // Update the state value for ch2 to [1,2,4,5]
@@ -168,6 +171,8 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   ch2.getByTestId("value-input").fill("[1,2,4,5]");
   await resonatorField.click(); // Clicking (anywhere) away from input feild to spawn undo button
   await expect(ch2.getByTestId("update-before-icon")).toBeVisible();
+  await resonatorField.click(); // Clicking (anywhere) away from input feild to spawn undo button
+  await expect(ch2.getByTestId("undo-icon-wrapper")).toBeVisible();
   ch2.getByTestId("update-before-icon").click(); // Click the icon to update the state
   await expect(ch2.getByTestId("update-after-icon")).toBeVisible();
 });
