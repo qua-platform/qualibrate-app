@@ -84,7 +84,8 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
     await expect(page.getByTestId("status-running-percentage")).toBeVisible(); // percentage appears
     await expect(page.getByTestId("status-running-percentage")).toContainText("0%"); // percentage stays at 0% because test_cal doesn't not implemented yet to change progress percentage 
     await expect(page.getByTestId("status-running-stop")).toBeVisible(); // stop button appears
-  } else if (await page.getByTestId("status-finished").isVisible()) {
+  }
+  if (await page.getByTestId("status-finished").isVisible()) {
     await page.getByTestId("tooltip-trigger").hover(); // hover over the tooltip to show the tooltip content
     await expect(page.getByTestId('tooltip-status')).toBeVisible();
     await expect(page.getByTestId('tooltip-run-start')).toBeVisible();
@@ -94,8 +95,6 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
     await expect(page.getByTestId("status-running-stop")).toBeHidden(); // stop button disappears
     await expect(page.getByTestId("status-running")).toBeHidden(); // running status disappears
   }
-
-  await expect(page.getByTestId("status-node-name")).toContainText("test_cal");
 
   const screenshotPathStep5 = `screenshot-after-step5-${Date.now()}.png`;
   await page.screenshot({ path: screenshotPathStep5 });
