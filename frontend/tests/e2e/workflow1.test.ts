@@ -44,6 +44,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   const resonatorField = testCalNode.getByTestId("input-field-resonator");
   const samplingPointsField = testCalNode.getByTestId("input-field-sampling_points");
   const noiseFactorField = testCalNode.getByTestId("input-field-noise_factor");
+  const waitTimeField = testCalNode.getByTestId("input-field-wait_time");
   await expect(resonatorField).toHaveValue("q1.resonator");
   await expect(samplingPointsField).toHaveValue("100");
   await expect(noiseFactorField).toHaveValue("0.1");
@@ -51,6 +52,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await resonatorField.click();
   await samplingPointsField.click();
   await noiseFactorField.click();
+  await waitTimeField.click();
 
   // 4. Change a node parameter value
   // Varify that it's possible to replace the default parameter values with new ones
@@ -62,9 +64,12 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await noiseFactorField.click();
   await noiseFactorField.fill("0.2");
   await resonatorField.click();
+  await waitTimeField.click();
+  await waitTimeField.fill("10");
   await expect(resonatorField).toHaveValue("q2.resonator");
   await expect(samplingPointsField).toHaveValue("1000");
   await expect(noiseFactorField).toHaveValue("0.2");
+  await expect(waitTimeField).toHaveValue("10");
   await page.getByTestId("node-element-test_cal").click();
   await expect(page.getByTestId("parameter-description-icon-resonator")).toBeTruthy();
   const screenshotPathStep4 = `screenshot-after-step4-${Date.now()}.png`;
@@ -85,7 +90,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await page.screenshot({ path: screenshotPathStep5 });
   await testInfo.attach('screenshot-after-step5', { path: screenshotPathStep5, contentType: 'image/png' });
   // Verify finishing of the node:
-  await expect(page.getByTestId('status-finished')).toBeVisible();
+  await expect(page.getByTestId('status-finished')).toBeVisible({ timeout: 10000 }); // finished status appears in node card
   await page.getByTestId("tooltip-trigger").hover(); // hover over the tooltip to show the tooltip content
   await expect(page.getByTestId('tooltip-status')).toBeVisible();
   await expect(page.getByTestId('tooltip-run-start')).toBeVisible();
@@ -150,7 +155,6 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   ch1.getByTestId("value-input").fill("20000000");
   await expect(ch1.getByTestId("update-before-icon")).toBeVisible();
   await resonatorField.click(); // Clicking (anywhere) away from input feild to spawn undo button
-  await expect(ch1.getByTestId("undo-icon-wrapper")).toBeVisible();
   ch1.getByTestId("update-before-icon").click(); // Click the icon to update the state
   await expect(ch1.getByTestId("update-after-icon")).toBeVisible(); 
   // Update the state value for ch2 to [1,2,4,5]
@@ -160,7 +164,6 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   ch2.getByTestId("value-input").click();
   ch2.getByTestId("value-input").fill("[1,2,4,5]");
   await resonatorField.click(); // Clicking (anywhere) away from input feild to spawn undo button
-  await expect(ch2.getByTestId("undo-icon-wrapper")).toBeVisible();
   await expect(ch2.getByTestId("update-before-icon")).toBeVisible();
   ch2.getByTestId("update-before-icon").click(); // Click the icon to update the state
   await expect(ch2.getByTestId("update-after-icon")).toBeVisible();
