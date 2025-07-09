@@ -19,7 +19,7 @@ const TitleBarNodeCard: React.FC<IProps> = ({ node }) => {
 
   return (
     <Tooltip title={<TitleBarTooltipContent node={node} />} placement="bottom" componentsProps={{ tooltip: { sx: DEFAULT_TOOLTIP_SX } }}>
-      <div onClick={() => openTab("nodes")} className={styles.hoverRegion}>
+      <div onClick={() => openTab("nodes")} className={styles.hoverRegion} data-testid="tooltip-trigger">
         <div className={classNames(styles.wrapper, getWrapperClass(node.status, styles))}>
           <div className={styles.indicatorWrapper}>
             {StatusIndicator(

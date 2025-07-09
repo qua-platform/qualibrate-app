@@ -23,7 +23,7 @@ export const RunningJobNodeProgressTracker: React.FC = () => {
         <div className={styles.leftStatus}>
           <RunningJobStatusVisuals status={runStatus?.node?.status} percentage={Math.round(runStatus?.node?.percentage_complete ?? 0)} />
           <div className={styles.nodeText}>
-            Node: <span className={styles.nodeName}>{runStatus?.node?.name || "Unnamed"}</span>
+            Node: <span className={styles.nodeName} data-testid="status-node-name">{runStatus?.node?.name || "Unnamed"}</span>
           </div>
         </div>
         <div className={styles.rightStatus}>

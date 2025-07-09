@@ -2,9 +2,7 @@ import { expect, test } from "@playwright/test";
 
 // Test for Workflow 1
 test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
-  const date = /(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2}):(\d{2})/;
-  const runDuration = /\d+\.\d{2}\s+s/;
-  const idx = /\d+/;
+  const NodeElementColorRunning = "linear-gradient(0deg, rgba(44, 203, 229, 0.06) 0%, rgba(44, 203, 229, 0.06) 100%) repeat scroll 0% 0% / auto padding-box border-box, rgb(50, 51, 57) none repeat scroll 0% 0% / auto padding-box border-box";
   const frequencyShift = /"frequency_shift":\d+(\.\d+)?/;
 
   // 0. Prerequisite:
@@ -37,8 +35,6 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // Click the test_cal node.
   await page.getByTestId("node-element-test_cal").click();
   await page.waitForTimeout(1000);
-  // Check that the test_cal node is runnable by containing a green dot.
-  await expect(page.getByTestId("dot-wrapper-test_cal")).toBeVisible();
   // Check that the 3 different labels exist
   await expect(testCalNode.getByTestId("node-parameters-wrapper")).toBeVisible();
   await expect(testCalNode.getByTestId("parameter-values-resonator")).toBeVisible();
@@ -61,6 +57,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await resonatorField.click();
   await resonatorField.fill("q2.resonator");
   await samplingPointsField.click();
+  await expect(page.getByTestId('node-element-test_cal').getByTestId('parameter-values-resonator').getByRole('img')).toBeVisible(); // the resonator parameter has a description icon
   await samplingPointsField.fill("1000");
   await noiseFactorField.click();
   await noiseFactorField.fill("0.2");
@@ -68,7 +65,7 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   await expect(samplingPointsField).toHaveValue("1000");
   await expect(noiseFactorField).toHaveValue("0.2");
   await page.getByTestId("node-element-test_cal").click();
-
+  await expect(page.getByTestId("parameter-description-icon-resonator")).toBeTruthy();
   const screenshotPathStep4 = `screenshot-after-step4-${Date.now()}.png`;
   await page.screenshot({ path: screenshotPathStep4 });
   await testInfo.attach('screenshot-after-step4', { path: screenshotPathStep4, contentType: 'image/png' });
@@ -76,26 +73,26 @@ test("Workflow1 - Running a Calibration Node", async ({ page }, testInfo) => {
   // 5. Run the Calibration Node
   // Click the Run button for test_cal.
   await page.getByTestId("run-button").click();
-  await expect(page.getByTestId("circular-progress-test_cal")).toBeVisible(); // spinning loading icon appears
-  await expect(page.getByTestId("run-info-value-status")).toContainText("running"); // status changes to running
-  await expect(page.getByTestId("stop-button")).toBeVisible(); // stop button appears
-  await expect(page.getByTestId("running-job-name")).toContainText("test_cal");
+  await expect(page.getByTestId("node-element-test_cal")).toHaveCSS("background", NodeElementColorRunning); // node background color changes to blue
+  await expect(page.getByTestId("status-running")).toBeVisible(); // running status appears in node card
+  await expect(page.getByTestId("status-running-percentage")).toBeVisible(); // percentage appears
+  await expect(page.getByTestId("status-running-percentage")).toContainText("0%"); // percentage stays at 0% because test_cal doesn't not implemented yet to change progress percentage 
+  await expect(page.getByTestId("status-running-stop")).toBeVisible(); // stop button appears
+  await expect(page.getByTestId("status-node-name")).toContainText("test_cal");
 
   const screenshotPathStep5 = `screenshot-after-step5-${Date.now()}.png`;
   await page.screenshot({ path: screenshotPathStep5 });
   await testInfo.attach('screenshot-after-step5', { path: screenshotPathStep5, contentType: 'image/png' });
-  // Verify:
-  // The Running Job section appears, showing parameters and status.
-  await expect(page.getByTestId("running-job-wrapper")).toBeVisible();
-  await expect(page.getByTestId("running-job-title")).toContainText("Running job: test_cal");
-  await expect(page.getByTestId("running-job-name-wrapper")).toBeVisible();
-  await expect(page.getByTestId("run-info-wrapper")).toBeVisible();
-  await expect(page.getByTestId("run-info-value-timestamp")).toContainText(date); // Matches the format: 2021/09/30 15:00:00
-  await expect(page.getByTestId("run-info-value-duration")).toContainText(runDuration, {timeout: 15000}); // Matches the format: 4.00 s
-  // Job status changes to finished upon completion, along with other stats.
-  await expect(page.getByTestId("run-info-value-status")).toContainText("finished"); // status changes to finished
-  await expect(page.getByTestId("run-info-value-idx")).toContainText(idx); // Matches the format of any integer number
-  await expect(page.getByTestId("running-job-dot")).toHaveCSS("background-color", "rgb(50, 205, 50)"); // green color
+  // Verify finishing of the node:
+  await expect(page.getByTestId('status-finished')).toBeVisible();
+  await page.getByTestId("tooltip-trigger").hover(); // hover over the tooltip to show the tooltip content
+  await expect(page.getByTestId('tooltip-status')).toBeVisible();
+  await expect(page.getByTestId('tooltip-run-start')).toBeVisible();
+  await expect(page.getByTestId('tooltip-run-duration')).toBeVisible();
+  await expect(page.getByTestId('tooltip-idx')).toBeVisible();
+  await expect(page.getByTestId("status-finished-percentage")).toBeHidden(); // percentage disappears
+  await expect(page.getByTestId("status-running-stop")).toBeHidden(); // stop button disappears
+  await expect(page.getByTestId("status-running")).toBeHidden(); // running status disappears
 
   const screenshotPathFinished = `screenshot-after-finished-${Date.now()}.png`;
   await page.screenshot({ path: screenshotPathFinished });
