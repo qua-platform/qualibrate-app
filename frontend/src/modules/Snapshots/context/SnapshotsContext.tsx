@@ -186,15 +186,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   // -----------------------------------------------------------
 
   const fetchOneSnapshot = (snapshotId: number, snapshotId2?: number, updateResult = true, fetchUpdate = false) => {
-    // Prevent duplicate fetches
-    if (fetchingSnapshotId === snapshotId) {
-      console.log(`Already fetching snapshot ${snapshotId}, skipping duplicate fetch.`);
-      return;
-    }
-    if (selectedSnapshotId === snapshotId && jsonData) {
-      console.log(`Snapshot ${snapshotId} is already loaded, skipping fetch.`);
-      return;
-    }
+    if (fetchingSnapshotId === snapshotId) return;
+    if (selectedSnapshotId === snapshotId && jsonData) return;
     setFetchingSnapshotId(snapshotId);
     // console.log("fetchOneSnapshot", snapshotId, snapshotId2, updateResult);
     // const fetchOneSnapshot = (snapshots: SnapshotDTO[], index: number) => {
@@ -203,7 +196,7 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
     // const index2 = selectedSnapshotId ? (selectedSnapshotId - 1 >= 0 ? selectedSnapshotId - 1 : 0) : 0;
     const id1 = (snapshotId ?? 0).toString();
     let id2 = snapshotId2 ? snapshotId2.toString() : snapshotId - 1 >= 0 ? (snapshotId - 1).toString() : "0";
-    if (!id2 || id1 === id2) id2 = "0"; // Prevent self-compare or invalid compare
+    if (id1 === id2) id2 = "0";
     SnapshotsApi.fetchSnapshot(id1)
       .then((promise: Res<SnapshotDTO>) => {
         if (updateResult) {

@@ -35,10 +35,8 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
         setLatestSnapshotId(current.id);
         if (current.id !== undefined) {
           if (prev && prev.id !== undefined && current.id !== prev.id) {
-            console.log(`Fetching snapshot ${current.id} compared to previous ${prev.id}`);
             fetchOneSnapshot(current.id, prev.id, true, true);
           } else {
-            console.log(`Fetching snapshot ${current.id} with no valid previous snapshot for comparison`);
             fetchOneSnapshot(current.id, undefined, true, true);
           }
         }
