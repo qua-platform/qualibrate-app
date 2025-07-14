@@ -12,7 +12,7 @@ interface IMeasurementHistoryListProps {
 
 export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ title = "Execution history" }) => {
   const { allMeasurements, trackLatest, setTrackLatest } = useGraphStatusContext();
-  const { trackLatestSidePanel, fetchOneSnapshot, setLatestSnapshotId, setResult, setDiffData } = useSnapshotsContext();
+  const { fetchOneSnapshot, setLatestSnapshotId } = useSnapshotsContext();
   const { setSelectedNodeNameInWorkflow } = useGraphContext();
   const { setSelectedItemName } = useSelectionContext();
   const [latestId, setLatestId] = useState<number | undefined>();
@@ -28,29 +28,27 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
         const element = allMeasurements[0];
         // if (element) {
 
-        if (element && (element.id !== latestId || element.metadata?.name !== latestName)) {
-          setLatestId(element.id);
-          setLatestName(element.metadata?.name);
-          setSelectedItemName(element?.metadata?.name);
-
-          setSelectedNodeNameInWorkflow(allMeasurements[0]?.metadata?.name);
-          if (element.id) {
-            setLatestSnapshotId(element.id);
-            if (trackLatestSidePanel) {
-              fetchOneSnapshot(element.id, element.id - 1, true, true);
-            } else {
-              fetchOneSnapshot(element.id);
+        if (allMeasurements.length > 0) {
+          const current = allMeasurements[0];
+          const prev = allMeasurements[1];
+        
+          if (current && (current.id !== latestId || current.metadata?.name !== latestName)) {
+            setLatestId(current.id);
+            setLatestName(current.metadata?.name);
+            setSelectedItemName(current.metadata?.name);
+            setSelectedNodeNameInWorkflow(current.metadata?.name);
+            setLatestSnapshotId(current.id);
+            if (current.id !== undefined) {
+              if (prev && prev.id !== undefined && current.id !== prev.id) {
+                console.log(`Fetching snapshot ${current.id} compared to previous ${prev.id}`);
+                fetchOneSnapshot(current.id, prev.id, true, true);
+              } else {
+                console.log(`Fetching snapshot ${current.id} with no valid previous snapshot for comparison`);
+                fetchOneSnapshot(current.id, undefined, true, true);
+              }
             }
-            // if (trackLatestSidePanel) {
-            //   fetchOneSnapshot(element.id, element.id - 1, true);
-            // } else {
-            //   fetchOneSnapshot(element.id);
-            // }
-          } else {
-            setResult({});
-            setDiffData({});
           }
-        }
+        }      
       }
     }
   }, [trackLatest, allMeasurements, latestId, latestName]);
