@@ -46,7 +46,7 @@ interface ISnapshotsContext {
   setFreezeLatestSnapshot: Dispatch<SetStateAction<boolean>>;
   fetchingSnapshotId: number | undefined;
   setFetchingSnapshotId: Dispatch<SetStateAction<number | undefined>>;
-};
+}
 
 export const SnapshotsContext = React.createContext<ISnapshotsContext>({
   graphIsRunning: false,
