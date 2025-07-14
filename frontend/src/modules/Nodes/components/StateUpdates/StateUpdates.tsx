@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { RunningNodeInfo, StateUpdate } from "../../context/NodesContext";
 import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 // eslint-disable-next-line css-modules/no-unused-class
@@ -20,7 +20,7 @@ export const StateUpdates: React.FC<{
 }> = ({ isExpanded, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  let timer: NodeJS.Timeout | null = null;
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { trackLatestSidePanel, fetchOneSnapshot, latestSnapshotId, secondId } = useSnapshotsContext();
 
   const handleUpdateAllClick = async (stateUpdates: StateUpdate) => {
@@ -39,15 +39,27 @@ export const StateUpdates: React.FC<{
     }
   };
 
-  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
-    if (timer) clearTimeout(timer);
+  const handlePointerEnter = useCallback((event: React.PointerEvent<HTMLElement>) => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
     setAnchorEl(event.currentTarget);
     setTooltipOpen(true);
-  };
+  }, []);
 
-  const handleMouseLeave = () => {
-    timer = setTimeout(() => setTooltipOpen(false), 100);
-  };
+  const handlePointerLeave = useCallback(() => {
+    closeTimer.current = setTimeout(() => {
+      setTooltipOpen(false);
+      closeTimer.current = null;
+    }, 100);
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    };
+  }, []);
 
   return (
     <>
@@ -60,7 +72,7 @@ export const StateUpdates: React.FC<{
             ? `(${Object.keys(runningNodeInfo.state_updates).length})`
             : ""}
           {!isExpanded && (
-            <span className={styles.tooltipWrapper} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <span className={styles.tooltipWrapper} onPointerEnter={handlePointerEnter} onPointerLeave={handlePointerLeave}>
               <span className={styles.tooltipIcon}>&nbsp;<EllipsesIcon /></span>
               <Popper open={tooltipOpen} anchorEl={anchorEl} placement="bottom-start" disablePortal transition={false} modifiers={[{ name: "offset", options: { offset: [0, 10] } }]} style={{ zIndex: 9999 }} >
                 <div className={styles.stateUpdatesTooltipBox}>
