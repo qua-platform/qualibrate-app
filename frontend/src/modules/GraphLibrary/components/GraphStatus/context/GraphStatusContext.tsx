@@ -15,6 +15,7 @@ export interface GlobalParameterStructure {
 export interface Measurement {
   created_at?: string;
   id?: number;
+  workflow_execution_id?: string;
   data?: {
     outcomes: object;
     parameters: GlobalParameterStructure;
@@ -105,6 +106,7 @@ export const GraphStatusContextProvider = (props: GraphProviderProps): React.Rea
 
   useEffect(() => {
     if (history) {
+      console.log("GraphStatusContext history updated", { history });
       setAllMeasurements(history.items);
     }
   }, [history]);

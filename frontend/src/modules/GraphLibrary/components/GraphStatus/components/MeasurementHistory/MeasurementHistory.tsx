@@ -12,7 +12,7 @@ interface IMeasurementHistoryListProps {
 
 export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ title = "Execution history" }) => {
   const { allMeasurements, trackLatest, setTrackLatest } = useGraphStatusContext();
-  const { trackLatestSidePanel, fetchOneSnapshot, setLatestSnapshotId, setResult, setDiffData } = useSnapshotsContext();
+  const { trackLatestSidePanel, fetchOneSnapshot, setLatestSnapshotId, graphIsRunning, freezeLatestSnapshot } = useSnapshotsContext();
   const { setSelectedNodeNameInWorkflow } = useGraphContext();
   const { setSelectedItemName } = useSelectionContext();
   const [latestId, setLatestId] = useState<number | undefined>();
@@ -23,37 +23,53 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
   };
 
   useEffect(() => {
-    if (trackLatest) {
-      if (allMeasurements) {
-        const element = allMeasurements[0];
-        // if (element) {
+    console.log("MeasurementHistory useEffect", { trackLatest, allMeasurements, graphIsRunning, freezeLatestSnapshot });
 
-        if (element && (element.id !== latestId || element.metadata?.name !== latestName)) {
-          setLatestId(element.id);
-          setLatestName(element.metadata?.name);
-          setSelectedItemName(element?.metadata?.name);
+    if (freezeLatestSnapshot) {
+      console.log("Freeze active, skipping MeasurementHistory update.");
+      return; // Skip updates to prevent flashes
+    }
 
-          setSelectedNodeNameInWorkflow(allMeasurements[0]?.metadata?.name);
-          if (element.id) {
-            setLatestSnapshotId(element.id);
-            if (trackLatestSidePanel) {
-              fetchOneSnapshot(element.id, element.id - 1, true, true);
+    if ((allMeasurements ?? []).length > 0) {
+      const current = (allMeasurements ?? [])[0];
+
+      if (current.id !== undefined && (current.id !== latestId || current.metadata?.name !== latestName)) {
+        console.log(`Switching to node ${current.metadata?.name} with snapshot id ${current.id}`);
+        setLatestId(current.id);
+        setLatestName(current.metadata?.name);
+        setSelectedItemName(current.metadata?.name);
+        setSelectedNodeNameInWorkflow(current.metadata?.name);
+        setLatestSnapshotId(current.id);
+
+        if (trackLatest && graphIsRunning) {
+          if (trackLatestSidePanel) {
+            const prev = (allMeasurements ?? [])[1];
+            if (prev && prev.id !== undefined && current.id !== prev.id && prev.workflow_execution_id === current.workflow_execution_id) {
+              console.log(`Fetching snapshot ${current.id} compared to previous ${prev.id}`);
+              fetchOneSnapshot(current.id, prev.id, true, true);
             } else {
-              fetchOneSnapshot(element.id);
+              console.log(`Fetching snapshot ${current.id} with no valid previous snapshot for comparison`);
+              fetchOneSnapshot(current.id, undefined, true, true);
             }
-            // if (trackLatestSidePanel) {
-            //   fetchOneSnapshot(element.id, element.id - 1, true);
-            // } else {
-            //   fetchOneSnapshot(element.id);
-            // }
           } else {
-            setResult({});
-            setDiffData({});
+            console.log(`Fetching snapshot ${current.id} (no side panel compare)`);
+            fetchOneSnapshot(current.id);
           }
         }
+
+        // When graph stops running but trackLatest is still on, freeze on last node
+        if (!graphIsRunning && trackLatest) {
+          console.log("Graph stopped running, freezing last node view");
+          setSelectedItemName(current.metadata?.name);
+          setSelectedNodeNameInWorkflow(current.metadata?.name);
+          setLatestSnapshotId(current.id);
+          fetchOneSnapshot(current.id); // Final snapshot without compare
+        }
+      } else {
+        console.log(`Skipping fetch, already displaying snapshot id ${current.id}`);
       }
     }
-  }, [trackLatest, allMeasurements, latestId, latestName]);
+  }, [trackLatest, allMeasurements, graphIsRunning, latestId, latestName]);
 
   return (
     <div className={styles.wrapper}>
