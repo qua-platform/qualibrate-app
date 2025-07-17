@@ -186,8 +186,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   // -----------------------------------------------------------
 
   const fetchOneSnapshot = (snapshotId: number, snapshotId2?: number, updateResult = true, fetchUpdate = false) => {
-    if (fetchingSnapshotId === snapshotId) return undefined;
-    if (selectedSnapshotId === snapshotId && jsonData) return undefined;
+    if (fetchingSnapshotId === snapshotId) return;
+    if (selectedSnapshotId === snapshotId && jsonData) return;
     setFetchingSnapshotId(snapshotId);
     // console.log("fetchOneSnapshot", snapshotId, snapshotId2, updateResult);
     // const fetchOneSnapshot = (snapshots: SnapshotDTO[], index: number) => {
