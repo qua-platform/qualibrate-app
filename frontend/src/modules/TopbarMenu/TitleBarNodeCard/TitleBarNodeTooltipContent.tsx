@@ -12,20 +12,20 @@ export const TitleBarTooltipContent: React.FC<TooltipContentProps> = ({ node }) 
     <div className={styles.tooltipContent}>
       <div className={styles.tooltipRow}>
         <div className={styles.tooltipLabel}>Run start:</div>
-        <div className={styles.tooltipValue}>{formatDate(node.run_start)}</div>
+        <div className={styles.tooltipValue} data-testid="tooltip-run-start">{formatDate(node.run_start)}</div>
       </div>
       <div className={styles.tooltipRow}>
         <div className={styles.tooltipLabel}>Status:</div>
-        <div className={styles.tooltipValue}>{capitalize(node.status)}</div>
+        <div className={styles.tooltipValue} data-testid="tooltip-status">{capitalize(node.status)}</div>
       </div>
       <div className={styles.tooltipRow}>
         <div className={styles.tooltipLabel}>Run duration:</div>
-        <div className={styles.tooltipValue}>{formatTime(node.run_duration ?? 0)}</div>
+        <div className={styles.tooltipValue} data-testid="tooltip-run-duration">{formatTime(node.run_duration ?? 0)}</div>
       </div>
       {node.id && node.id !== -1 && (
         <div className={styles.tooltipRow}>
           <div className={styles.tooltipLabel}>idx:</div>
-          <div className={styles.tooltipValue}>{node.id}</div>
+          <div className={styles.tooltipValue} data-testid="tooltip-idx">{node.id}</div>
         </div>
       )}
     </div>
