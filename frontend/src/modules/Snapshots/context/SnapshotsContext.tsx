@@ -25,7 +25,8 @@ interface ISnapshotsContext {
   setClickedForSnapshotSelection: Dispatch<SetStateAction<boolean>>;
 
   fetchOneSnapshot: (id: number, id2?: number, updateResult?: boolean, fetchUpdate?: boolean) => void;
-
+  fetchingSnapshotId: number | undefined;
+  setFetchingSnapshotId: Dispatch<SetStateAction<number | undefined>>;
   jsonData: object | undefined;
   setJsonData: Dispatch<SetStateAction<object | undefined>>;
   jsonDataSidePanel: object | undefined;
@@ -61,6 +62,8 @@ export const SnapshotsContext = React.createContext<ISnapshotsContext>({
   setClickedForSnapshotSelection: () => {},
 
   fetchOneSnapshot: () => {},
+  fetchingSnapshotId: undefined,
+  setFetchingSnapshotId: () => {},
 
   jsonData: {},
   setJsonData: () => {},
@@ -88,6 +91,7 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<number | undefined>(undefined);
   const [clickedForSnapshotSelection, setClickedForSnapshotSelection] = useState<boolean>(false);
   const [latestSnapshotId, setLatestSnapshotId] = useState<number | undefined>(undefined);
+  const [fetchingSnapshotId, setFetchingSnapshotId] = useState<number | undefined>(undefined);
 
   const [reset, setReset] = useState<boolean>(false);
 
@@ -182,13 +186,18 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   // -----------------------------------------------------------
 
   const fetchOneSnapshot = (snapshotId: number, snapshotId2?: number, updateResult = true, fetchUpdate = false) => {
+    if (fetchingSnapshotId === snapshotId) return;
+    if (selectedSnapshotId === snapshotId && jsonData) return;
+    setFetchingSnapshotId(snapshotId);
     // console.log("fetchOneSnapshot", snapshotId, snapshotId2, updateResult);
     // const fetchOneSnapshot = (snapshots: SnapshotDTO[], index: number) => {
     // const id1 = snapshots[index].id.toString();
     // const index2 = index - 1 >= 0 ? index - 1 : 0;
     // const index2 = selectedSnapshotId ? (selectedSnapshotId - 1 >= 0 ? selectedSnapshotId - 1 : 0) : 0;
+    const NO_PREVIOUS_SNAPSHOT = "0";
     const id1 = (snapshotId ?? 0).toString();
-    const id2 = snapshotId2 ? snapshotId2.toString() : snapshotId - 1 >= 0 ? (snapshotId - 1).toString() : "0";
+    let id2 = snapshotId2 ? snapshotId2.toString() : snapshotId - 1 >= 0 ? (snapshotId - 1).toString() : NO_PREVIOUS_SNAPSHOT;
+    if (id1 === id2) id2 = NO_PREVIOUS_SNAPSHOT;
     SnapshotsApi.fetchSnapshot(id1)
       .then((promise: Res<SnapshotDTO>) => {
         if (updateResult) {
@@ -274,6 +283,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
         result,
         setResult,
         fetchOneSnapshot,
+        fetchingSnapshotId,
+        setFetchingSnapshotId,
         firstId,
         setFirstId,
         secondId,
