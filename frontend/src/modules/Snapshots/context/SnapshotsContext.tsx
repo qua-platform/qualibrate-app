@@ -213,6 +213,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
         .then((promise: Res<object>) => {
           if (promise.result) {
             setResult(promise?.result);
+          } else {
+            setResult(undefined);
           }
         })
         .catch((e) => {
@@ -224,11 +226,15 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
         .then((promise: Res<object>) => {
           if (promise.result) {
             setDiffData(promise?.result);
+          } else {
+            setDiffData({});
           }
         })
         .catch((e) => {
           console.log(e);
         });
+    } else {
+      setDiffData({});
     }
   };
   // const gitgraphUpdate = () => {
