@@ -41,30 +41,30 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
           if (trackLatestSidePanel) {
             const prev = (allMeasurements ?? [])[1];
             if (prev && prev.id !== undefined && current.id !== prev.id) {
-              console.log(`Fetching snapshot ${current.id} compared to previous ${prev.id}`);
+              // console.log(`Fetching snapshot ${current.id} compared to previous ${prev.id}`);
               fetchOneSnapshot(current.id, prev.id, true, true);
             } else {
-              console.log(`Fetching snapshot ${current.id} with no valid previous snapshot for comparison`);
+              // console.log(`Fetching snapshot ${current.id} with no valid previous snapshot for comparison`);
               fetchOneSnapshot(current.id, undefined, true, true);
             }
           } else {
-            console.log(`Fetching snapshot ${current.id} (no side panel compare)`);
+            // console.log(`Fetching snapshot ${current.id} (no side panel compare)`);
             fetchOneSnapshot(current.id);
           }
         }
         // When graph stops running but trackLatest is still on, freeze on last node
         if (!graphIsRunning && trackLatest) {
-          console.log("Graph stopped running, freezing last node view");
+          // console.log("Graph stopped running, freezing last node view");
           setSelectedItemName(current.metadata?.name);
           setSelectedNodeNameInWorkflow(current.metadata?.name);
           setLatestSnapshotId(current.id);
           fetchOneSnapshot(current.id); // Final snapshot without compare
         }
-      } else {
-        console.log(`Skipping fetch, already displaying snapshot id ${current.id}`);
-      }
+      } // else {
+        // console.log(`Skipping fetch, already displaying snapshot id ${current.id}`);
+      // }
     }
-  }, [trackLatest, allMeasurements, graphIsRunning, latestId, latestName, freezeLatestSnapshot]);
+  }, [trackLatest, allMeasurements, graphIsRunning, latestId, latestName, freezeLatestSnapshot, setSelectedItemName, setSelectedNodeNameInWorkflow, setLatestSnapshotId, fetchOneSnapshot]);
 
   return (
     <div className={styles.wrapper}>
