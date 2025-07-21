@@ -40,7 +40,7 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
         if (trackLatest && graphIsRunning) {
           if (trackLatestSidePanel) {
             const prev = (allMeasurements ?? [])[1];
-            if (prev && prev.id !== undefined && current.id !== prev.id && String(prev.id) === String(current.id)) {
+            if (prev && prev.id !== undefined && current.id !== prev.id) {
               console.log(`Fetching snapshot ${current.id} compared to previous ${prev.id}`);
               fetchOneSnapshot(current.id, prev.id, true, true);
             } else {
@@ -64,7 +64,7 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
         console.log(`Skipping fetch, already displaying snapshot id ${current.id}`);
       }
     }
-  }, [trackLatest, allMeasurements, graphIsRunning, latestId, latestName]);
+  }, [trackLatest, allMeasurements, graphIsRunning, latestId, latestName, freezeLatestSnapshot]);
 
   return (
     <div className={styles.wrapper}>

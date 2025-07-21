@@ -182,9 +182,9 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
       setTotalPages(promise.result?.total_pages as number);
       setPageNumber(promise.result?.page as number);
       const newMaxId = promise.result?.items[0]?.id;
-      const odlMaxId = allSnapshots[0]?.id;
+      const oldMaxId = allSnapshots[0]?.id;
       // console.log(`Max snapshot ID - previous=${odlMaxId}, latest=${newMaxId}`);
-      if (newMaxId !== odlMaxId! && allSnapshots.length !== 0) {
+      if (newMaxId !== oldMaxId! && allSnapshots.length !== 0) {
         setReset(true);
       } else {
         setReset(false);
