@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { RunningNodeInfo, StateUpdate } from "../../context/NodesContext";
 import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "../RunningJob/RunningJob.module.scss";
-import { StateUpdateElement, StateUpdateProps } from "./StateUpdateElement";
+import { StateUpdateElement } from "./StateUpdateElement";
 import { Button } from "@mui/material";
+import Popper from "@mui/material/Popper";
+import EllipsesIcon from "../../../../ui-lib/Icons/EllipsesIcon";
+import StateUpdatesListPreview from "./StateUpdatesListPreview";
 // import { ErrorStatusWrapper } from "../../../common/Error/ErrorStatusWrapper";
 import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
 
@@ -13,20 +16,21 @@ export const StateUpdates: React.FC<{
   setRunningNodeInfo: (a: RunningNodeInfo) => void;
   updateAllButtonPressed: boolean;
   setUpdateAllButtonPressed: (a: boolean) => void;
-}> = (props) => {
+  isExpanded: boolean;
+}> = ({ isExpanded, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed }) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { trackLatestSidePanel, fetchOneSnapshot, latestSnapshotId, secondId } = useSnapshotsContext();
-  const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed } = props;
 
-  const handleClick = async (stateUpdates: StateUpdate) => {
-    const litOfUpdates = Object.entries(stateUpdates ?? {})
-      .filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated)
-      .map(([key, stateUpdateObject]) => {
-        return {
-          data_path: key,
-          value: stateUpdateObject.val ?? stateUpdateObject.new!,
-        };
-      });
-    const result = await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", litOfUpdates);
+  const handleUpdateAllClick = async (stateUpdates: StateUpdate) => {
+    const listOfUpdates = Object.entries(stateUpdates ?? {})
+      .filter(([, obj]) => !obj.stateUpdated)
+      .map(([key, obj]) => ({
+        data_path: key,
+        value: obj.val ?? obj.new!,
+      }));
+    const result = await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", listOfUpdates);
     if (result.isOk) {
       setUpdateAllButtonPressed(result.result!);
       if (result.result && trackLatestSidePanel) {
@@ -35,6 +39,28 @@ export const StateUpdates: React.FC<{
     }
   };
 
+  const handlePointerEnter = useCallback((event: React.PointerEvent<HTMLElement>) => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+    setAnchorEl(event.currentTarget);
+    setTooltipOpen(true);
+  }, []);
+
+  const handlePointerLeave = useCallback(() => {
+    closeTimer.current = setTimeout(() => {
+      setTooltipOpen(false);
+      closeTimer.current = null;
+    }, 100);
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    };
+  }, []);
+
   return (
     <>
       {/*{Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >*/}
@@ -42,38 +68,47 @@ export const StateUpdates: React.FC<{
       <div className={styles.stateWrapper} data-testid="state-wrapper">
         <div className={styles.stateTitle} data-testid="state-title">
           State updates&nbsp;
-          {runningNodeInfo?.state_updates && Object.keys(runningNodeInfo?.state_updates).length > 0
-            ? `(${Object.keys(runningNodeInfo?.state_updates).length})`
+          {runningNodeInfo?.state_updates && Object.keys(runningNodeInfo.state_updates).length > 0
+            ? `(${Object.keys(runningNodeInfo.state_updates).length})`
             : ""}
+          {!isExpanded && (
+            <span className={styles.tooltipWrapper} onPointerEnter={handlePointerEnter} onPointerLeave={handlePointerLeave}>
+              <span className={styles.tooltipIcon}>&nbsp;<EllipsesIcon /></span>
+              <Popper open={tooltipOpen} anchorEl={anchorEl} placement="bottom-start" disablePortal transition={false} modifiers={[{ name: "offset", options: { offset: [0, 10] } }]} style={{ zIndex: 9999 }} >
+                <div className={styles.stateUpdatesTooltipBox}>
+                  <StateUpdatesListPreview runningNodeInfo={runningNodeInfo} />
+                </div>
+              </Popper>
+            </span>
+          )}
         </div>
         {updateAllButtonPressed ||
-          (Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >
-            0 && (
+          (Object.entries(runningNodeInfo?.state_updates ?? {}).some(([, obj]) => !obj.stateUpdated) && (
             <Button
               className={styles.updateAllButton}
               data-testid="update-all-button"
               disabled={updateAllButtonPressed}
-              onClick={() => handleClick(runningNodeInfo?.state_updates ?? {})}
+              onClick={() => handleUpdateAllClick(runningNodeInfo?.state_updates ?? {})}
             >
               Accept All
             </Button>
           ))}
       </div>
       {/*// )}*/}
-      {runningNodeInfo?.state_updates && (
+      {isExpanded && runningNodeInfo?.state_updates && (
         <div className={styles.stateUpdatesTopWrapper} data-testid="state-updates-top-wrapper">
-          {Object.entries(runningNodeInfo?.state_updates ?? {}).map(([key, stateUpdateObject], index) =>
-            StateUpdateElement({
-              key,
-              index,
-              stateUpdateObject,
-              runningNodeInfo,
-              setRunningNodeInfo,
-              updateAllButtonPressed,
-            } as StateUpdateProps)
-          )}
-
           {/*{runningNodeInfo?.error && <ErrorStatusWrapper error={runningNodeInfo?.error} />}*/}
+          {Object.entries(runningNodeInfo.state_updates).map(([key, stateUpdateObject], index) => (
+            <StateUpdateElement
+              key={`${key}-expanded`}
+              stateUpdateKey={key}
+              index={index}
+              stateUpdateObject={stateUpdateObject}
+              runningNodeInfo={runningNodeInfo}
+              setRunningNodeInfo={setRunningNodeInfo}
+              updateAllButtonPressed={updateAllButtonPressed}
+            />
+          ))}
         </div>
       )}
     </>
