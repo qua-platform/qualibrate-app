@@ -23,15 +23,10 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
   };
 
   useEffect(() => {
-    // console.log("MeasurementHistory useEffect", { trackLatest, allMeasurements, graphIsRunning, freezeLatestSnapshot });
-    if (freezeLatestSnapshot) {
-      // console.log("Freeze active, skipping MeasurementHistory update.");
-      return; // Skip updates to prevent flashes
-    }
+    if (freezeLatestSnapshot) return;
     if ((allMeasurements ?? []).length > 0) {
       const current = (allMeasurements ?? [])[0];
       if (current.id !== undefined && (current.id !== latestId || current.metadata?.name !== latestName)) {
-        // console.log(`Switching to node ${current.metadata?.name} with snapshot id ${current.id}`);
         setLatestId(current.id);
         setLatestName(current.metadata?.name);
         setSelectedItemName(current.metadata?.name);
@@ -41,28 +36,22 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
           if (trackLatestSidePanel) {
             const prev = (allMeasurements ?? [])[1];
             if (prev && prev.id !== undefined && current.id !== prev.id) {
-              // console.log(`Fetching snapshot ${current.id} compared to previous ${prev.id}`);
               fetchOneSnapshot(current.id, prev.id, true, true);
             } else {
-              // console.log(`Fetching snapshot ${current.id} with no valid previous snapshot for comparison`);
               fetchOneSnapshot(current.id, undefined, true, true);
             }
           } else {
-            // console.log(`Fetching snapshot ${current.id} (no side panel compare)`);
             fetchOneSnapshot(current.id);
           }
         }
         // When graph stops running but trackLatest is still on, freeze on last node
         if (!graphIsRunning && trackLatest) {
-          // console.log("Graph stopped running, freezing last node view");
           setSelectedItemName(current.metadata?.name);
           setSelectedNodeNameInWorkflow(current.metadata?.name);
           setLatestSnapshotId(current.id);
           fetchOneSnapshot(current.id); // Final snapshot without compare
         }
-      } // else {
-        // console.log(`Skipping fetch, already displaying snapshot id ${current.id}`);
-      // }
+      }
     }
   }, [trackLatest, allMeasurements, graphIsRunning, latestId, latestName, freezeLatestSnapshot, setSelectedItemName, setSelectedNodeNameInWorkflow, setLatestSnapshotId, fetchOneSnapshot]);
 
