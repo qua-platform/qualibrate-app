@@ -121,14 +121,7 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   // -----------------------------------------------------------
   // FIRST FETCH ALL SNAPSHOTS ON THE BEGINNING
   const fetchGitgraphSnapshots = (firstTime: boolean, page: number) => {
-    if (graphIsRunning) {
-      // console.log("SnapshotsContext: Graph is running, skipping snapshot fetch to avoid overwriting active node result");
-      return;
-    }
-    if (freezeLatestSnapshot) {
-      // console.log("SnapshotsContext: Freeze active, skipping snapshot reset.");
-      return;
-    }
+    if (graphIsRunning || freezeLatestSnapshot) return;
     SnapshotsApi.fetchAllSnapshots(page).then((promise: Res<SnapshotResult>) => {
       if (promise.isOk) {
         setTotalPages(promise.result?.total_pages ?? 1);
@@ -174,16 +167,12 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   // -----------------------------------------------------------
   // PERIODICAL FETCH ALL SNAPSHOTS
   const intervalFetch = (page: number) => {
-    if (graphIsRunning) {
-      // console.log("SnapshotsContext: Graph is running, skipping interval fetch");
-      return;
-    }
+    if (graphIsRunning) return;
     SnapshotsApi.fetchAllSnapshots(page).then((promise: Res<SnapshotResult>) => {
       setTotalPages(promise.result?.total_pages as number);
       setPageNumber(promise.result?.page as number);
       const newMaxId = promise.result?.items[0]?.id;
       const oldMaxId = allSnapshots[0]?.id;
-      // console.log(`Max snapshot ID - previous=${oldMaxId}, latest=${newMaxId}`);
       if (newMaxId !== oldMaxId! && allSnapshots.length !== 0) {
         setReset(true);
       } else {
@@ -230,15 +219,7 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   }, [allSnapshots, graphIsRunning, latestSnapshotId]);
 
   const fetchOneSnapshot = (snapshotId: number, snapshotId2?: number, updateResult = true, fetchUpdate = false) => {
-    // Prevent duplicate fetches
-    if (fetchingSnapshotId === snapshotId) {
-      // console.log(`Already fetching snapshot ${snapshotId}, skipping duplicate fetch.`);
-      return;
-    }
-    if (selectedSnapshotId === snapshotId && jsonData) {
-      // console.log(`Snapshot ${snapshotId} is already loaded, skipping fetch.`);
-      return;
-    }
+    if ((fetchingSnapshotId === snapshotId) || (selectedSnapshotId === snapshotId && jsonData)) return;
     setFetchingSnapshotId(snapshotId);
     // console.log("fetchOneSnapshot", snapshotId, snapshotId2, updateResult);
     // const fetchOneSnapshot = (snapshots: SnapshotDTO[], index: number) => {
