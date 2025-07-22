@@ -5,6 +5,8 @@ import { Res } from "../../../common/interfaces/Api";
 
 interface ISnapshotsContext {
   // trackLatestSidePanel: boolean;
+  graphIsRunning: boolean;
+  setGraphIsRunning: Dispatch<SetStateAction<boolean>>; 
   trackLatestSidePanel: boolean;
   setTrackLatestSidePanel: Dispatch<SetStateAction<boolean>>;
   trackPreviousSnapshot: boolean;
@@ -25,7 +27,6 @@ interface ISnapshotsContext {
   setClickedForSnapshotSelection: Dispatch<SetStateAction<boolean>>;
 
   fetchOneSnapshot: (id: number, id2?: number, updateResult?: boolean, fetchUpdate?: boolean) => void;
-
   jsonData: object | undefined;
   setJsonData: Dispatch<SetStateAction<object | undefined>>;
   jsonDataSidePanel: object | undefined;
@@ -38,9 +39,19 @@ interface ISnapshotsContext {
   setFirstId: (id: string) => void;
   secondId: string;
   setSecondId: (id: string) => void;
+  currentWorkflowExecutionId: string | undefined;
+  setCurrentWorkflowExecutionId: Dispatch<SetStateAction<string | undefined>>;
+  freezeLatestSnapshot: boolean;
+  setFreezeLatestSnapshot: Dispatch<SetStateAction<boolean>>;
+  fetchingSnapshotId: number | undefined;
+  setFetchingSnapshotId: Dispatch<SetStateAction<number | undefined>>;
 }
 
 export const SnapshotsContext = React.createContext<ISnapshotsContext>({
+  graphIsRunning: false,
+  setGraphIsRunning: () => {},
+  currentWorkflowExecutionId: undefined,
+  setCurrentWorkflowExecutionId: () => {},
   trackLatestSidePanel: true,
   setTrackLatestSidePanel: () => {},
   trackPreviousSnapshot: true,
@@ -74,6 +85,10 @@ export const SnapshotsContext = React.createContext<ISnapshotsContext>({
   setFirstId: () => {},
   secondId: "0",
   setSecondId: () => {},
+  freezeLatestSnapshot: false,
+  setFreezeLatestSnapshot: () => {},
+  fetchingSnapshotId: undefined,
+  setFetchingSnapshotId: () => {},
 });
 
 export const useSnapshotsContext = (): ISnapshotsContext => useContext<ISnapshotsContext>(SnapshotsContext);
@@ -98,10 +113,15 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
 
   const [firstId, setFirstId] = useState<string>("0");
   const [secondId, setSecondId] = useState<string>("0");
+  const [graphIsRunning, setGraphIsRunning] = useState(false);
+  const [currentWorkflowExecutionId, setCurrentWorkflowExecutionId] = useState<string | undefined>(undefined);
+  const [freezeLatestSnapshot, setFreezeLatestSnapshot] = useState<boolean>(false);
+  const [fetchingSnapshotId, setFetchingSnapshotId] = useState<number | undefined>(undefined);
 
   // -----------------------------------------------------------
   // FIRST FETCH ALL SNAPSHOTS ON THE BEGINNING
   const fetchGitgraphSnapshots = (firstTime: boolean, page: number) => {
+    if (graphIsRunning || freezeLatestSnapshot) return;
     SnapshotsApi.fetchAllSnapshots(page).then((promise: Res<SnapshotResult>) => {
       if (promise.isOk) {
         setTotalPages(promise.result?.total_pages ?? 1);
@@ -147,13 +167,13 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   // -----------------------------------------------------------
   // PERIODICAL FETCH ALL SNAPSHOTS
   const intervalFetch = (page: number) => {
+    if (graphIsRunning) return;
     SnapshotsApi.fetchAllSnapshots(page).then((promise: Res<SnapshotResult>) => {
       setTotalPages(promise.result?.total_pages as number);
       setPageNumber(promise.result?.page as number);
       const newMaxId = promise.result?.items[0]?.id;
-      const odlMaxId = allSnapshots[0]?.id;
-      console.log(`Max snapshot ID - previous=${odlMaxId}, latest=${newMaxId}`);
-      if (newMaxId !== odlMaxId! && allSnapshots.length !== 0) {
+      const oldMaxId = allSnapshots[0]?.id;
+      if (newMaxId !== oldMaxId! && allSnapshots.length !== 0) {
         setReset(true);
       } else {
         setReset(false);
@@ -181,14 +201,36 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   }, [reset, pageNumber]);
   // -----------------------------------------------------------
 
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | undefined;
+
+    if (graphIsRunning) {
+      if (allSnapshots.length > 0 && latestSnapshotId === allSnapshots[0].id) {
+        timeoutId = setTimeout(() => {
+          console.log("Graph execution likely completed. Stopping tracking after debounce.");
+          setGraphIsRunning(false);
+          setFreezeLatestSnapshot(true); // Prevent snapshot context reset
+        }, 3000);
+      }
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [allSnapshots, graphIsRunning, latestSnapshotId]);
+
   const fetchOneSnapshot = (snapshotId: number, snapshotId2?: number, updateResult = true, fetchUpdate = false) => {
+    if ((fetchingSnapshotId === snapshotId) || (selectedSnapshotId === snapshotId && jsonData)) return;
+    setFetchingSnapshotId(snapshotId);
     // console.log("fetchOneSnapshot", snapshotId, snapshotId2, updateResult);
     // const fetchOneSnapshot = (snapshots: SnapshotDTO[], index: number) => {
     // const id1 = snapshots[index].id.toString();
     // const index2 = index - 1 >= 0 ? index - 1 : 0;
     // const index2 = selectedSnapshotId ? (selectedSnapshotId - 1 >= 0 ? selectedSnapshotId - 1 : 0) : 0;
-    const id1 = (snapshotId ?? 0).toString();
-    const id2 = snapshotId2 ? snapshotId2.toString() : snapshotId - 1 >= 0 ? (snapshotId - 1).toString() : "0";
+    const id1 = snapshotId.toString();
+    let id2 = snapshotId2?.toString();
+    if (!id2 || id1 === id2) {
+      id2 = undefined; // Prevent self-compare or invalid compare
+    }
     SnapshotsApi.fetchSnapshot(id1)
       .then((promise: Res<SnapshotDTO>) => {
         if (updateResult) {
@@ -198,6 +240,9 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
       })
       .catch((e) => {
         console.log(e);
+      })
+      .finally(() => {
+        setFetchingSnapshotId(undefined);
       });
     if (updateResult) {
       SnapshotsApi.fetchSnapshotResult(id1)
@@ -212,7 +257,7 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
           console.log(e);
         });
     }
-    if (id1 !== id2 && fetchUpdate) {
+    if (id2 && fetchUpdate) {
       SnapshotsApi.fetchSnapshotUpdate(id2, id1)
         .then((promise: Res<object>) => {
           if (promise.result) {
@@ -246,6 +291,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   return (
     <SnapshotsContext.Provider
       value={{
+        graphIsRunning,
+        setGraphIsRunning,
         trackLatestSidePanel,
         setTrackLatestSidePanel,
         trackPreviousSnapshot,
@@ -278,6 +325,12 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
         setFirstId,
         secondId,
         setSecondId,
+        currentWorkflowExecutionId,
+        setCurrentWorkflowExecutionId,
+        freezeLatestSnapshot,
+        setFreezeLatestSnapshot,
+        fetchingSnapshotId,
+        setFetchingSnapshotId,
       }}
     >
       {props.children}
