@@ -1,23 +1,24 @@
 import styles from "./ToggleSwitch.module.scss";
 
 interface IToggleSwitchProps {
-  title: string;
   activeTab: string;
   setActiveTab: (a: string) => void;
+  options: { label: string; value: string }[];
 }
 
-const ToggleSwitch = ({ title, activeTab, setActiveTab }: IToggleSwitchProps) => {
+const ToggleSwitch = ({ activeTab, setActiveTab, options }: IToggleSwitchProps) => {
   return (
-    <div className={styles.firstRowWrapper}>
-      <h1>{title}</h1>
-      <div className={styles.switchWrapper}>
-        <div className={`${styles.switchOption} ${activeTab === "live" ? styles.selected : ""}`} onClick={() => setActiveTab("live")}>
-          Live
+    <div className={styles.switchWrapper}>
+      {options.map((option) => (
+        <div
+          key={option.value}
+          className={`${styles.switchOption} ${activeTab === option.value ? styles.active : ""}`}
+          onClick={() => setActiveTab(option.value)}
+        >
+          {activeTab === option.value && <span className={styles.switchIndicator}></span>}
+          <span className={styles.optionLabel}>{option.label}</span>
         </div>
-        <div className={`${styles.switchOption} ${activeTab === "final" ? styles.selected : ""}`} onClick={() => setActiveTab("final")}>
-          Final
-        </div>
-      </div>
+      ))}
     </div>
   );
 };

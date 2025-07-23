@@ -6,8 +6,8 @@ import { NodeElementList } from "./components/NodeElement/NodeElementList";
 import { RunningJob } from "./components/RunningJob/RunningJob";
 import { Results } from "./components/Results/Results";
 import { SelectionContextProvider } from "../common/context/SelectionContext";
-import BlueButton from "../../ui-lib/components/Button/BlueButton";
 import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
+import RefreshIcon from "../../ui-lib/Icons/RefreshIcon";
 
 export const NodesPage = () => {
   const { allNodes, runningNodeInfo, fetchAllNodes } = useNodesContext();
@@ -15,7 +15,7 @@ export const NodesPage = () => {
   const NodeTopBarRefreshButton = () => {
     return (
       <div className={styles.refreshButtonWrapper} data-testid="refresh-button">
-        <BlueButton onClick={() => fetchAllNodes()}>Refresh</BlueButton>
+        <button onClick={() => fetchAllNodes()} title="Refresh node parameters"> <RefreshIcon /> </button>
       </div>
     );
   };
