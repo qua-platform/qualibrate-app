@@ -14,19 +14,12 @@
 
 .menuCardsWrapper {
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
   flex-wrap: wrap;
   gap: 12px;
-  margin-left: auto;
-  justify-content: flex-end;
   padding-right: 25px;
   margin-right: 25px;
-}
-
-.ToggleSwitchAndRefreshWrapper {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-  gap: 10px;
 }
 
 .topBarRow {
@@ -39,11 +32,4 @@
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.menuCardsWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
 }
