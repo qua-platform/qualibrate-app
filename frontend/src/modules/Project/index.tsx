@@ -47,16 +47,18 @@ const Project = () => {
   return (
     <>
       <div className={styles.projectPageLayout}>
-        <div className={styles.createProjectWrapper}>
-          <button title="Create new project" onClick={() => setShowCreatePanel(prev => !prev)} className={styles.createProjectButton}>
-            <CreateNewProjectIcon />
-          </button>
-          {showCreatePanel && (
-            <div className={styles.createProjectPanelWrapper}>
-              <CreateNewProjectForm onCancel={() => setShowCreatePanel(false)} />
-            </div>
-          )}
-        </div>
+        {NEW_PROJECT_BUTTON_VISIBLE && (
+          <div className={styles.createProjectWrapper}>
+            <button title="Create new project" onClick={() => setShowCreatePanel(prev => !prev)} className={styles.createProjectButton}>
+              <CreateNewProjectIcon />
+            </button>
+            {showCreatePanel && (
+              <div className={styles.createProjectPanelWrapper}>
+                <CreateNewProjectForm onCancel={() => setShowCreatePanel(false)} />
+              </div>
+            )}
+          </div>
+        )}
 
         {!activeProject?.name && <PageName>{heading}</PageName>}
         <div className={styles.pageWrapper}>
@@ -84,13 +86,6 @@ const Project = () => {
         >
           Let’s Start
         </BlueButton>
-
-        {NEW_PROJECT_BUTTON_VISIBLE && (
-          <BlueButton isSecondary className={styles.actionButton}>
-            <AddIcon height={12} color={ACTIVE_TEXT} />
-            New project
-          </BlueButton>
-        )}
       </div>
     </>
   );
