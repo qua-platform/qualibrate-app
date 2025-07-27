@@ -1,7 +1,5 @@
 import styles from "./Index.module.scss";
 import { NEW_PROJECT_BUTTON_VISIBLE } from "../../dev.config";
-import { ACTIVE_TEXT } from "../../utils/colors";
-import { AddIcon } from "../../ui-lib/Icons/AddIcon";
 import BlueButton from "../../ui-lib/components/Button/BlueButton";
 import { IconType } from "../../common/interfaces/InputProps";
 import { SearchIcon } from "../../ui-lib/Icons/SearchIcon";
@@ -49,20 +47,18 @@ const Project = () => {
   return (
     <>
       <div className={styles.projectPageLayout}>
-        <div className={styles.createProjectWrapper}>
-          <button
-            title="Create new project"
-            onClick={() => setShowCreatePanel(prev => !prev)}
-            className={styles.createProjectButton}
-          >
-            <CreateNewProjectIcon />
-          </button>
-          {showCreatePanel && (
-            <div className={styles.createProjectFormWrapper}>
-              <CreateNewProjectForm onCancel={() => setShowCreatePanel(false)} />
-            </div>
-          )}
-        </div>
+        {NEW_PROJECT_BUTTON_VISIBLE && (
+          <div className={styles.createProjectWrapper}>
+            <button title="Create new project" onClick={() => setShowCreatePanel(prev => !prev)} className={styles.createProjectButton}>
+              <CreateNewProjectIcon />
+            </button>
+            {showCreatePanel && (
+              <div className={styles.createProjectFormWrapper}>
+                <CreateNewProjectForm onCancel={() => setShowCreatePanel(false)} />
+              </div>
+            )}
+          </div>
+        )}
 
         {!activeProject?.name && <PageName>{heading}</PageName>}
 
@@ -111,13 +107,6 @@ const Project = () => {
         >
           Let’s Start
         </BlueButton>
-
-        {NEW_PROJECT_BUTTON_VISIBLE && (
-          <BlueButton isSecondary className={styles.actionButton}>
-            <AddIcon height={12} color={ACTIVE_TEXT} />
-            New project
-          </BlueButton>
-        )}
       </div>
     </>
   );
