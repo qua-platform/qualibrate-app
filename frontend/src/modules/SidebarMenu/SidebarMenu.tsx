@@ -64,7 +64,7 @@ const SidebarMenu: React.FunctionComponent = () => {
                 handleOnClick = handleHelpClick;
               } else if (item.keyId === ACTIVE_PROJECT_KEY && activeProject?.name) {
                 handleOnClick = handleProjectClick;
-                menuItem.title = activeProject.name.length > 15 ? activeProject.name.slice(0, 16) + "…" : activeProject.name;
+                menuItem.title = activeProject.name;
                 menuItem.icon = () => (
                   <ProjectFolderIcon
                     initials={extractInitials(activeProject.name)}
