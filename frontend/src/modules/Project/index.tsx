@@ -1,7 +1,5 @@
 import styles from "./Project.module.scss";
 import { NEW_PROJECT_BUTTON_VISIBLE } from "../../dev.config";
-import { ACTIVE_TEXT } from "../../utils/colors";
-import { AddIcon } from "../../ui-lib/Icons/AddIcon";
 import BlueButton from "../../ui-lib/components/Button/BlueButton";
 import { IconType } from "../../common/interfaces/InputProps";
 import { SearchIcon } from "../../ui-lib/Icons/SearchIcon";
