@@ -14,11 +14,22 @@
 
 .menuCardsWrapper {
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
   flex-wrap: wrap;
   gap: 12px;
-  margin-left: auto;
-  justify-content: flex-end;
   padding-right: 25px;
   margin-right: 25px;
 }
 
+.topBarRow {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.titleAndControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

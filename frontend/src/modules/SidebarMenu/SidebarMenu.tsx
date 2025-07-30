@@ -11,10 +11,12 @@ import QUAlibrateLogoIcon from "../../ui-lib/Icons/QUAlibrateLogoIcon";
 import QUAlibrateLogoSmallIcon from "../../ui-lib/Icons/QualibrateLogoSmall";
 import ExpandSideMenuIcon from "../../ui-lib/Icons/ExpandSideMenuIcon";
 import CollapseSideMenuIcon from "../../ui-lib/Icons/CollapseSideMenuIcon";
+import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
 
 const SidebarMenu: React.FunctionComponent = () => {
   const { pinSideMenu } = useContext(GlobalThemeContext) as GlobalThemeContextState;
   const [minify, setMinify] = useState(true);
+  const { openTab, graphTab } = useFlexLayoutContext();
   const [selectedMenuItem, setSelectedMenuItem] = useState<ModuleKey>(NODES_KEY);
 
   const containerClassName = classNames(styles.sidebarMenu, minify ? styles.collapsed : styles.expanded);
@@ -34,19 +36,28 @@ const SidebarMenu: React.FunctionComponent = () => {
           {minify ? <QUAlibrateLogoSmallIcon /> : <QUAlibrateLogoIcon />}
         </button>
 
-        <div className={styles.menuContent}>
-          <div className={styles.menuUpperContent}>
-            {menuItems.map((item) => (
+      <div className={styles.menuContent}>
+        <div className={styles.menuUpperContent}>
+          {menuItems.filter((item) => !item.hidden).map((item) => {
+            const handleClick = () => {
+              setSelectedMenuItem(item.keyId);
+              if (item.keyId === "graph-library") {
+                openTab(graphTab === "run" ? "graph-library" : "graph-status");
+              }
+            };
+
+            return (
               <MenuItem
                 {...item}
                 key={item.keyId}
                 hideText={minify}
-                onClick={() => setSelectedMenuItem(item.keyId)}
+                onClick={handleClick}
                 isSelected={selectedMenuItem === item.keyId}
                 data-testid={`menu-item-${item.keyId}`}
               />
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
           <div className={styles.menuBottomContent}>
             {bottomMenuItems.map((item) => {

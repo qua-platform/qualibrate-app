@@ -18,6 +18,8 @@ interface IFlexLayoutContext {
   setTopBarAdditionalComponents: (a: { [id: string]: React.JSX.Element } | undefined) => void;
   selectedPageName: ModuleKey | null;
   setSelectedPageName: (a: ModuleKey | null) => void;
+  graphTab: string;
+  setGraphTab: (tab: string) => void;
 }
 
 const FlexLayoutContext = React.createContext<IFlexLayoutContext | null>(null);
@@ -38,6 +40,7 @@ export function FlexLayoutContextProvider(props: PropsWithChildren<ReactNode | R
     | undefined
   >(undefined);
   const [selectedPageName, setSelectedPageName] = useState<ModuleKey | null>(null);
+  const [graphTab, setGraphTab] = useState<string>("run");
 
   useEffect(() => {
     // openTab("nodes");
@@ -47,10 +50,10 @@ export function FlexLayoutContextProvider(props: PropsWithChildren<ReactNode | R
   const handleIframeUrlSetup = (tab: ModuleKey) => {
     if (tab === "graph-status") {
       setSelectedPageName("graph-status");
-    } else if (tab === "nodes") {
-      setSelectedPageName("nodes");
     } else if (tab === "graph-library") {
       setSelectedPageName("graph-library");
+    } else if (tab === "nodes") {
+      setSelectedPageName("nodes");
     } else if (tab === "data") {
       setSelectedPageName("data");
     } else {
@@ -108,6 +111,8 @@ export function FlexLayoutContextProvider(props: PropsWithChildren<ReactNode | R
         setTopBarAdditionalComponents,
         selectedPageName,
         setSelectedPageName,
+        graphTab,
+        setGraphTab,
       }}
     >
       {children}

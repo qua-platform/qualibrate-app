@@ -1,4 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
+/* eslint-disable css-modules/no-unused-class */
+import styles from "./JSONEditor.module.scss";
 import jp from "jsonpath";
 import { defineDataType, JsonViewer, Path } from "@textea/json-viewer";
 import InputField from "../../../common/ui-components/common/Input/InputField";
@@ -137,7 +139,19 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
       }}
     >
       {!toggleSwitch && <h1 style={{ paddingTop: "10px", paddingBottom: "5px" }}>{title}</h1>}
-      {toggleSwitch && <ToggleSwitch title={title} activeTab={activeTab} setActiveTab={setActiveTab} />}
+      {toggleSwitch && (
+      <div className={styles.titleRow}>
+        <h1 className={styles.titleNoMargin}>{title}</h1>
+          <ToggleSwitch
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            options={[
+              { label: "Live", value: "live" },
+              { label: "Final", value: "final" },
+            ]}
+          />
+        </div>
+      )}
       {showSearch && (
         <InputField value={searchTerm} title={"Search"} onChange={(_e, event) => handleSearch(event.target.value, event)}></InputField>
       )}

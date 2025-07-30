@@ -13,6 +13,7 @@ import { SnapshotsApi } from "../../Snapshots/api/SnapshotsApi";
 import { GraphItem, useWebSocketData } from "../../../contexts/WebSocketContext";
 
 const TitleBarGraphCard: React.FC = () => {
+  const { openTab, setGraphTab } = useFlexLayoutContext();
   const { runStatus } = useWebSocketData();
   const [node, setNode] = useState<LastRunStatusNodeResponseDTO>(fallbackNode);
   const [graph, setGraph] = useState<GraphItem>(fallbackGraph);
@@ -28,9 +29,12 @@ const TitleBarGraphCard: React.FC = () => {
     }
   }, [runStatus]);
 
-  const { openTab } = useFlexLayoutContext();
-  const handleClick = () => openTab(graph.status === "pending" ? "graph-library" : "graph-status");
-
+  const handleClick = () => {
+    const isPending = graph.status === "pending";
+    setGraphTab(isPending ? "run" : "active");
+    openTab(isPending ? "graph-library" : "graph-status");
+  };
+  
   const renderElapsedTime = (time: number) => (
     <div className={styles.stopAndTimeWrapper}>
       <div className={styles.timeRemaining}>

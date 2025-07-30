@@ -39,7 +39,7 @@ export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrat
     setLastRunInfo,
     fetchWorkflowGraph,
   } = useGraphContext();
-  const { openTab } = useFlexLayoutContext();
+  const { openTab, setGraphTab } = useFlexLayoutContext();
 
   const updateParameter = (paramKey: string, newValue: boolean | number | string, workflow?: NodeDTO | GraphWorkflow) => {
     const updatedParameters = {
@@ -121,6 +121,7 @@ export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrat
       const response = await GraphLibraryApi.submitWorkflow(selectedWorkflowName, transformDataForSubmit());
       if (response.isOk) {
         openTab("graph-status");
+        setGraphTab("active");
       } else {
         setErrorObject(response.error);
       }
