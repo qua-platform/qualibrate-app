@@ -63,31 +63,32 @@ export const Parameters: React.FC<IProps> = ({
         </div>
       )}
       {expanded &&
-        Object.entries(currentItem?.parameters ?? {}).map(([key, parameter]) => {
-          if (parameter.title.toLowerCase() !== "targets name") {
+        Object.entries(currentItem?.parameters ?? {})
+          .filter(([key, parameter]) => parameter.title.toLowerCase() !== "targets name")
+          .map(([key, parameter], index, filteredArray) => {
             return (
-              <div key={key} className={styles.parameterValues} data-testid={`parameter-values-${key}`}>
-                <div className={styles.parameterLabel}>{parameter.title}:</div>
-                <div className={styles.parameterValue} data-testid="parameter-value">
-                  {getInputElement(key, parameter, currentItem)}
-                </div>
-                <div className={styles.descriptionWrapper}>
+              <React.Fragment key={key}>
+                <div className={styles.parameterRow} data-testid={`parameter-values-${key}`}>
+                  <Tooltip title={parameter.title} placement="top">
+                    <div className={styles.parameterLabel}>{parameter.title}</div>
+                  </Tooltip>
+                  <div className={styles.parameterValue}>
+                    {getInputElement(key, parameter, currentItem)}
+                  </div>
                   {parameter.description && (
-                    <Tooltip
-                      title={<div className={styles.descriptionTooltip}>{parameter.description} </div>}
-                      placement="left-start"
-                      arrow
-                    >
-                      <span>
-                        <InfoIcon />
-                      </span>
-                    </Tooltip>
+                    <div className={styles.descriptionWrapper}>
+                      <Tooltip title={<div className={styles.descriptionTooltip}>{parameter.description}</div>} placement="left-start" arrow>
+                        <span>
+                          <InfoIcon />
+                        </span>
+                      </Tooltip>
+                    </div>
                   )}
                 </div>
-              </div>
+                {index < filteredArray.length - 1 && <div className={styles.indentedBorder}></div>}
+              </React.Fragment>
             );
-          }
-        })}
+          })}
     </div>
   );
 };

@@ -1,7 +1,6 @@
 .parametersWrapper {
   gap: 10px;
   font-size: 12px;
-  padding-left: 15px;
   padding-top: 10px;
 }
 
@@ -26,17 +25,20 @@
 }
 
 .parameterLabel {
-  padding: 10px 20px;
+  padding: 7px 0  7px 0;
   align-content: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   text-wrap: nowrap;
-  //width: 60%;
+  color: gray;
+  width: 30%;
 }
 
 .parameterValue {
-  width: 100%;
-  margin-top: 2px;
-  max-height: 25px;
-
+  flex: 1;
+  max-width: 300px;
+  
   div, input {
     height: 90%;
     color: var(--font) !important;
@@ -53,8 +55,22 @@
   }
 }
 
+.parameterRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.indentedBorder {
+  border-bottom: 1px solid var(--border-color);
+  margin-left: 30%;
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
 .descriptionWrapper {
-  padding-left: 10px;
+  padding-left: 6px;
+  padding-top: 4px;
   align-content: center;
   text-align: right;
 }
