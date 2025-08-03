@@ -28,7 +28,9 @@
 }
 
 .parametersContainer {
-  max-width: 40%;
+  background-color: var(--popup-background);
+  max-width: 30%;
+  width: -webkit-fill-available;
 }
 
 .graphContainer {
@@ -76,5 +78,5 @@
 }
 
 .calibrationGraphSelected {
-  background-color: var(--selected-node);
+  background-color: var(--popup-background);
 }
