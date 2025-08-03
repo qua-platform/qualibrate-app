@@ -64,7 +64,7 @@ export const Parameters: React.FC<IProps> = ({
       )}
       {expanded &&
         Object.entries(currentItem?.parameters ?? {})
-          .filter(([key, parameter]) => parameter.title.toLowerCase() !== "targets name")
+          .filter(([, parameter]) => parameter.title.toLowerCase() !== "targets name")
           .map(([key, parameter], index, filteredArray) => {
             return (
               <React.Fragment key={key}>
@@ -72,7 +72,7 @@ export const Parameters: React.FC<IProps> = ({
                   <Tooltip title={parameter.title} placement="top">
                     <div className={styles.parameterLabel}>{parameter.title}</div>
                   </Tooltip>
-                  <div className={styles.parameterValue}>
+                  <div className={styles.parameterValue} data-testid={`parameter-value-${key}`}>
                     {getInputElement(key, parameter, currentItem)}
                   </div>
                   {parameter.description && (
