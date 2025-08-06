@@ -38,6 +38,8 @@ interface ISnapshotsContext {
   setFirstId: (id: string) => void;
   secondId: string;
   setSecondId: (id: string) => void;
+  fetchingSnapshotId: number | undefined;
+  setFetchingSnapshotId: Dispatch<SetStateAction<number | undefined>>;
 }
 
 export const SnapshotsContext = React.createContext<ISnapshotsContext>({
@@ -74,6 +76,8 @@ export const SnapshotsContext = React.createContext<ISnapshotsContext>({
   setFirstId: () => {},
   secondId: "0",
   setSecondId: () => {},
+  fetchingSnapshotId: undefined,
+  setFetchingSnapshotId: () => {},
 });
 
 export const useSnapshotsContext = (): ISnapshotsContext => useContext<ISnapshotsContext>(SnapshotsContext);
@@ -98,7 +102,7 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
 
   const [firstId, setFirstId] = useState<string>("0");
   const [secondId, setSecondId] = useState<string>("0");
-
+  const [fetchingSnapshotId, setFetchingSnapshotId] = useState<number | undefined>(undefined);
   // -----------------------------------------------------------
   // FIRST FETCH ALL SNAPSHOTS ON THE BEGINNING
   const fetchGitgraphSnapshots = (firstTime: boolean, page: number) => {
@@ -187,6 +191,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
     // const id1 = snapshots[index].id.toString();
     // const index2 = index - 1 >= 0 ? index - 1 : 0;
     // const index2 = selectedSnapshotId ? (selectedSnapshotId - 1 >= 0 ? selectedSnapshotId - 1 : 0) : 0;
+    if (fetchingSnapshotId === snapshotId) return;
+    if (selectedSnapshotId === snapshotId && jsonData) return;
     const id1 = (snapshotId ?? 0).toString();
     const id2 = snapshotId2 ? snapshotId2.toString() : snapshotId - 1 >= 0 ? (snapshotId - 1).toString() : "0";
     SnapshotsApi.fetchSnapshot(id1)
@@ -278,6 +284,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
         setFirstId,
         secondId,
         setSecondId,
+        fetchingSnapshotId,
+        setFetchingSnapshotId,
       }}
     >
       {props.children}
