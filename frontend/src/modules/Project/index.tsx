@@ -7,7 +7,7 @@ import { IconType } from "../../common/interfaces/InputProps";
 import { SearchIcon } from "../../ui-lib/Icons/SearchIcon";
 import React, { useEffect, useState } from "react";
 import ProjectList from "./components/ProjectList";
-import { ProjectContextProvider, useProjectContext } from "./context/ProjectContext";
+import { useProjectContext } from "./context/ProjectContext";
 import cyKeys from "../../utils/cyKeys";
 import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
 import LoaderPage from "../../ui-lib/loader/LoaderPage";
@@ -27,7 +27,12 @@ const Project = () => {
   }, [allProjects, setListedProjects]);
 
   const handleSubmit = () => {
-    selectActiveProject(selectedProject!);
+    const fallbackProject = allProjects.length > 0 ? allProjects[0] : undefined;
+    const projectToSelect = selectedProject || fallbackProject;
+
+    if (!projectToSelect) return;
+
+    selectActiveProject(projectToSelect);
     openTab("data");
   };
 
@@ -78,8 +83,4 @@ const Project = () => {
   );
 };
 
-export default () => (
-  <ProjectContextProvider>
-    <Project />
-  </ProjectContextProvider>
-);
+export default Project;
