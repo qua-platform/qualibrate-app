@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import styles from "./CreateNewProjectForm.module.scss";
 import InputField from "../../../common/ui-components/common/Input/InputField";
+import PlusSignSquareIcon from "../../../ui-lib/Icons/PlusSignSquareIcon";
+import XIcon from "../../../ui-lib/Icons/XIcon";
+
+interface Member {
+  name: string;
+  email: string;
+}
 
 interface Props {
   onCancel: () => void;
@@ -11,11 +18,29 @@ const CreateNewProjectForm: React.FC<Props> = ({ onCancel }) => {
   const [quamPath, setQuamPath] = useState("");
   const [calibrationPath, setCalibrationPath] = useState("");
   const [projectPath, setProjectPath] = useState("");
+  const [memberEmail, setMemberEmail] = useState("");
+  const [memberName, setMemberName] = useState("");
+  const [members, setMembers] = useState<Member[]>([]);
+
+  const addMember = () => {
+    if (memberEmail && memberName && !members.some(m => m.email === memberEmail)) {
+      setMembers([...members, { name: memberName, email: memberEmail }]);
+      setMemberEmail("");
+      setMemberName("");
+    }
+  };
+
+  const removeMember = (email: string) => {
+    setMembers(members.filter((m) => m.email !== email));
+  };
 
   const handleCancel = () => {
     setDataPath("");
     setQuamPath("");
     setCalibrationPath("");
+    setMemberEmail("");
+    setMemberName("");
+    setMembers([]);
     onCancel();
   };
   
@@ -40,6 +65,26 @@ const CreateNewProjectForm: React.FC<Props> = ({ onCancel }) => {
 
       <label>Calibration library path</label>
       <InputField type="text" placeholder="Enter calibration path" value={calibrationPath} onChange={(val: string) => setCalibrationPath(val)} />
+
+      <label>Members <span className={styles.optional}>– optional</span> </label>
+
+      <div className={styles.memberInputWrapper}>
+        <div className={styles.memberInputFields}>
+          <InputField type="text" placeholder="Member name" value={memberName} onChange={(val: string) => setMemberName(val)} />
+          <InputField type="email" placeholder="Member email" value={memberEmail} onChange={(val: string) => setMemberEmail(val)} />
+        </div>
+        <button type="button" onClick={addMember} className={styles.plusButton} title="Add member" disabled={!memberName || !memberEmail}>
+            <PlusSignSquareIcon />
+        </button>
+      </div>
+      <div className={styles.chips}>
+        {members.map((member) => (
+          <span key={member.email} title={member.email} className={styles.chip}>
+            {member.name}
+            <span onClick={() => removeMember(member.email)}> <XIcon /> </span>
+          </span>
+        ))}
+      </div>
 
       <div className={styles.actions}>
         <button onClick={handleCancel} className={styles.cancel}>Cancel</button>
