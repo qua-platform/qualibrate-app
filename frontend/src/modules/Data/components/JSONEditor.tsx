@@ -22,6 +22,7 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [jsonData, setJsonData] = useState(jsonDataProp);
   const [activeTab, setActiveTab] = useState<string>("final");
+  const [fileType, setFileType] = useState<string>("json");
   const { selectedPageName } = useFlexLayoutContext();
 
   useEffect(() => {
@@ -137,7 +138,16 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
       }}
     >
       {!toggleSwitch && <h1 style={{ paddingTop: "10px", paddingBottom: "5px" }}>{title}</h1>}
-      {toggleSwitch && <ToggleSwitch title={title} activeTab={activeTab} setActiveTab={setActiveTab} />}
+      {toggleSwitch && (
+        <ToggleSwitch 
+          title={title} 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab}
+          fileType={fileType}
+          onFileTypeChange={setFileType}
+          showFileTypeSelector={true}
+        />
+      )}
       {showSearch && (
         <InputField value={searchTerm} title={"Search"} onChange={(_e, event) => handleSearch(event.target.value, event)}></InputField>
       )}

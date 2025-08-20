@@ -1,0 +1,108 @@
+.fileTypeSelector {
+  position: relative;
+  display: inline-block;
+}
+
+.selectorButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--popup-background, #2a2a2a);
+  border: 1px solid var(--border, #42424C);
+  border-radius: 20px;
+  color: white;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: rgb(44 203 229 / 60%);
+    box-shadow: 0 0 0 2px rgba(44, 203, 229, 0.2);
+  }
+}
+
+.viewLabel {
+  color: #b0b0b0;
+  font-weight: 400;
+}
+
+.fileTypeLabel {
+  color: white;
+  font-weight: 500;
+}
+
+.dropdownIcon {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  color: #b0b0b0;
+  margin-left: auto;
+  
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: var(--popup-background, #2a2a2a);
+  border: 1px solid var(--border, #42424C);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.2s ease;
+}
+
+.dropdownOption {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #b0b0b0;
+  font-size: 14px;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+  
+  &.selected {
+    background: rgba(44, 203, 229, 0.2);
+    color: rgb(44 203 229);
+  }
+  
+  &:first-child {
+    border-radius: 6px 6px 0 0;
+  }
+  
+  &:last-child {
+    border-radius: 0 0 6px 6px;
+  }
+  
+  &:only-child {
+    border-radius: 6px;
+  }
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
