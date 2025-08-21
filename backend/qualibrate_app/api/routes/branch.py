@@ -36,6 +36,9 @@ from qualibrate_app.api.routes.utils.dependencies import (
     get_search_filter,
     get_snapshot_load_type_flag,
 )
+from qualibrate_app.api.routes.utils.latest_requested_data import (
+    update_latest_data_id_if_requested,
+)
 from qualibrate_app.config import get_settings
 
 branch_router = APIRouter(prefix="/branch/{name}", tags=["branch"])
@@ -73,6 +76,7 @@ def get_snapshot(
 ) -> SnapshotModel:
     snapshot = branch.get_snapshot(snapshot_id)
     snapshot.load_from_flag(load_type_flag)
+    update_latest_data_id_if_requested(snapshot.id, load_type_flag)
     return snapshot.dump()
 
 
@@ -86,6 +90,7 @@ def get_latest_snapshot(
 ) -> SnapshotModel:
     snapshot = branch.get_snapshot()
     snapshot.load_from_flag(load_type_flag)
+    update_latest_data_id_if_requested(snapshot.id, load_type_flag)
     return snapshot.dump()
 
 

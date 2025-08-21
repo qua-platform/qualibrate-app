@@ -33,6 +33,10 @@ from qualibrate_app.api.routes.utils.dependencies import (
     get_search_with_id_filter,
     get_snapshot_load_type_flag,
 )
+from qualibrate_app.api.routes.utils.latest_requested_data import (
+    get_latest_requested_data,
+    update_latest_data_id_if_requested,
+)
 from qualibrate_app.config import (
     get_settings,
 )
@@ -96,6 +100,7 @@ def get_snapshot_by_id(
 ) -> SnapshotModel:
     snapshot = root.get_snapshot(id)
     snapshot.load_from_flag(load_type_flag)
+    update_latest_data_id_if_requested(snapshot.id, load_type_flag)
     return snapshot.dump()
 
 
@@ -109,6 +114,7 @@ def get_latest_snapshot(
 ) -> SnapshotModel:
     snapshot = root.get_snapshot()
     snapshot.load_from_flag(load_type_flag)
+    update_latest_data_id_if_requested(snapshot.id, load_type_flag)
     return snapshot.dump()
 
 
@@ -267,3 +273,8 @@ def search_snapshots_data(
         total_items=total,
         items=list(seq),
     )
+
+
+@root_router.get("/latest_run_id")
+def get_latest_run_id() -> Optional[IdType]:
+    return get_latest_requested_data()
