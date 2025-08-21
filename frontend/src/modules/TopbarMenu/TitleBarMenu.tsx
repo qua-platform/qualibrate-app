@@ -1,4 +1,5 @@
 import React from "react";
+// eslint-disable-next-line css-modules/no-unused-class
 import styles from "./styles/TitleBarMenu.module.scss";
 import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext";
 import modulesMap from "../../routing/ModulesRegistry";
@@ -15,7 +16,7 @@ const TopBar: React.FC = () => {
 
 const TitleBarMenu: React.FC = () => {
   const { activeTab, topBarAdditionalComponents } = useFlexLayoutContext();
-  
+
   return (
     <div className={styles.wrapper}>
       <PageName>{modulesMap[activeTab ?? ""]?.menuItem?.title ?? ""}</PageName>
