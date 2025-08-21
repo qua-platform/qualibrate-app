@@ -27,6 +27,23 @@
 
 .searchProjectField {
   margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  background-color: var(--input-background);
+  border: 1px solid var(--input-border);
+  border-radius: 999px;
+  height: 38px;
+  width: 100%;
+  font-size: 14px;
+  transition: border 0.2s ease;
+
+  input {
+    background: transparent;
+    border: none;
+    color: var(--font);
+    padding-left: 8px;
+    border-radius: 999px;
+  }
 }
 
 .actionButton {
