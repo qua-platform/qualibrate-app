@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./NodeElement.module.scss";
 import { Checkbox } from "@mui/material";
@@ -41,6 +41,7 @@ export const formatDate = (date: Date) => {
 export const NodeElement: React.FC<{ nodeKey: string; node: NodeDTO }> = ({ nodeKey, node }) => {
   const { selectedItemName, setSelectedItemName } = useSelectionContext();
   const { firstId, secondId, fetchOneSnapshot, trackLatestSidePanel } = useSnapshotsContext();
+  const [editingFields, setEditingFields] = useState<Set<string>>(new Set());
   const {
     isNodeRunning,
     setRunningNodeInfo,
@@ -66,6 +67,8 @@ export const NodeElement: React.FC<{ nodeKey: string; node: NodeDTO }> = ({ node
     setAllNodes({ ...allNodes, [nodeKey]: { ...node, parameters: updatedParameters } });
   };
   const getInputElement = (key: string, parameter: SingleParameter) => {
+    const isEditing = editingFields.has(key);
+    
     switch (parameter.type) {
       case "boolean":
         return (
@@ -77,7 +80,7 @@ export const NodeElement: React.FC<{ nodeKey: string; node: NodeDTO }> = ({ node
           />
         );
       default:
-        return (
+        return isEditing ? (
           <InputField
             placeholder={key}
             data-testid={`input-field-${key}`}
@@ -85,7 +88,31 @@ export const NodeElement: React.FC<{ nodeKey: string; node: NodeDTO }> = ({ node
             onChange={(val: boolean | number | string) => {
               updateParameter(key, val);
             }}
+            onBlur={() => {
+              const newEditingFields = new Set(editingFields);
+              newEditingFields.delete(key);
+              setEditingFields(newEditingFields);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === "Escape") {
+                const newEditingFields = new Set(editingFields);
+                newEditingFields.delete(key);
+                setEditingFields(newEditingFields);
+              }
+            }}
+            autoFocus
           />
+        ) : (
+          <div className={styles.tempName}
+            onClick={(e) => {
+              e.stopPropagation();
+              const newEditingFields = new Set(editingFields);
+              newEditingFields.add(key);
+              setEditingFields(newEditingFields);
+            }}
+          >
+            {parameter.default ? parameter.default.toString() : key}
+          </div>
         );
     }
   };
