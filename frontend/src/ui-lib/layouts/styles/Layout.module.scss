@@ -17,9 +17,10 @@
 
 .pageWrapper1 {
   height: 100%;
-  width: 100%;
+  width: calc(100% - 20px);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .mainPageWrapper {
