@@ -1,20 +1,27 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100vh - 88px);
   width: 40px;
   z-index: 9999;
+  position: fixed;
+  right: 0;
+  top: 88px;
+  background-color: var(--background-color);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 10px 0px;
 }
 
 .tabContainer {
   border: 1px solid #42424C;
   box-sizing: border-box;
   display: flex;
-  height: 100%;
+  height: 50%;
   flex-direction: column;
   cursor: pointer;
   justify-content: center;
   align-items: center;
+  background: #323339;
+  transition: all 0.2s ease;
 
   span {
     writing-mode: vertical-lr;
@@ -26,19 +33,23 @@
 }
 
 .tabContainerSelected {
-  border: 1px solid #42424C;
+  border: 1px solid #2CCBE5;
+  border-radius: 5px;
   background: #28292F;
+  opacity: 0.8;
 }
 
 .tabContainer:hover {
-  border: 1px solid var(--border, #42424C);
-  background: #323339;
+  border: 1px solid #2CCBE5;
+  border-radius: 5px;
+  background: #42424C;
+  opacity: 0.9;
 }
 
 .sliderPanelWrapperLogger {
   right: 40px;
   position: fixed;
-  height: 95vh;
+  height: calc(100vh - 88px);
   padding-bottom: 5px;
   width: 500px;
   background-color: #323339;
@@ -49,12 +60,13 @@
   box-shadow: -2px 0 10px rgb(0 0 0 / 40%);
   display: flex;
   flex-direction: column;
+  top: 88px;
 }
 
 .sliderPanelWrapper {
   right: 40px;
   position: fixed;
-  height: 95vh;
+  height: calc(100vh - 88px);
   padding-bottom: 5px;
   width: 500px;
   background-color: #323339;
@@ -64,4 +76,5 @@
   box-shadow: -2px 0 10px rgb(0 0 0 / 40%);
   display: flex;
   flex-direction: column;
+  top: 88px;
 }
