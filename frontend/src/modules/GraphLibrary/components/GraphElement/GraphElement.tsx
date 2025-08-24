@@ -28,6 +28,7 @@ interface TransformedGraph {
 
 export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrationGraphKey, calibrationGraph }) => {
   const [errorObject, setErrorObject] = useState<unknown>(undefined);
+  const [editingFields, setEditingFields] = useState<Set<string>>(new Set());
   const { selectedItemName, setSelectedItemName } = useSelectionContext();
   const {
     workflowGraphElements,
@@ -65,6 +66,9 @@ export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrat
     }
   };
   const getInputElement = (key: string, parameter: SingleParameter, node?: NodeDTO | GraphWorkflow) => {
+    const uniqueKey = `${node?.name || "workflow"}-${key}`;
+    const isEditing = editingFields.has(uniqueKey);
+    
     switch (parameter.type) {
       case "boolean":
         return (
@@ -75,14 +79,39 @@ export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrat
           />
         );
       default:
-        return (
+        return isEditing ? (
           <InputField
             placeholder={key}
             value={parameter.default ? parameter.default.toString() : ""}
             onChange={(val: boolean | number | string) => {
               updateParameter(key, val, node);
             }}
+            onBlur={() => {
+              const newEditingFields = new Set(editingFields);
+              newEditingFields.delete(uniqueKey);
+              setEditingFields(newEditingFields);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === "Escape") {
+                const newEditingFields = new Set(editingFields);
+                newEditingFields.delete(uniqueKey);
+                setEditingFields(newEditingFields);
+              }
+            }}
+            autoFocus
           />
+        ) : (
+          <div 
+            style={{ cursor: "pointer", padding: "4px 8px", marginTop: "1px", fontSize: "14px" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              const newEditingFields = new Set(editingFields);
+              newEditingFields.add(uniqueKey);
+              setEditingFields(newEditingFields);
+            }}
+          >
+            {parameter.default ? parameter.default.toString() : key}
+          </div>
         );
     }
   };

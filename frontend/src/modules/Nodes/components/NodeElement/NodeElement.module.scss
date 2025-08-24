@@ -106,6 +106,13 @@
   max-width: 100%;
 }
 
+.tempName {
+  cursor: pointer;
+  padding: 4px 8px;
+  margin-top: 1px;
+  font-size: 14px;
+}
+
 .descriptionTooltip {
   overflow: scroll;
   max-height: 500px;
