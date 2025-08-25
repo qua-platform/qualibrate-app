@@ -93,6 +93,13 @@
   text-wrap: nowrap;
 }
 
+.stateWrapper {
+  display: flex;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px 15px 5px 20px;
+}
+
 .stateUpdatesTopWrapper {
   overflow: scroll;
 }
@@ -138,4 +145,34 @@
     padding: 0 !important;
     height: 20px !important;
   }
+}
+
+.emptyStateWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #A5ACB6;
+  font-family: Roboto, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.emptyStateIcon {
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+.emptyStateTitle {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #E0E0E0;
+}
+
+.emptyStateDescription {
+  font-size: 12px;
+  line-height: 1.3;
+  max-width: 250px;
 }
