@@ -19,3 +19,5 @@ export const SYSTEM_PANEL_VISIBLE = false;
 export const OFFLINE_MODE = false;
 
 export const SHOW_NOT_IMPLEMENTED = false;
+
+export const EXTENSIONS_VISIBLE = true;
