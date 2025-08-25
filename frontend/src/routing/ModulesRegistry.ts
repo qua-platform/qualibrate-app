@@ -12,6 +12,9 @@ import GraphStatusIcon from "../ui-lib/Icons/GraphStatusIcon";
 import GraphStatus from "../modules/GraphLibrary/components/GraphStatus/GraphStatus";
 import { Data } from "../modules/Data";
 import { HelpIcon } from "../ui-lib/Icons/HelpIcon";
+import Extensions from "../modules/Extensions/Extensions";
+import ExtensionsIcon from "../ui-lib/Icons/ExtensionsIcon";
+import { EXTENSIONS_VISIBLE } from "../dev.config";
 
 export const DATA_KEY: ModuleKey = "data";
 export const NODES_KEY: ModuleKey = "nodes";
@@ -19,6 +22,7 @@ export const PROJECT_TAB: ModuleKey = "project";
 export const GRAPH_LIBRARY: ModuleKey = "graph-library";
 export const GRAPH_STATUS: ModuleKey = "graph-status";
 export const HELP_KEY: ModuleKey = "help";
+export const EXTENSIONS_KEY: ModuleKey = "extensions";
 export const TOGGLE_SIDEBAR_KEY: ModuleKey = "toggle";
 
 export type ModuleKey =
@@ -36,6 +40,7 @@ export type ModuleKey =
   | "admin-settings"
   | "graph-library"
   | "graph-status"
+  | "extensions"
   | "help"
   | "toggle";
 
@@ -113,6 +118,18 @@ export const ModulesRegistry: Array<Module> = [
       dataCy: cyKeys.DATA_TAB,
     },
   },
+  ...(EXTENSIONS_VISIBLE ? [{
+    keyId: EXTENSIONS_KEY,
+    path: "extensions",
+    Component: () => React.createElement(Extensions),
+    menuItem: {
+      sideBarTitle: "Extensions",
+      title: "Extensions",
+      icon: ExtensionsIcon,
+      dataCy: "extensions-tab",
+      atBottom: true as const,
+    },
+  }] : []),
   {
     keyId: HELP_KEY,
     path: "help",

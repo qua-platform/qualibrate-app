@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { bottomMenuItems, HELP_KEY, menuItems, TOGGLE_SIDEBAR_KEY } from "../../routing/ModulesRegistry";
+import { bottomMenuItems, HELP_KEY, menuItems, TOGGLE_SIDEBAR_KEY, EXTENSIONS_KEY } from "../../routing/ModulesRegistry";
 import MenuItem from "./MenuItem";
 // import { THEME_TOGGLE_VISIBLE } from "../../dev.config";
 // import ThemeToggle from "../themeModule/ThemeToggle";
@@ -16,7 +16,7 @@ import { useFlexLayoutContext } from "../../routing/flexLayout/FlexLayoutContext
 const SidebarMenu: React.FunctionComponent = () => {
   const { pinSideMenu } = useContext(GlobalThemeContext) as GlobalThemeContextState;
   const [minify, setMinify] = useState(true);
-  const { activeTabsetName, setActiveTabsetName } = useFlexLayoutContext();
+  const { activeTabsetName, setActiveTabsetName, openTab } = useFlexLayoutContext();
   const containerClassName = classNames(styles.sidebarMenu, minify ? styles.collapsed : styles.expanded);
 
   useEffect(() => {
@@ -58,10 +58,22 @@ const SidebarMenu: React.FunctionComponent = () => {
                 menuItem.icon = minify ? ExpandSideMenuIcon : CollapseSideMenuIcon;
               } else if (item.keyId === HELP_KEY) {
                 handleOnClick = handleHelpClick;
+              } else if (item.keyId === EXTENSIONS_KEY) {
+                handleOnClick = () => {
+                  openTab(item.keyId);
+                  setActiveTabsetName(item.keyId);
+                };
               }
 
               return (
-                <MenuItem {...item} menuItem={menuItem} key={item.keyId} hideText={minify} isSelected={false} onClick={handleOnClick} />
+                <MenuItem 
+                  {...item} 
+                  menuItem={menuItem} 
+                  key={item.keyId} 
+                  hideText={minify} 
+                  isSelected={item.keyId === EXTENSIONS_KEY ? activeTabsetName === item.keyId : false} 
+                  onClick={handleOnClick} 
+                />
               );
             })}
           </div>
