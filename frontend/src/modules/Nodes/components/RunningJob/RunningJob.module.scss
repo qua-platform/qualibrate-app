@@ -368,6 +368,30 @@
 
 }
 
+.editableValueContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.editIconWrapper {
+  display: flex;
+  align-items: center;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  padding-left: 5px;
+  
+  svg {
+    width: 12px;
+    height: 12px;
+    color: var(--active-text);
+  }
+}
+
+.editableValueContainer:hover .editIconWrapper {
+  opacity: 1;
+}
+
 input:focus {
   outline: none !important;
 }
@@ -410,10 +434,6 @@ input:focus {
   padding-top: 5px;
   align-items: center;
   display: flex;
-}
-
-.editIconWrapper {
-  padding-left: 5px;
 }
 
 .newValueOfState {
