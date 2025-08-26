@@ -7,7 +7,7 @@ import { useNodesContext } from "../../Nodes/context/NodesContext";
 import Iframe from "../../../common/ui-components/common/Iframe/Iframe";
 import { useFlexLayoutContext } from "../../../routing/flexLayout/FlexLayoutContext";
 import { ModuleKey } from "../../../routing/ModulesRegistry";
-
+import { EmptyStateOverlay } from "../../Nodes/components/StateUpdates/EmptyStateOverlay";
 interface IJSONEditorProps {
   title: string;
   jsonDataProp: object;
@@ -137,7 +137,7 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
       }}
     >
       {!toggleSwitch && <h1 style={{ paddingTop: "10px", paddingBottom: "5px" }}>{title}</h1>}
-      {toggleSwitch && <ToggleSwitch title={title} activeTab={activeTab} setActiveTab={setActiveTab} />}
+      {toggleSwitch && Object.keys(jsonData).length > 0 && <ToggleSwitch title={title} activeTab={activeTab} setActiveTab={setActiveTab} />}
       {showSearch && (
         <InputField value={searchTerm} title={"Search"} onChange={(_e, event) => handleSearch(event.target.value, event)}></InputField>
       )}
@@ -150,16 +150,24 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
             overflowY: "auto",
           }}
         >
-          <JsonViewer
-            rootName={false}
-            onSelect={(path) => handleOnSelect(path)}
-            theme={"dark"}
-            value={jsonData}
-            valueTypes={[imageDataType]}
-            displayDataTypes={false}
-            defaultInspectDepth={3}
-            style={{ overflowY: "auto", height: "100%" }}
-          />
+          {Object.keys(jsonData).length === 0 ? (
+            <EmptyStateOverlay
+              title="Results"
+              message="Results will appear here once a node has been executed and data is available for display."
+              iconSize={100}
+            />
+          ) : (
+            <JsonViewer
+              rootName={false}
+              onSelect={(path) => handleOnSelect(path)}
+              theme={"dark"}
+              value={jsonData}
+              valueTypes={[imageDataType]}
+              displayDataTypes={false}
+              defaultInspectDepth={3}
+              style={{ overflowY: "auto", height: "100%" }}
+            />
+          )}
         </div>
         {toggleSwitch && (
           <div style={{ width: "100%", height: "100%", display: activeTab === "live" ? "block" : "none" }}>
