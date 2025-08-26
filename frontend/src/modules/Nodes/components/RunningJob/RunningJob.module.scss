@@ -515,16 +515,18 @@ input:focus {
   font-family: Roboto, sans-serif;
   text-align: center;
   padding: 20px;
-  animation: subtlePulse 2s ease-in-out infinite;
+  animation: subtle-pulse 2s ease-in-out infinite;
 }
 
-@keyframes subtlePulse {
+@keyframes subtle-pulse {
   0% {
     opacity: 0.7;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0.7;
   }
