@@ -11,6 +11,7 @@ const ToggleSwitch = ({ title, activeTab, setActiveTab }: IToggleSwitchProps) =>
     <div className={styles.firstRowWrapper}>
       <h1>{title}</h1>
       <div className={styles.switchWrapper}>
+        <div className={styles.slidingBackground} data-active={activeTab} />
         <div className={`${styles.switchOption} ${activeTab === "live" ? styles.selected : ""}`} onClick={() => setActiveTab("live")}>
           Live
         </div>
