@@ -8,6 +8,7 @@ import { CheckMarkBeforeIcon } from "../../../../ui-lib/Icons/CheckMarkBeforeIco
 import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 import { CheckMarkAfterIcon } from "../../../../ui-lib/Icons/CheckMarkAfterIcon";
 import { UndoIcon } from "../../../../ui-lib/Icons/UndoIcon";
+import { EditIcon } from "../../../../ui-lib/Icons/EditIcon";
 import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
 
 export interface StateUpdateProps {
@@ -70,25 +71,30 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
     return (
       <>
         <Tooltip title={`${isHovered ? tooltipText : ""}`}>
-          <input
-            ref={inputRef}
-            className={isHovered ? styles.valueContainerHovered : disabled ? styles.valueContainerDisabled : styles.valueContainerEditable}
-            data-testid="value-input"
-            onMouseEnter={() => {
-              if (tooltipText === undefined) {
+          <div className={styles.editableValueContainer}>
+            <input
+              ref={inputRef}
+              className={isHovered ? styles.valueContainerHovered : disabled ? styles.valueContainerDisabled : styles.valueContainerEditable}
+              data-testid="value-input"
+              onMouseEnter={() => {
+                if (tooltipText === undefined) {
+                  setTooltipText("Edit");
+                }
+                setIsHovered(true);
+              }}
+              disabled={disabled}
+              onMouseLeave={() => setIsHovered(false)}
+              onFocus={() => setTooltipText("")}
+              onBlur={(e) => {
+                onChange && onChange(e);
                 setTooltipText("Edit");
-              }
-              setIsHovered(true);
-            }}
-            disabled={disabled}
-            onMouseLeave={() => setIsHovered(false)}
-            onFocus={() => setTooltipText("")}
-            onBlur={(e) => {
-              onChange && onChange(e);
-              setTooltipText("Edit");
-            }}
-            defaultValue={stateUpdateValue}
-          />
+              }}
+              defaultValue={stateUpdateValue}
+            />
+            <div className={styles.editIconWrapper}>
+              <EditIcon />
+            </div>
+          </div>
         </Tooltip>
       </>
     );
