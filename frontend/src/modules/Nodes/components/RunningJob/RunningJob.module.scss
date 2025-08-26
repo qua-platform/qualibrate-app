@@ -379,6 +379,7 @@
   align-items: center;
   opacity: 0.6;
   transition: opacity 0.2s ease;
+  padding-left: 5px;
   
   svg {
     width: 12px;
@@ -433,10 +434,6 @@ input:focus {
   padding-top: 5px;
   align-items: center;
   display: flex;
-}
-
-.editIconWrapper {
-  padding-left: 5px;
 }
 
 .newValueOfState {
