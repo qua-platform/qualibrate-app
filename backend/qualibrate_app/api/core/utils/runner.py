@@ -11,6 +11,7 @@ from qualibrate_app.api.core.utils.request_utils import get_runner_config
 
 APP2RUNNER_VERSIONS: dict[Version, tuple[Version, Version]] = {
     Version("0.3.6"): (Version("0.3.6"), Version("0.4.0")),
+    Version("0.4.0"): (Version("0.4.0"), Version("0.4.0")),
 }
 
 
@@ -26,7 +27,12 @@ def validate_runner_version(
     if runner_range is None:
         return False
     runner_v = Version(runner_version)
-    return runner_range[0] <= runner_v <= runner_range[1]
+    if not runner_v.is_prerelease:
+        return runner_range[0] <= runner_v <= runner_range[1]
+    return (
+        runner_range[0] <= Version(app_v.base_version)
+        and runner_v <= runner_range[1]
+    )
 
 
 def get_runner_status(
