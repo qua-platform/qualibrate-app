@@ -38,7 +38,7 @@ class RunnerVersionValid(BaseModel):
 class HealthCheck(BaseModel):
     frontend_version: str
     backend_version: str
-    runners_status: RunnerVersionValid
+    runner_status: RunnerVersionValid
 
     @computed_field
     def is_valid(self) -> bool:

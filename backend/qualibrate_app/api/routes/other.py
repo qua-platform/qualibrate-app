@@ -33,5 +33,5 @@ def health(
     return HealthCheck(
         backend_version=app_v,
         frontend_version=frontend_version,
-        runners_status=get_runner_status(app_v, settings, cookies=cookies),
+        runner_status=get_runner_status(app_v, settings, cookies=cookies),
     )
