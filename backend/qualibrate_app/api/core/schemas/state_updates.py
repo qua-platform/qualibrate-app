@@ -1,6 +1,7 @@
 from collections.abc import Mapping
 from typing import Any
 
+from packaging.version import InvalidVersion, Version
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
 
 
@@ -41,4 +42,8 @@ class HealthCheck(BaseModel):
 
     @computed_field
     def is_valid(self) -> bool:
+        try:
+            Version(self.frontend_version)
+        except InvalidVersion:
+            return False
         return self.frontend_version.lstrip("v") == self.backend_version
