@@ -38,11 +38,14 @@ def get_runner_statuses(
         runner_config = get_runner_config(settings)
     except RuntimeError:
         return []
-    response = requests.get(
-        urljoin(runner_config.address_with_root, "meta"),
-        cookies=cookies,
-        timeout=runner_config.timeout,
-    )
+    try:
+        response = requests.get(
+            urljoin(runner_config.address_with_root, "meta"),
+            cookies=cookies,
+            timeout=runner_config.timeout,
+        )
+    except requests.exceptions.RequestException:
+        return []
     if response.status_code != requests.codes.ok:
         return []
     try:
