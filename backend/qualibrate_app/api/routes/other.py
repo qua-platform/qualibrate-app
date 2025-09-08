@@ -5,7 +5,7 @@ from fastapi import APIRouter, Cookie, Depends
 from qualibrate_config.models import QualibrateConfig
 
 from qualibrate_app.api.core.schemas.state_updates import HealthCheck
-from qualibrate_app.api.core.utils.runner import get_runner_statuses
+from qualibrate_app.api.core.utils.runner import get_runner_status
 from qualibrate_app.config import get_settings
 
 other_router = APIRouter(tags=["other"])
@@ -33,5 +33,5 @@ def health(
     return HealthCheck(
         backend_version=app_v,
         frontend_version=frontend_version,
-        runners_status=get_runner_statuses(app_v, settings, cookies=cookies),
+        runners_status=get_runner_status(app_v, settings, cookies=cookies),
     )

@@ -29,15 +29,24 @@ def validate_runner_version(
     return runner_range[0] <= runner_v <= runner_range[1]
 
 
-def get_runner_statuses(
+def get_runner_status(
     app_version: str,
     settings: QualibrateConfig,
     cookies: MutableMapping[str, Any],
-) -> list[RunnerVersionValid]:
+) -> RunnerVersionValid:
     try:
         runner_config = get_runner_config(settings)
     except RuntimeError:
-        return []
+        return RunnerVersionValid(
+            version=None,
+            url=None,
+            is_valid=False,
+        )
+    invalid_runner = RunnerVersionValid(
+        version=None,
+        url=runner_config.address,
+        is_valid=False,
+    )
     try:
         response = requests.get(
             urljoin(runner_config.address_with_root, "meta"),
@@ -45,18 +54,17 @@ def get_runner_statuses(
             timeout=runner_config.timeout,
         )
     except requests.exceptions.RequestException:
-        return []
+        return invalid_runner
     if response.status_code != requests.codes.ok:
-        return []
+        return invalid_runner
     try:
         data = response.json()
         runner_v = data.get("version")
-        return [
-            RunnerVersionValid(
-                version=runner_v,
-                url=runner_config.address,  # type: ignore[arg-type] # TODO
-                is_valid=validate_runner_version(app_version, runner_v),
-            )
-        ]
+        return RunnerVersionValid(
+            version=runner_v,
+            url=runner_config.address,
+            is_valid=validate_runner_version(app_version, runner_v),
+        )
+
     except requests.exceptions.JSONDecodeError:
-        return []
+        return invalid_runner

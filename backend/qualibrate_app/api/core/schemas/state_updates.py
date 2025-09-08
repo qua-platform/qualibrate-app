@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, Optional
 
 from packaging.version import InvalidVersion, Version
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
@@ -30,15 +30,15 @@ class StateUpdateRequestItems(BaseModel):
 
 
 class RunnerVersionValid(BaseModel):
-    url: HttpUrl
-    version: str
+    url: Optional[HttpUrl]
+    version: Optional[str]
     is_valid: bool
 
 
 class HealthCheck(BaseModel):
     frontend_version: str
     backend_version: str
-    runners_status: list[RunnerVersionValid]
+    runners_status: RunnerVersionValid
 
     @computed_field
     def is_valid(self) -> bool:
