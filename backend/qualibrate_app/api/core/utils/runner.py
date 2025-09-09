@@ -8,11 +8,7 @@ from qualibrate_config.models import QualibrateConfig
 
 from qualibrate_app.api.core.schemas.health import RunnerVersionValid
 from qualibrate_app.api.core.utils.request_utils import get_runner_config
-
-APP2RUNNER_VERSIONS: dict[Version, tuple[Version, Version]] = {
-    Version("0.3.6"): (Version("0.3.6"), Version("0.4.0")),
-    Version("0.4.0"): (Version("0.4.0"), Version("0.4.0")),
-}
+from qualibrate_app.versions_matching import APP2RUNNER_VERSIONS
 
 
 def validate_runner_version(
