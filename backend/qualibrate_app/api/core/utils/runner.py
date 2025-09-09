@@ -6,7 +6,7 @@ import requests
 from packaging.version import Version
 from qualibrate_config.models import QualibrateConfig
 
-from qualibrate_app.api.core.schemas.state_updates import RunnerVersionValid
+from qualibrate_app.api.core.schemas.health import RunnerVersionValid
 from qualibrate_app.api.core.utils.request_utils import get_runner_config
 
 APP2RUNNER_VERSIONS: dict[Version, tuple[Version, Version]] = {

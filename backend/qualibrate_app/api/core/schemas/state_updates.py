@@ -1,8 +1,7 @@
 from collections.abc import Mapping
-from typing import Any, Optional
+from typing import Any
 
-from packaging.version import InvalidVersion, Version
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, computed_field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class StateUpdate(BaseModel):
@@ -27,23 +26,3 @@ class StateUpdateRequestItem(BaseModel):
 
 class StateUpdateRequestItems(BaseModel):
     items: list[StateUpdateRequestItem]
-
-
-class RunnerVersionValid(BaseModel):
-    url: Optional[HttpUrl]
-    version: Optional[str]
-    is_valid: bool
-
-
-class HealthCheck(BaseModel):
-    frontend_version: str
-    backend_version: str
-    runner_status: RunnerVersionValid
-
-    @computed_field
-    def is_valid(self) -> bool:
-        try:
-            Version(self.frontend_version)
-        except InvalidVersion:
-            return False
-        return self.frontend_version.lstrip("v") == self.backend_version

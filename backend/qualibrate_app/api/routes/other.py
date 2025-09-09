@@ -4,7 +4,7 @@ from typing import Annotated, Union
 from fastapi import APIRouter, Cookie, Depends
 from qualibrate_config.models import QualibrateConfig
 
-from qualibrate_app.api.core.schemas.state_updates import HealthCheck
+from qualibrate_app.api.core.schemas.health import HealthCheck
 from qualibrate_app.api.core.utils.runner import get_runner_status
 from qualibrate_app.config import get_settings
 
