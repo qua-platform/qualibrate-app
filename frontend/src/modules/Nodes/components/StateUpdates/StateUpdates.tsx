@@ -1,5 +1,5 @@
-import React from "react";
-import { RunningNodeInfo, StateUpdate } from "../../context/NodesContext";
+import React, { useCallback } from "react";
+import { StateUpdate, useNodesContext } from "../../context/NodesContext";
 import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "../RunningJob/RunningJob.module.scss";
@@ -8,25 +8,22 @@ import { Button } from "@mui/material";
 // import { ErrorStatusWrapper } from "../../../common/Error/ErrorStatusWrapper";
 import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
 
-export const StateUpdates: React.FC<{
-  runningNodeInfo: RunningNodeInfo | undefined;
-  setRunningNodeInfo: (a: RunningNodeInfo) => void;
-  updateAllButtonPressed: boolean;
-  setUpdateAllButtonPressed: (a: boolean) => void;
-}> = (props) => {
+export const StateUpdates: React.FC = () => {
   const { trackLatestSidePanel, fetchOneSnapshot, latestSnapshotId, secondId } = useSnapshotsContext();
-  const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed } = props;
+  const { runningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed } = useNodesContext();
 
-  const handleClick = async (stateUpdates: StateUpdate) => {
-    const litOfUpdates = Object.entries(stateUpdates ?? {})
+  const stateUpdates = runningNodeInfo?.state_updates ?? {};
+
+  const handleStateUpdates = async (updates: StateUpdate) => {
+    const listOfUpdates = Object.entries(updates)
       .filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated)
-      .map(([key, stateUpdateObject]) => {
-        return {
-          data_path: key,
-          value: stateUpdateObject.val ?? stateUpdateObject.new!,
-        };
-      });
-    const result = await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", litOfUpdates);
+      .map(([key, stateUpdateObject]) => ({
+        data_path: key,
+        value: stateUpdateObject.val ?? stateUpdateObject.new!,
+      }));
+
+    const result = await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", listOfUpdates);
+
     if (result.isOk) {
       setUpdateAllButtonPressed(result.result!);
       if (result.result && trackLatestSidePanel) {
@@ -35,46 +32,36 @@ export const StateUpdates: React.FC<{
     }
   };
 
+  const handleOnClick = useCallback(() => handleStateUpdates(stateUpdates), [stateUpdates]);
+
+  const pendingUpdatesCount = Object.entries(stateUpdates).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length;
+
   return (
     <>
-      {/*{Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >*/}
-      {/*  0 && (*/}
       <div className={styles.stateWrapper} data-testid="state-wrapper">
         <div className={styles.stateTitle} data-testid="state-title">
           State updates&nbsp;
-          {runningNodeInfo?.state_updates && Object.keys(runningNodeInfo?.state_updates).length > 0
-            ? `(${Object.keys(runningNodeInfo?.state_updates).length})`
-            : ""}
+          {Object.keys(stateUpdates).length > 0 ? `(${Object.keys(stateUpdates).length})` : ""}
         </div>
+
         {updateAllButtonPressed ||
-          (Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >
-            0 && (
+          (pendingUpdatesCount > 0 && (
             <Button
               className={styles.updateAllButton}
               data-testid="update-all-button"
               disabled={updateAllButtonPressed}
-              onClick={() => handleClick(runningNodeInfo?.state_updates ?? {})}
+              onClick={handleOnClick}
             >
               Accept All
             </Button>
           ))}
       </div>
-      {/*// )}*/}
-      {runningNodeInfo?.state_updates && (
-        <div className={styles.stateUpdatesTopWrapper} data-testid="state-updates-top-wrapper">
-          {Object.entries(runningNodeInfo?.state_updates ?? {}).map(([key, stateUpdateObject], index) => (
-            <StateUpdateElement
-              key={key}
-              keyValue={key}
-              index={index}
-              stateUpdateObject={stateUpdateObject}
-              runningNodeInfo={runningNodeInfo}
-              setRunningNodeInfo={setRunningNodeInfo}
-              updateAllButtonPressed={updateAllButtonPressed}
-            />
-          ))}
 
-          {/*{runningNodeInfo?.error && <ErrorStatusWrapper error={runningNodeInfo?.error} />}*/}
+      {Object.keys(stateUpdates).length > 0 && (
+        <div className={styles.stateUpdatesTopWrapper} data-testid="state-updates-top-wrapper">
+          {Object.entries(stateUpdates).map(([key, stateUpdateObject], index) => (
+            <StateUpdateElement key={key} keyValue={key} index={index} stateUpdateObject={stateUpdateObject} />
+          ))}
         </div>
       )}
     </>

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "../RunningJob/RunningJob.module.scss";
-import { RunningNodeInfo, StateUpdateObject } from "../../context/NodesContext";
+import { StateUpdateObject, useNodesContext } from "../../context/NodesContext";
 import { RightArrowIcon } from "../../../../ui-lib/Icons/RightArrowIcon";
 import { CircularProgress, Tooltip } from "@mui/material";
 import { CheckMarkBeforeIcon } from "../../../../ui-lib/Icons/CheckMarkBeforeIcon";
@@ -14,17 +14,16 @@ interface StateUpdateProps {
   keyValue: string;
   index: number;
   stateUpdateObject: StateUpdateObject;
-  runningNodeInfo?: RunningNodeInfo;
-  setRunningNodeInfo?: (a: RunningNodeInfo) => void;
-  updateAllButtonPressed: boolean;
 }
 
 export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
-  const { keyValue, index, stateUpdateObject, runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed } = props;
+  const { keyValue, index, stateUpdateObject } = props;
   const [runningUpdate, setRunningUpdate] = React.useState<boolean>(false);
   const [parameterUpdated, setParameterUpdated] = useState<boolean>(false);
   const [customValue, setCustomValue] = useState<string | number>(JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? ""));
   const previousValue = JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? "");
+  const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed } = useNodesContext();
+
   const { secondId, fetchOneSnapshot, trackLatestSidePanel, latestSnapshotId } = useSnapshotsContext();
 
   const ValueComponent = ({
@@ -202,76 +201,6 @@ export const StateUpdateElement: React.FC<StateUpdateProps> = (props) => {
           </div>
         )}
       </div>
-      <>
-        {/*</div>)}*/}
-        {/*  */}
-
-        {/*<div>*/}
-        {/*  {!runningUpdate && !parameterUpdated && (*/}
-        {/*    <div*/}
-        {/*      className={styles.upArrowIconWrapper}*/}
-        {/*    onClick={async () => {*/}
-        {/*    if (*/}
-        {/*        runningNodeInfo &&*/}
-        {/*        runningNodeInfo.idx &&*/}
-        {/*        stateUpdateObject &&*/}
-        {/*        ("val" in stateUpdateObject || "new" in stateUpdateObject)*/}
-        {/*    ) {*/}
-        {/*        setRunningUpdate(true);*/}
-        {/*        const stateUpdateValue = customValue ? customValue : stateUpdateObject.val ?? stateUpdateObject.new!;*/}
-        {/*        const response = await SnapshotsApi.updateState(runningNodeInfo?.idx, key, stateUpdateValue);*/}
-
-        {/*        const stateUpdate = {...stateUpdateObject, stateUpdated: response.result!};*/}
-        {/*        if (setRunningNodeInfo) {*/}
-        {/*            setRunningNodeInfo({*/}
-        {/*                ...runningNodeInfo,*/}
-        {/*                state_updates: {...runningNodeInfo.state_updates, [key]: stateUpdate},*/}
-        {/*            });*/}
-        {/*        }*/}
-        {/*        setParameterUpdated(response.result!);*/}
-        {/*        setRunningUpdate(false);*/}
-        {/*    }*/}
-        {/*}}*/}
-        {/*    >*/}
-        {/*      {!updateAllButtonPressed && <UpArrowIcon />}*/}
-        {/*    </div>*/}
-        {/*  )}*/}
-        {/*  <div className={styles.stateUpdateIconWrapper}>*/}
-        {/*    {runningUpdate && !parameterUpdated && <CircularProgress size={32} />}*/}
-        {/*    {((!runningUpdate && parameterUpdated) || updateAllButtonPressed) && <CheckMarkIcon />}*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        {/*<div key={key} className={styles.stateUpdateComponentTextWrapper}>*/}
-        {/*  <div className={styles.stateUpdateKeyText}>{stateUpdateObject?.key ? stateUpdateObject?.key.toString() : key.toString()}</div>*/}
-        {/*  <div className={styles.stateUpdateValueText}>*/}
-        {/*    {stateUpdateObject && (*/}
-        {/*      <div className={styles.stateUpdateValueTextWrapper}>*/}
-        {/*        {JSON.stringify(stateUpdateObject.old)}&nbsp;&nbsp;*/}
-        {/*        <RightArrowIcon />*/}
-        {/*        &nbsp;&nbsp;{JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new ?? "")}*/}
-        {/*        <div*/}
-        {/*          className={styles.editIconWrapper}*/}
-        {/*          onClick={() => {*/}
-        {/*            setEditMode(true);*/}
-        {/*            setCustomValue(JSON.stringify(stateUpdateObject.val ?? stateUpdateObject.new));*/}
-        {/*          }}*/}
-        {/*        >*/}
-        {/*          {!editMode && <EditIcon />}*/}
-        {/*        </div>*/}
-        {/*        {editMode && (*/}
-        {/*          <InputField*/}
-        {/*            className={styles.newValueOfState}*/}
-        {/*            value={customValue as string | number | readonly string[] | undefined}*/}
-        {/*            onChange={(val) => {*/}
-        {/*              setCustomValue(val);*/}
-        {/*            }}*/}
-        {/*          />*/}
-        {/*        )}*/}
-        {/*      </div>*/}
-        {/*    )}*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-      </>
     </div>
   );
 };
