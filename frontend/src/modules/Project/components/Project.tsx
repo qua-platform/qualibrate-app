@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import ProjectInfo from "./ProjectInfo";
 import { classNames } from "../../../utils/classnames";
 // eslint-disable-next-line css-modules/no-unused-class
@@ -20,7 +20,7 @@ interface Props {
 
 const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: Props) => {
   const index = useMemo(() => getColorIndex(name), [name]);
-  const projectColor = colorPalette[index];  
+  const projectColor = colorPalette[index];
   const handleOnClick = useCallback(() => {
     if (!onClick) {
       return;
@@ -35,7 +35,7 @@ const Project = ({ showRuntime = false, isActive = false, onClick, name = "" }: 
       onClick={handleOnClick}
       data-cy={cyKeys.projects.PROJECT}
     >
-      <ProjectInfo name={name} colorIcon={projectColor}/>
+      <ProjectInfo name={name} colorIcon={projectColor} />
       <div className={styles.projectActions}>{showRuntime && SelectRuntime}</div>
     </button>
   );
