@@ -5,7 +5,6 @@ import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
 import styles from "../RunningJob/RunningJob.module.scss";
 import { StateUpdateElement } from "./StateUpdateElement";
 import { Button } from "@mui/material";
-// import { ErrorStatusWrapper } from "../../../common/Error/ErrorStatusWrapper";
 import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
 
 export const StateUpdates: React.FC = () => {
