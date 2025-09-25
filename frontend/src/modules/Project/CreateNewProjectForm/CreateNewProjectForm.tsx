@@ -135,6 +135,7 @@ const CreateNewProjectForm: React.FC<Props> = ({ closeNewProjectForm }) => {
         error={errors.projectName}
       />
       <ProjectFormField
+        hasOpenFileDialogButton={true}
         id="data_path"
         label="Data path"
         placeholder="Enter data path"
@@ -143,6 +144,7 @@ const CreateNewProjectForm: React.FC<Props> = ({ closeNewProjectForm }) => {
         error={errors.dataPath}
       />
       <ProjectFormField
+        hasOpenFileDialogButton={true}
         id="quam_state_path"
         label="QUAM state path"
         placeholder="Enter QUAM path"
@@ -151,6 +153,7 @@ const CreateNewProjectForm: React.FC<Props> = ({ closeNewProjectForm }) => {
         error={errors.quamPath}
       />
       <ProjectFormField
+        hasOpenFileDialogButton={true}
         id="calibration_library_path"
         label="Calibration library path"
         placeholder="Enter calibration path"
