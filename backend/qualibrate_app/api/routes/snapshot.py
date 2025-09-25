@@ -30,6 +30,7 @@ from qualibrate_app.api.core.types import DocumentSequenceType, IdType
 from qualibrate_app.api.core.utils.request_utils import get_runner_config
 from qualibrate_app.api.core.utils.types_parsing import types_conversion
 from qualibrate_app.api.dependencies.search import get_search_path
+from qualibrate_app.api.exceptions.classes.base import QualibrateException
 from qualibrate_app.api.routes.utils.dependencies import (
     get_snapshot_load_type_flag,
 )
@@ -91,8 +92,11 @@ def get_history(
 def compare_by_id(
     id_to_compare: IdType,
     snapshot: Annotated[SnapshotBase, Depends(_get_snapshot_instance)],
-) -> Mapping[str, Mapping[str, Any]]:
-    return snapshot.compare_by_id(id_to_compare)
+) -> Optional[Mapping[str, Mapping[str, Any]]]:
+    try:
+        return snapshot.compare_by_id(id_to_compare)
+    except QualibrateException:
+        return None
 
 
 @snapshot_router.post("/update_entry")
