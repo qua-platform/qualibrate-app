@@ -7,7 +7,7 @@ import { RunningJobNodeProgressTracker } from "./RunningJobNodeProgressTracker";
 import { RunningJobParameters } from "./RunningJobParameters";
 
 export const RunningJob: React.FC = () => {
-  const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed, runStatus } = useNodesContext();
+  const { runStatus } = useNodesContext();
 
   return (
     <div className={styles.wrapper} data-testid="running-job-wrapper">
@@ -17,12 +17,7 @@ export const RunningJob: React.FC = () => {
           <RunningJobParameters />
         </div>
         <div className={styles.statesColumnWrapper} data-testid="states-column-wrapper">
-          <StateUpdates
-            runningNodeInfo={runningNodeInfo}
-            setRunningNodeInfo={setRunningNodeInfo}
-            updateAllButtonPressed={updateAllButtonPressed}
-            setUpdateAllButtonPressed={setUpdateAllButtonPressed}
-          />
+          <StateUpdates />
         </div>
       </div>
     </div>

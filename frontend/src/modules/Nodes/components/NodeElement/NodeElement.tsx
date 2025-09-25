@@ -115,8 +115,8 @@ export const NodeElement: React.FC<{ nodeKey: string; node: NodeDTO }> = ({ node
       const errorWithDetails = result.error as ErrorWithDetails;
       setSubmitNodeResponseError({
         nodeName: node.name,
-        name: `${errorWithDetails.detail[0].type ?? "Error msg"}: `,
-        msg: errorWithDetails.detail[0].msg,
+        name: `${errorWithDetails?.detail?.length > 0 ? errorWithDetails?.detail[0].type : "Error msg"}: `,
+        msg: errorWithDetails?.detail?.length > 0 ? errorWithDetails?.detail[0].msg : "",
       });
       setRunningNodeInfo({
         timestampOfRun: formatDate(new Date()),
