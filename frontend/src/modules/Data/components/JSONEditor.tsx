@@ -3,6 +3,7 @@ import jp from "jsonpath";
 import { defineDataType, JsonViewer, Path } from "@textea/json-viewer";
 import InputField from "../../../common/ui-components/common/Input/InputField";
 import ToggleSwitch from "../../../common/ui-components/common/ToggleSwitch/ToggleSwitch";
+import FileTypeSelector from "../../../common/ui-components/common/FileTypeSelector/FileTypeSelector";
 import { useNodesContext } from "../../Nodes/context/NodesContext";
 import Iframe from "../../../common/ui-components/common/Iframe/Iframe";
 import { useFlexLayoutContext } from "../../../routing/flexLayout/FlexLayoutContext";
@@ -22,6 +23,7 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [jsonData, setJsonData] = useState(jsonDataProp);
   const [activeTab, setActiveTab] = useState<string>("final");
+  const [fileType, setFileType] = useState<string>("json");
   const { selectedPageName } = useFlexLayoutContext();
 
   useEffect(() => {
@@ -136,8 +138,21 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
         marginRight: "20px",
       }}
     >
-      {!toggleSwitch && <h1 style={{ paddingTop: "10px", paddingBottom: "5px" }}>{title}</h1>}
-      {toggleSwitch && <ToggleSwitch title={title} activeTab={activeTab} setActiveTab={setActiveTab} />}
+        {toggleSwitch && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "10px", paddingBottom: "5px" }}>
+            <h1 style={{ paddingTop: "10px", paddingBottom: "5px" }}>{title}</h1>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <FileTypeSelector
+                value={fileType}
+                onChange={setFileType}
+              />
+              <ToggleSwitch 
+                activeTab={activeTab} 
+                setActiveTab={setActiveTab}
+              />
+            </div>
+          </div>
+        )}
       {showSearch && (
         <InputField value={searchTerm} title={"Search"} onChange={(_e, event) => handleSearch(event.target.value, event)}></InputField>
       )}
