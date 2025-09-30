@@ -37,7 +37,12 @@ const config = {
     },
   },
   devServer: {
-    static: false,
+    static: [
+      {
+        directory: inProject("public"),
+        publicPath: "/",
+      },
+    ],
     port: 1234,
     hot: true,
     historyApiFallback: true,
@@ -60,6 +65,10 @@ const config = {
         {
           from: inProject("public/manifest.json"),
           to: inProject("dist/manifest.json"),
+        },
+        {
+          from: inProject("public/service-worker.js"),
+          to: inProject("dist/service-worker.js"),
         },
       ],
     }),
