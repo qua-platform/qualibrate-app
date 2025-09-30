@@ -1,6 +1,7 @@
 import os
 import warnings
 from functools import lru_cache
+from itertools import product
 from pathlib import Path
 from typing import Annotated
 
@@ -15,11 +16,13 @@ from qualibrate_config.resolvers import (
 
 from qualibrate_app.config.vars import (
     CONFIG_PATH_ENV_NAME,
+    CORS_ORIGINS_ENV_NAME,
 )
 
 __all__ = [
     "get_default_static_files_path",
     "get_config_path",
+    "get_cors_origin",
     "get_settings",
     "get_quam_state_path",
 ]
@@ -41,6 +44,19 @@ def get_config_path() -> Path:
     if path is not None:
         return Path(path)
     return get_qualibrate_config_path()
+
+
+@lru_cache
+def get_cors_origin() -> list[str]:
+    cors_env = os.environ.get(CORS_ORIGINS_ENV_NAME)
+    if cors_env is not None:
+        return list(cors_env.split(","))
+    return list(
+        f"http://{host}:{port}"
+        for host, port in product(
+            ["localhost", "127.0.0.1"], [1234, 8000, 8001]
+        )
+    )
 
 
 @lru_cache

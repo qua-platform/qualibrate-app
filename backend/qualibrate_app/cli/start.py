@@ -8,6 +8,7 @@ from qualibrate_config.vars import (
 )
 
 from qualibrate_app.config import CONFIG_PATH_ENV_NAME
+from qualibrate_app.config.vars import CORS_ORIGINS_ENV_NAME
 
 
 @click.command(name="start")
@@ -33,8 +34,21 @@ from qualibrate_app.config import CONFIG_PATH_ENV_NAME
     show_default=True,
     help="Application will be started on the given port",
 )  # env QUALIBRATE_START_PORT
-def start_command(config_path: Path, port: int, reload: bool) -> None:
+@click.option(
+    "--cors-origin",
+    type=str,
+    multiple=True,
+    help="CORS origin to use. Can be passed multiple times.",
+)
+def start_command(
+    config_path: Path,
+    port: int,
+    reload: bool,
+    cors_origin: list[str],
+) -> None:
     os.environ[CONFIG_PATH_ENV_NAME] = str(config_path)
+    if len(cors_origin) != 0:
+        os.environ[CORS_ORIGINS_ENV_NAME] = ",".join(cors_origin)
 
     from qualibrate_app.app import main as app_main
 
