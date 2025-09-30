@@ -7,6 +7,7 @@ import { StateUpdateElement, StateUpdateProps } from "./StateUpdateElement";
 import { Button } from "@mui/material";
 // import { ErrorStatusWrapper } from "../../../common/Error/ErrorStatusWrapper";
 import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
+import { EmptyStateOverlay } from "./EmptyStateOverlay";
 
 export const StateUpdates: React.FC<{
   runningNodeInfo: RunningNodeInfo | undefined;
@@ -39,30 +40,32 @@ export const StateUpdates: React.FC<{
     <>
       {/*{Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >*/}
       {/*  0 && (*/}
-      <div className={styles.stateWrapper} data-testid="state-wrapper">
-        <div className={styles.stateTitle} data-testid="state-title">
-          State updates&nbsp;
-          {runningNodeInfo?.state_updates && Object.keys(runningNodeInfo?.state_updates).length > 0
-            ? `(${Object.keys(runningNodeInfo?.state_updates).length})`
-            : ""}
+      {runningNodeInfo?.state_updates && Object.keys(runningNodeInfo?.state_updates).length > 0 && (
+        <div className={styles.stateWrapper} data-testid="state-wrapper">
+          <div className={styles.stateTitle} data-testid="state-title">
+            State updates&nbsp;
+            {runningNodeInfo?.state_updates && Object.keys(runningNodeInfo?.state_updates).length > 0
+              ? `(${Object.keys(runningNodeInfo?.state_updates).length})`
+              : ""}
+          </div>
+          {updateAllButtonPressed ||
+            (Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >
+              0 && (
+              <Button
+                className={styles.updateAllButton}
+                data-testid="update-all-button"
+                disabled={updateAllButtonPressed}
+                onClick={() => handleClick(runningNodeInfo?.state_updates ?? {})}
+              >
+                Accept All
+              </Button>
+            ))}
         </div>
-        {updateAllButtonPressed ||
-          (Object.entries(runningNodeInfo?.state_updates ?? {}).filter(([, stateUpdateObject]) => !stateUpdateObject.stateUpdated).length >
-            0 && (
-            <Button
-              className={styles.updateAllButton}
-              data-testid="update-all-button"
-              disabled={updateAllButtonPressed}
-              onClick={() => handleClick(runningNodeInfo?.state_updates ?? {})}
-            >
-              Accept All
-            </Button>
-          ))}
-      </div>
-      {/*// )}*/}
-      {runningNodeInfo?.state_updates && (
-        <div className={styles.stateUpdatesTopWrapper} data-testid="state-updates-top-wrapper">
-          {Object.entries(runningNodeInfo?.state_updates ?? {}).map(([key, stateUpdateObject], index) =>
+      )}
+      
+      <div className={styles.stateUpdatesTopWrapper} data-testid="state-updates-top-wrapper">
+        {runningNodeInfo?.state_updates && Object.keys(runningNodeInfo?.state_updates).length > 0 ? (
+          Object.entries(runningNodeInfo?.state_updates ?? {}).map(([key, stateUpdateObject], index) =>
             StateUpdateElement({
               key,
               index,
@@ -71,11 +74,15 @@ export const StateUpdates: React.FC<{
               setRunningNodeInfo,
               updateAllButtonPressed,
             } as StateUpdateProps)
-          )}
-
-          {/*{runningNodeInfo?.error && <ErrorStatusWrapper error={runningNodeInfo?.error} />}*/}
-        </div>
-      )}
+          )
+        ) : (
+          <EmptyStateOverlay
+            title="State Updates"
+            message="State updates will appear here when a node is running and generates parameter changes."
+            iconSize={30}
+          />
+        )}
+      </div>
     </>
   );
 };
