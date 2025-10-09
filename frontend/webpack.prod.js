@@ -64,6 +64,10 @@ const config = {
           from: inProject("public/manifest.json"),
           to: inProject("dist/manifest.json"),
         },
+        {
+          from: inProject("public/service-worker.js"),
+          to: inProject("dist/service-worker.js"),
+        },
       ],
     }),
     new MiniCssExtractPlugin({
