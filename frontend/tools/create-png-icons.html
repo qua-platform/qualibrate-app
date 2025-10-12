@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate PNG Icons</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        input[type="file"] { margin: 20px 0; padding: 10px; border: 2px solid #2CCBE5; }
+        button { padding: 10px 20px; background: #2CCBE5; color: white; border: none; cursor: pointer; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>Convert SVG to PNG Icons</h1>
+    <p>Select an SVG file to convert to multiple PNG sizes for PWA icons</p>
+    <input type="file" id="svgFile" accept=".svg">
+    <div id="status"></div>
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const status = document.getElementById('status');
+        const fileInput = document.getElementById('svgFile');
+
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const svgText = await file.text();
+            status.innerHTML = '<p>Starting conversion...</p>';
+
+            for (const size of sizes) {
+                await createPngIcon(svgText, size);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            status.innerHTML += '<p><strong>✓ Done! Move all downloaded PNG files to frontend/public/assets/icons/</strong></p>';
+        });
+
+        async function createPngIcon(svgText, size) {
+            // Parse and modify SVG dimensions
+            const parser = new DOMParser();
+            const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+            const svgElement = svgDoc.documentElement;
+
+            svgElement.setAttribute('width', size);
+            svgElement.setAttribute('height', size);
+
+            const svg = new XMLSerializer().serializeToString(svgElement);
+
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Create image from SVG
+            const img = new Image();
+            const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+
+            return new Promise((resolve) => {
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, size, size);
+                    canvas.toBlob((blob) => {
+                        const link = document.createElement('a');
+                        link.download = `icon-${size}x${size}.png`;
+                        link.href = URL.createObjectURL(blob);
+                        link.click();
+                        status.innerHTML += `<p>✓ Created icon-${size}x${size}.png</p>`;
+                        URL.revokeObjectURL(url);
+                        resolve();
+                    }, 'image/png');
+                };
+                img.src = url;
+            });
+        }
+    </script>
+</body>
+</html>
