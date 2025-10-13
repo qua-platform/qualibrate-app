@@ -22,6 +22,7 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [jsonData, setJsonData] = useState(jsonDataProp);
   const [activeTab, setActiveTab] = useState<string>("final");
+  const [imageModal, setImageModal] = useState<{ isOpen: boolean; src: string }>({ isOpen: false, src: "" });
   const { selectedPageName } = useFlexLayoutContext();
 
   useEffect(() => {
@@ -92,8 +93,7 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
     is: (value) => typeof value === "string" && value.startsWith("data:image"),
     Component: ({ value }) => {
       const handleImageClick = () => {
-        const win = window.open();
-        win?.document.write(`<img src='${value}' alt='${value}' style="max-width: 100%; height: auto;" />`);
+        setImageModal({ isOpen: true, src: value as string });
       };
 
       return (
@@ -167,6 +167,70 @@ export const JSONEditor = ({ title, jsonDataProp, height, showSearch = true, tog
           </div>
         )}
       </>
+      {imageModal.isOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            cursor: "pointer",
+          }}
+          onClick={() => setImageModal({ isOpen: false, src: "" })}
+        >
+          <div
+            style={{
+              position: "relative",
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              cursor: "default",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={imageModal.src}
+              alt="Modal image"
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                transition: "transform 0.3s ease",
+                cursor: "zoom-in",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.5)";
+                e.currentTarget.style.cursor = "zoom-out";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.cursor = "zoom-in";
+              }}
+            />
+            <button
+              onClick={() => setImageModal({ isOpen: false, src: "" })}
+              style={{
+                position: "absolute",
+                top: "-40px",
+                right: "0px",
+                background: "none",
+                border: "none",
+                color: "white",
+                fontSize: "24px",
+                cursor: "pointer",
+                padding: "8px",
+              }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
