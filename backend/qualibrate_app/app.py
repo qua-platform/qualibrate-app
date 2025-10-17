@@ -4,9 +4,11 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from qualibrate_app.api.__main__ import api_router
+from qualibrate_app.api.core.lifespan import app_lifespan
 from qualibrate_app.api.exceptions.classes.base import QualibrateException
 from qualibrate_app.api.exceptions.handler import qualibrate_exception_handler
 from qualibrate_app.api.middleware.process_time import ProcessTimeMiddleware
+from qualibrate_app.api.sockets import base_ws_router
 from qualibrate_app.config.resolvers import (
     get_config_path,
     get_default_static_files_path,
@@ -20,6 +22,7 @@ except ImportError:
 
 
 app = FastAPI(
+    lifespan=app_lifespan,
     title="Qualibrate",
     openapi_url="/app_openapi.json",
     docs_url="/app_docs",
@@ -44,6 +47,7 @@ app.add_middleware(
 app.add_middleware(ProcessTimeMiddleware)
 
 app.include_router(api_router, prefix="/api")
+app.include_router(base_ws_router, prefix="/ws")
 
 static_files_path = (
     _settings.app.static_site_files
