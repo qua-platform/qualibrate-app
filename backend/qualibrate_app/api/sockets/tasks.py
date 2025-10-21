@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from qualibrate_app.api.core.domain.local_storage.utils.node_utils import (
     find_nodes_ids_by_filter,
@@ -21,7 +20,7 @@ def _on_exc(exc: Exception) -> None:
     )
 
 
-previous_snapshot_id: Optional[IdType] = None
+previous_snapshot_id: IdType | None = None
 
 
 @repeat_every(seconds=1, on_exception=_on_exc)
