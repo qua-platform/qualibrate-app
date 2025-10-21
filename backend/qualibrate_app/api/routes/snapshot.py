@@ -1,6 +1,6 @@
 import contextlib
 from collections.abc import Mapping
-from typing import Annotated, Any, Optional, Union, cast
+from typing import Annotated, Any, cast
 from urllib.parse import urljoin
 
 import requests
@@ -92,7 +92,7 @@ def get_history(
 def compare_by_id(
     id_to_compare: IdType,
     snapshot: Annotated[SnapshotBase, Depends(_get_snapshot_instance)],
-) -> Optional[Mapping[str, Mapping[str, Any]]]:
+) -> Mapping[str, Mapping[str, Any]] | None:
     try:
         return snapshot.compare_by_id(id_to_compare)
     except QualibrateException:
@@ -115,7 +115,7 @@ def update_entry(
     value: Annotated[Any, Body()],
     settings: Annotated[QualibrateConfig, Depends(get_settings)],
     qualibrate_token: Annotated[
-        Union[str, None], Cookie(alias="Qualibrate-Token")
+        str | None, Cookie(alias="Qualibrate-Token")
     ] = None,
 ) -> bool:
     cookies = (
@@ -150,7 +150,7 @@ def update_entries(
     state_updates: StateUpdateRequestItems,
     settings: Annotated[QualibrateConfig, Depends(get_settings)],
     qualibrate_token: Annotated[
-        Union[str, None], Cookie(alias="Qualibrate-Token")
+        str | None, Cookie(alias="Qualibrate-Token")
     ] = None,
 ) -> bool:
     """
@@ -199,8 +199,8 @@ def update_entries(
 @snapshot_router.get("/search/data/values")
 def search(
     snapshot: Annotated[SnapshotBase, Depends(_get_snapshot_instance)],
-    data_path: Annotated[list[Union[str, int]], Depends(get_search_path)],
-) -> Optional[DocumentSequenceType]:
+    data_path: Annotated[list[str | int], Depends(get_search_path)],
+) -> DocumentSequenceType | None:
     return snapshot.search(data_path, load=True)
 
 
@@ -208,5 +208,5 @@ def search(
 def search_recursive(
     snapshot: Annotated[SnapshotBase, Depends(_get_snapshot_instance)],
     target_key: str,
-) -> Optional[DocumentSequenceType]:
+) -> DocumentSequenceType | None:
     return snapshot.search_recursive(target_key, load=True)
