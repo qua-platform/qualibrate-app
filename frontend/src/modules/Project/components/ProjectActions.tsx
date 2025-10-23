@@ -19,31 +19,20 @@ interface ProjectActionsProps {
 const ProjectActions: React.FC<ProjectActionsProps> = ({ isCurrentProject, projectName, selectedProject }) => {
   const { openTab } = useFlexLayoutContext();
   const { handleSelectActiveProject } = useProjectContext();
-  const { reset, setReset, setSelectedSnapshotId, setAllSnapshots, setJsonData, setResult, setDiffData } = useSnapshotsContext();
+  const { fetchGitgraphSnapshots, pageNumber, setJsonData, setResult, setDiffData } = useSnapshotsContext();
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!selectedProject) return;
 
-    handleSelectActiveProject(selectedProject);
-    setSelectedSnapshotId(undefined);
+    await handleSelectActiveProject(selectedProject as ProjectDTO);
     setJsonData(undefined);
     setResult(undefined);
     setDiffData(undefined);
-    setReset(true);
+    fetchGitgraphSnapshots(true, pageNumber);
 
     openTab(NODES_KEY);
-  }, [
-    selectedProject,
-    handleSelectActiveProject,
-    openTab,
-    setAllSnapshots,
-    setSelectedSnapshotId,
-    setJsonData,
-    setResult,
-    setDiffData,
-    setReset,
-    reset,
-  ]);
+  }, [handleSelectActiveProject, setJsonData, setResult, setDiffData, fetchGitgraphSnapshots, pageNumber, selectedProject]);
+
   return (
     <div className={styles.pageActions}>
       {selectedProject?.name === projectName && (
