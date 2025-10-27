@@ -1,5 +1,5 @@
 import contextlib
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from typing import Annotated, Any, cast
 from urllib.parse import urljoin
 
@@ -20,17 +20,22 @@ from qualibrate_app.api.core.domain.timeline_db.snapshot import (
 )
 from qualibrate_app.api.core.models.paged import PagedCollection
 from qualibrate_app.api.core.models.snapshot import (
+    MachineSearchResults,
     SimplifiedSnapshotWithMetadata,
 )
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
 from qualibrate_app.api.core.schemas.state_updates import (
     StateUpdateRequestItems,
 )
-from qualibrate_app.api.core.types import DocumentSequenceType, IdType
+from qualibrate_app.api.core.types import (
+    IdType,
+    PageFilter,
+)
 from qualibrate_app.api.core.utils.request_utils import get_runner_config
 from qualibrate_app.api.core.utils.types_parsing import types_conversion
 from qualibrate_app.api.dependencies.search import get_search_path
 from qualibrate_app.api.routes.utils.dependencies import (
+    get_page_filter,
     get_snapshot_load_type_flag,
 )
 from qualibrate_app.config import (
@@ -66,24 +71,37 @@ def get(
 @snapshot_router.get("/history")
 def get_history(
     *,
-    page: int = Query(1, gt=0),
-    per_page: int = Query(50, gt=0),
-    reverse: bool = False,
-    global_reverse: bool = False,
+    page_filter: Annotated[PageFilter, Depends(get_page_filter)],
+    descending: bool = True,
+    reverse: Annotated[
+        bool,
+        Query(
+            deprecated=True,
+            description="This field is ignored. Use `descending` instead.",
+        ),
+    ] = False,
+    global_reverse: Annotated[
+        bool,
+        Query(
+            deprecated=True,
+            description="This field is ignored. Use `descending` instead.",
+        ),
+    ] = False,
     snapshot: Annotated[SnapshotBase, Depends(_get_snapshot_instance)],
 ) -> PagedCollection[SimplifiedSnapshotWithMetadata]:
     total, history = snapshot.get_latest_snapshots(
-        page, per_page, global_reverse
+        pages_filter=page_filter,
+        descending=descending,
     )
     history_dumped = [
         SimplifiedSnapshotWithMetadata(**snapshot.dump().model_dump())
         for snapshot in history
     ]
-    if reverse:
-        # TODO: make more correct relationship update
-        history_dumped = list(reversed(history_dumped))
     return PagedCollection[SimplifiedSnapshotWithMetadata](
-        page=page, per_page=per_page, total_items=total, items=history_dumped
+        page=page_filter.page,
+        per_page=page_filter.per_page,
+        total_items=total,
+        items=history_dumped,
     )
 
 
@@ -196,7 +214,7 @@ def update_entries(
 def search(
     snapshot: Annotated[SnapshotBase, Depends(_get_snapshot_instance)],
     data_path: Annotated[list[str | int], Depends(get_search_path)],
-) -> DocumentSequenceType | None:
+) -> Sequence[MachineSearchResults] | None:
     return snapshot.search(data_path, load=True)
 
 
@@ -204,5 +222,5 @@ def search(
 def search_recursive(
     snapshot: Annotated[SnapshotBase, Depends(_get_snapshot_instance)],
     target_key: str,
-) -> DocumentSequenceType | None:
+) -> Sequence[MachineSearchResults] | None:
     return snapshot.search_recursive(target_key, load=True)
