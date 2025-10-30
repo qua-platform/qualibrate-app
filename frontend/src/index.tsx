@@ -8,12 +8,12 @@ import { BrowserRouter, HashRouter } from "react-router-dom";
 import { updateColorTheme } from "./modules/themeModule/themeHelper";
 import { GlobalThemeContextProvider } from "./modules/themeModule/GlobalThemeContext";
 import { createRoot } from "react-dom/client";
-import { AuthContextProvider } from "./modules/Login/context/AuthContext";
 import { SnapshotsContextProvider } from "./modules/Snapshots/context/SnapshotsContext";
-import { ProjectContextProvider } from "./modules/Project/context/ProjectContext";
 import { WebSocketProvider } from "./contexts/WebSocketContext";
 import { GraphContextProvider } from "./modules/GraphLibrary/context/GraphContext";
 import { NodesContextProvider } from "./modules/Nodes/context/NodesContext";
+import { Provider } from "react-redux";
+import store from "./stores";
 
 type ProviderComponent = React.FC<PropsWithChildren<ReactNode>>;
 
@@ -22,7 +22,6 @@ const RouterProvider = process.env.USE_RELATIVE_PATHS === "true" ? HashRouter : 
 const contextProviders: ProviderComponent[] = [
   ApiContextProvider,
   FlexLayoutContextProvider,
-  AuthContextProvider,
   RouterProvider,
   GraphContextProvider,
   NodesContextProvider,
@@ -32,8 +31,8 @@ const contextProviders: ProviderComponent[] = [
 const Application: React.FunctionComponent = () => {
   useEffect(updateColorTheme, []);
   return (
-    <GlobalThemeContextProvider>
-      <ProjectContextProvider>
+    <Provider store={store}>
+      <GlobalThemeContextProvider>
         <WebSocketProvider>
           {contextProviders.reduce(
             (Comp, Provider) => {
@@ -43,8 +42,8 @@ const Application: React.FunctionComponent = () => {
             <AppRoutes />
           )}
         </WebSocketProvider>
-      </ProjectContextProvider>
-    </GlobalThemeContextProvider>
+      </GlobalThemeContextProvider>
+    </Provider>
   );
 };
 
