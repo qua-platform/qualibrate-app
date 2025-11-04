@@ -41,7 +41,7 @@
 
 import React, {createContext, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState} from "react";
 import WebSocketService from "../services/WebSocketService";
-import {WS_EXECUTION_HISTORY, WS_GET_STATUS} from "../services/webSocketRoutes";
+import {WS_EXECUTION_HISTORY, WS_GET_STATUS, WS_SNAPSHOT_INFO} from "../services/webSocketRoutes";
 import {ErrorObject} from "../modules/common/Error/ErrorStatusWrapper";
 import {Measurement} from "../modules/GraphLibrary/components/GraphStatus/context/GraphStatusContext";
 import {BasicDialog} from "../common/ui-components/common/BasicDialog/BasicDialog";
@@ -222,6 +222,27 @@ export type HistoryType = {
 };
 
 /**
+ * Real-time info about latest executed and latest saved snapshot id and a flag that indicates whether snapshots array
+ * should be updated or not (by doing API request to the BE).
+ *
+ * @property saved_id - id of the last saved snapshot
+ * @property latest_id - id of the last executed node
+ * @property update_required -  flag that indicates if all snapshot array should be updated (because of the new ones)
+ *
+ * @remarks
+ * Pushed via `/execution/ws/workflow_execution_history` WebSocket endpoint.
+ * Used by timeline components to display calibration history and trends.
+ *
+ * @see Data for previous executed nodes details
+ *
+ */
+export type SnapshotType = {
+  saved_id: number;
+  latest_id: number;
+  update_required: boolean;
+};
+
+/**
  * WebSocket context value interface providing real-time calibration data and operations.
  *
  * Provides access to two WebSocket streams (runStatus and history) along with
@@ -229,10 +250,12 @@ export type HistoryType = {
  *
  * @property runStatus - Current calibration execution status (null if no active run)
  * @property history - Historical execution records (null if not yet received)
+ * @property snapshotInfo - Info about last snapshots and flag for fetching new ones
  * @property sendRunStatus - Send message to run status WebSocket (rarely used from frontend)
  * @property sendHistory - Send message to history WebSocket (rarely used from frontend)
  * @property subscribeToRunStatus - Register callback for run status updates, returns unsubscribe function
  * @property subscribeToHistory - Register callback for history updates, returns unsubscribe function
+ * @property subscribeToSnapshotInfo - Register callback for snapshotInfo updates, returns unsubscribe function
  *
  * @see useWebSocketData for the hook to access this context
  * @see WebSocketProvider for the provider component
@@ -240,10 +263,13 @@ export type HistoryType = {
 type WebSocketData = {
   runStatus: RunStatusType | null;
   history: HistoryType | null;
+  snapshotInfo: SnapshotType | null;
   sendRunStatus: (data: RunStatusType) => void;
   sendHistory: (data: HistoryType) => void;
+  sendSnapshotInfo: (data: SnapshotType) => void;
   subscribeToRunStatus: (cb: (data: RunStatusType) => void) => () => void;
   subscribeToHistory: (cb: (data: HistoryType) => void) => () => void;
+  subscribeToSnapshotInfo: (cb: (data: SnapshotType) => void) => () => void;
 };
 
 /**
@@ -255,10 +281,13 @@ type WebSocketData = {
 const WebSocketContext = createContext<WebSocketData>({
   runStatus: null,
   history: null,
+  snapshotInfo: null,
   sendRunStatus: () => {},
   sendHistory: () => {},
+  sendSnapshotInfo: () => {},
   subscribeToRunStatus: () => () => {},
   subscribeToHistory: () => () => {},
+  subscribeToSnapshotInfo: () => () => {},
 });
 
 /**
@@ -342,7 +371,7 @@ export const useWebSocketData = () => useContext(WebSocketContext);
  *
  * @see WebSocketService for low-level connection management (services/WebSocketService.ts)
  * @see useWebSocketData for the hook to consume this context
- * @see WS_GET_STATUS and WS_EXECUTION_HISTORY for WebSocket route constants
+ * @see WS_GET_STATUS, WS_EXECUTION_HISTORY and WS_SNAPSHOT_INFO for WebSocket route constants
  */
 export const WebSocketProvider: React.FC<PropsWithChildren> = ({ children }) => {
   // Determine WebSocket protocol based on current page protocol (http→ws, https→wss)
@@ -353,10 +382,12 @@ export const WebSocketProvider: React.FC<PropsWithChildren> = ({ children }) => 
   // This prevents reconnection on every component update
   const runStatusWS = useRef<WebSocketService<RunStatusType> | null>(null);
   const historyWS = useRef<WebSocketService<HistoryType> | null>(null);
+  const snapshotInfoWS = useRef<WebSocketService<SnapshotType> | null>(null);
 
   // State for current WebSocket data, updated by WebSocketService callbacks
   const [runStatus, setRunStatus] = useState<RunStatusType | null>(null);
   const [history, setHistory] = useState<HistoryType | null>(null);
+  const [snapshotInfo, setSnapshotInfo] = useState<SnapshotType | null>(null);
   const [showConnectionErrorDialog, setShowConnectionErrorDialog] = useState<boolean>(false);
   const [connectionLostAt, setConnectionLostAt] = useState<number | null>(null);
   const [connectionLostSeconds, setConnectionLostSeconds] = useState<number>(0);
@@ -418,6 +449,7 @@ export const WebSocketProvider: React.FC<PropsWithChildren> = ({ children }) => 
     // Construct full WebSocket URLs from protocol, host, and route constants
     const runStatusUrl = `${protocol}://${host}${WS_GET_STATUS}`;
     const historyUrl = `${protocol}://${host}${WS_EXECUTION_HISTORY}`;
+    const snapshotInfoUrl = `${protocol}://${host}${WS_SNAPSHOT_INFO}`;
 
     runStatusWS.current = new WebSocketService<RunStatusType>(
       runStatusUrl,
@@ -431,6 +463,12 @@ export const WebSocketProvider: React.FC<PropsWithChildren> = ({ children }) => 
       handleHideConnectionErrorDialog,
       handleShowConnectionErrorDialog
     );
+    snapshotInfoWS.current = new WebSocketService<SnapshotType>(
+      snapshotInfoUrl,
+      setSnapshotInfo,
+      handleHideConnectionErrorDialog,
+      handleShowConnectionErrorDialog
+    );
 
     // Initiate connections with continuous 1-second retry cadence
     if (runStatusWS.current && !runStatusWS.current.isConnected()) {
@@ -438,6 +476,9 @@ export const WebSocketProvider: React.FC<PropsWithChildren> = ({ children }) => 
     }
     if (historyWS.current && !historyWS.current.isConnected()) {
       historyWS.current.connect();
+    }
+    if (snapshotInfoWS.current && !snapshotInfoWS.current.isConnected()) {
+      snapshotInfoWS.current.connect();
     }
 
     // Cleanup function: disconnect WebSockets when component unmounts
@@ -449,15 +490,19 @@ export const WebSocketProvider: React.FC<PropsWithChildren> = ({ children }) => 
       if (historyWS.current && historyWS.current.isConnected()) {
         historyWS.current.disconnect();
       }
+      if (snapshotInfoWS.current && snapshotInfoWS.current.isConnected()) {
+        snapshotInfoWS.current.disconnect();
+      }
     };
   }, []); // Empty deps: run once on mount, cleanup on unmount
 
   // Message sending functions (Don't seem to be used in this application - WebSockets are used receive-only)
   const sendRunStatus = (data: RunStatusType) => runStatusWS.current?.send(data);
   const sendHistory = (data: HistoryType) => historyWS.current?.send(data);
+  const sendSnapshotInfo = (data: SnapshotType) => snapshotInfoWS.current?.send(data);
 
   // Pub/sub subscription functions for advanced use cases
-  // Most consumers just read runStatus/history from context without subscribing
+  // Most consumers just read runStatus/history/snapshotInfo from context without subscribing
   // Now returns unsubscribe function for convenient cleanup
   const subscribeToRunStatus = (cb: (data: RunStatusType) => void) => {
     return runStatusWS.current?.subscribe(cb) ?? (() => {});
@@ -467,15 +512,22 @@ export const WebSocketProvider: React.FC<PropsWithChildren> = ({ children }) => 
     return historyWS.current?.subscribe(cb) ?? (() => {});
   };
 
+  const subscribeToSnapshotInfo = (cb: (data: SnapshotType) => void) => {
+    return snapshotInfoWS.current?.subscribe(cb) ?? (() => {});
+  };
+
   return (
     <WebSocketContext.Provider
       value={{
         runStatus,
         history,
+        snapshotInfo,
         sendRunStatus,
         sendHistory,
+        sendSnapshotInfo,
         subscribeToRunStatus,
         subscribeToHistory,
+        subscribeToSnapshotInfo,
       }}
     >
       {showConnectionErrorDialog && (
