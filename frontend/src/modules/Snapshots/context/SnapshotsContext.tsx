@@ -1,7 +1,6 @@
 import React, { Dispatch, PropsWithChildren, ReactNode, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
 import { SnapshotDTO } from "../SnapshotDTO";
 import { SnapshotsApi } from "../api/SnapshotsApi";
-import { useWebSocketData } from "../../../contexts/WebSocketContext";
 
 interface ISnapshotsContext {
   // trackLatestSidePanel: boolean;
@@ -16,7 +15,7 @@ interface ISnapshotsContext {
   setAllSnapshots: Dispatch<SetStateAction<SnapshotDTO[]>>;
 
   selectedSnapshotId: number | undefined;
-  setSelectedSnapshotId: (id: number | undefined) => void;
+  setSelectedSnapshotId: Dispatch<SetStateAction<number | undefined>>;
 
   latestSnapshotId: number | undefined;
   setLatestSnapshotId: Dispatch<SetStateAction<number | undefined>>;
@@ -38,7 +37,8 @@ interface ISnapshotsContext {
   setFirstId: (id: string) => void;
   secondId: string;
   setSecondId: (id: string) => void;
-  fetchGitgraphSnapshots: (firstTime: boolean, page: number) => void;
+  reset: boolean;
+  setReset: (val: boolean) => void;
 }
 
 export const SnapshotsContext = React.createContext<ISnapshotsContext>({
@@ -75,13 +75,13 @@ export const SnapshotsContext = React.createContext<ISnapshotsContext>({
   setFirstId: () => {},
   secondId: "0",
   setSecondId: () => {},
-  fetchGitgraphSnapshots: () => {},
+  reset: false,
+  setReset: () => {},
 });
 
 export const useSnapshotsContext = (): ISnapshotsContext => useContext<ISnapshotsContext>(SnapshotsContext);
 
 export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): React.ReactElement {
-  const { snapshotInfo } = useWebSocketData();
   const [trackLatestSidePanel, setTrackLatestSidePanel] = useState(true);
   const [trackPreviousSnapshot, setTrackPreviousSnapshot] = useState(true);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -91,6 +91,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<number | undefined>(undefined);
   const [clickedForSnapshotSelection, setClickedForSnapshotSelection] = useState<boolean>(false);
   const [latestSnapshotId, setLatestSnapshotId] = useState<number | undefined>(undefined);
+
+  const [reset, setReset] = useState<boolean>(false);
 
   const [jsonDataSidePanel, setJsonDataSidePanel] = useState<object | undefined>(undefined);
   const [jsonData, setJsonData] = useState<object | undefined>(undefined);
@@ -159,6 +161,7 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
 
   const fetchGitgraphSnapshots = async (firstTime: boolean, page: number) => {
     const resAllSnapshots = await fetchAllSnapshots(page);
+    setAllSnapshots([]);
     if (resAllSnapshots && resAllSnapshots?.isOk) {
       const items = resAllSnapshots.result?.items;
       setTotalPages(resAllSnapshots.result?.total_pages ?? 1);
@@ -177,11 +180,11 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
       if (firstTime) {
         if (items) {
           setSelectedSnapshotId(lastElId);
-          console.log("lastElId=", lastElId);
           fetchOneSnapshot(lastElId, lastElId - 1, true, true);
         } else {
           if (selectedSnapshotId) {
             fetchOneSnapshot(selectedSnapshotId);
+            setReset(false);
           }
         }
       }
@@ -189,14 +192,48 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
   };
 
   useEffect(() => {
+    setAllSnapshots([]);
     fetchGitgraphSnapshots(true, pageNumber);
-  }, []);
+  }, [pageNumber]);
+  // -----------------------------------------------------------
+  // -----------------------------------------------------------
+
+  // -----------------------------------------------------------
+  // PERIODICAL FETCH ALL SNAPSHOTS
+  const intervalFetch = async (page: number) => {
+    const resAllSnapshots = await fetchAllSnapshots(page);
+    if (resAllSnapshots) {
+      setTotalPages(resAllSnapshots.result?.total_pages as number);
+      setPageNumber(resAllSnapshots.result?.page as number);
+      const newMaxId = resAllSnapshots.result?.items[0]?.id;
+      const odlMaxId = allSnapshots ? allSnapshots[0]?.id : 0;
+      console.log(`Max snapshot ID - previous=${odlMaxId}, latest=${newMaxId}`);
+      if (newMaxId !== odlMaxId! && resAllSnapshots.result?.items?.length !== 0) {
+        setReset(true);
+      } else {
+        setReset(false);
+      }
+    }
+  };
+
+  // TODO Add lastSelectedId! in state
 
   useEffect(() => {
-    if (snapshotInfo?.update_required) {
-      fetchGitgraphSnapshots(false, pageNumber);
+    const checkInterval = setInterval(() => intervalFetch(pageNumber), 1000);
+    return () => clearInterval(checkInterval);
+  }, [allSnapshots, pageNumber]);
+  // -----------------------------------------------------------
+
+  // -----------------------------------------------------------
+  // PERIODICAL FETCH ALL SNAPSHOTS
+  useEffect(() => {
+    if (reset) {
+      // setAllSnapshots([]);
+      const updateFn = setTimeout(() => fetchGitgraphSnapshots(false, pageNumber), 2);
+      return () => clearTimeout(updateFn);
     }
-  }, [snapshotInfo?.update_required, pageNumber]);
+  }, [reset, pageNumber]);
+  // -----------------------------------------------------------
 
   return (
     <SnapshotsContext.Provider
@@ -233,7 +270,8 @@ export function SnapshotsContextProvider(props: PropsWithChildren<ReactNode>): R
         setFirstId,
         secondId,
         setSecondId,
-        fetchGitgraphSnapshots,
+        reset,
+        setReset,
       }}
     >
       {props.children}
