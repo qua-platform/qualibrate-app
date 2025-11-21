@@ -11,10 +11,11 @@ import { useRootDispatch } from "../../../stores";
 
 interface IProps {
   showParameters: boolean;
-  mapOfItems?: NodeMap;
+  mapOfItems?: NodeMap | GraphWorkflow;
+  title?: string;
 }
 
-export const ParameterList: React.FC<IProps> = ({ showParameters = false, mapOfItems }) => {
+export const ParameterList: React.FC<IProps> = ({ showParameters = false, mapOfItems, title }) => {
   const dispatch = useRootDispatch();
   const allGraphs = useSelector(getAllGraphs);
   const selectedWorkflowName = useSelector(getSelectedWorkflowName);
@@ -73,16 +74,25 @@ export const ParameterList: React.FC<IProps> = ({ showParameters = false, mapOfI
   };
   return (
     <>
-      {Object.entries(mapOfItems ?? {}).map(([key, parameter]) => {
+      {Object.entries(mapOfItems ?? {}).map(([key, parameter], index) => {
+        if (!Object.prototype.hasOwnProperty.call(parameter, "nodes")) {
+          return (
+            <Parameters
+              key={key}
+              show={showParameters}
+              showTitle={true}
+              title={parameter.name}
+              currentItem={parameter}
+              getInputElement={getInputElement}
+            />
+          );
+        }
         return (
-          <Parameters
-            key={key}
-            show={showParameters}
-            showTitle={true}
-            title={parameter.name}
-            currentItem={parameter}
-            getInputElement={getInputElement}
-          />
+          <div>
+            {title}
+            <br />
+            <ParameterList key={key + index} title={key} showParameters={showParameters} mapOfItems={parameter.nodes} />
+          </div>
         );
       })}
     </>

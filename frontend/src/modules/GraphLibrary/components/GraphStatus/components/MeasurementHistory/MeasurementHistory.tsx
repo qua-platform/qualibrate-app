@@ -8,17 +8,17 @@
  * @see GraphStatusContext - Provides allMeasurements and trackLatest state
  * @see MeasurementElementList - Renders the measurement list
  */
-import React, {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import styles from "./MeasurementHistory.module.scss";
-import {MeasurementElementList} from "../MeasurementElementList/MeasurementElementList";
-import {useRootDispatch} from "../../../../../../stores";
-import {getAllMeasurements, getTrackLatest} from "../../../../../../stores/GraphStores/GraphStatus/selectors";
-import {setTrackLatest} from "../../../../../../stores/GraphStores/GraphStatus/actions";
-import {setSelectedNodeNameInWorkflow} from "../../../../../../stores/GraphStores/GraphCommon/actions";
-import {getTrackLatestSidePanel} from "../../../../../../stores/SnapshotsStore/selectors";
-import {fetchOneSnapshot, setDiffData, setLatestSnapshotId, setResult} from "../../../../../../stores/SnapshotsStore/actions";
-import {Measurement} from "../../../../../../stores/GraphStores/GraphStatus/GraphStatusStore";
+import { MeasurementElementList } from "../MeasurementElementList/MeasurementElementList";
+import { useRootDispatch } from "../../../../../../stores";
+import { getAllMeasurements, getTrackLatest } from "../../../../../../stores/GraphStores/GraphStatus/selectors";
+import { setTrackLatest } from "../../../../../../stores/GraphStores/GraphStatus/actions";
+import { setSelectedNodeNameInWorkflow } from "../../../../../../stores/GraphStores/GraphCommon/actions";
+import { getTrackLatestSidePanel } from "../../../../../../stores/SnapshotsStore/selectors";
+import { fetchOneSnapshot, setDiffData, setLatestSnapshotId, setResult } from "../../../../../../stores/SnapshotsStore/actions";
+import { Measurement } from "../../../../../../stores/GraphStores/GraphStatus/GraphStatusStore";
 
 interface IMeasurementHistoryListProps {
   title?: string;
@@ -28,7 +28,7 @@ export const MeasurementHistory: React.FC<IMeasurementHistoryListProps> = ({ tit
   const dispatch = useRootDispatch();
   const allMeasurements = useSelector(
     getAllMeasurements,
-    (prev?: Measurement[], current?: Measurement[]) => JSON.stringify(prev) === JSON.stringify(current)
+    (prev?: Measurement[] | null, current?: Measurement[] | null) => JSON.stringify(prev) === JSON.stringify(current)
   );
   const trackLatest = useSelector(getTrackLatest);
   const trackLatestSidePanel = useSelector(getTrackLatestSidePanel);

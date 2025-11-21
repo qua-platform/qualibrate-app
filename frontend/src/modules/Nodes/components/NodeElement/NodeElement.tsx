@@ -51,10 +51,11 @@ import BlueButton from "../../../../ui-lib/components/Button/BlueButton";
 import {NodesApi} from "../../api/NodesAPI";
 import {RunIcon} from "../../../../ui-lib/Icons/RunIcon";
 import Tooltip from "@mui/material/Tooltip";
-import { useRootDispatch } from "../../../../stores";
-import { useSelector } from "react-redux";
-import { getAllNodes, getSelectedNode, getSubmitNodeResponseError } from "../../../../stores/NodesStore/selectors";
-import { setAllNodes,
+import {useRootDispatch} from "../../../../stores";
+import {useSelector} from "react-redux";
+import {getAllNodes, getSelectedNode, getSubmitNodeResponseError} from "../../../../stores/NodesStore/selectors";
+import {
+  setAllNodes,
   setIsAllStatusesUpdated,
   setIsNodeRunning,
   setResults,
@@ -64,13 +65,19 @@ import { setAllNodes,
   setSubmitNodeResponseError,
   setUpdateAllButtonPressed,
 } from "../../../../stores/NodesStore/actions";
-import { ErrorWithDetails } from "../../../../stores/NodesStore/NodesStore";
-import { getRunStatusIsRunning, getRunStatusNodeName, getRunStatusNodePercentage, getRunStatusNodeStatus } from "../../../../stores/WebSocketStore/selectors";
-import { getFirstId, getSecondId, getTrackLatestSidePanel } from "../../../../stores/SnapshotsStore/selectors";
-import { fetchOneSnapshot } from "../../../../stores/SnapshotsStore/actions";
+import {ErrorWithDetails} from "../../../../stores/NodesStore/NodesStore";
+import {
+  getRunStatusIsRunning,
+  getRunStatusNodeName,
+  getRunStatusNodePercentage,
+  getRunStatusNodeStatus,
+} from "../../../../stores/WebSocketStore/selectors";
+import {getFirstId, getSecondId, getTrackLatestSidePanel} from "../../../../stores/SnapshotsStore/selectors";
+import {fetchOneSnapshot} from "../../../../stores/SnapshotsStore/actions";
 import {InfoIcon} from "../../../../ui-lib/Icons/InfoIcon";
 import {StatusVisuals} from "./NodeElementStatusVisuals";
 import {getNodeRowClass} from "./helpers";
+import {GraphWorkflow} from "@/modules/GraphLibrary/components/GraphList";
 
 /**
  * Calibration node definition from backend node library scan.
@@ -86,6 +93,7 @@ import {getNodeRowClass} from "./helpers";
  * @property nodes - Child nodes for graph workflows (currently unused in NodeElement)
  */
 export interface NodeDTO {
+  id?: string;
   name: string;
   title?: string;
   description: string;
@@ -100,7 +108,7 @@ export interface NodeDTO {
  * of the node library. Used to render the complete list of available calibrations.
  */
 export interface NodeMap {
-  [key: string]: NodeDTO;
+  [key: string]: NodeDTO | GraphWorkflow;
 }
 
 /**
@@ -247,7 +255,7 @@ export const NodeElement: React.FC<{ nodeKey: string; node: NodeDTO }> = ({ node
         acc[key] = parameter.default ?? null;
         return acc;
       },
-      {} as { [key: string]: boolean | number | string | null }
+      {} as { [key: string]: boolean | number | string | null | string[] }
     );
   };
 
@@ -289,15 +297,19 @@ export const NodeElement: React.FC<{ nodeKey: string; node: NodeDTO }> = ({ node
       dispatch(setRunningNodeInfo({ timestampOfRun: formatDate(new Date()), status: "running" }));
     } else {
       const errorWithDetails = result.error as ErrorWithDetails;
-      dispatch(setSubmitNodeResponseError({
-        nodeName: node.name,
-        name: `${errorWithDetails.detail[0].type ?? "Error msg"}: `,
-        msg: errorWithDetails.detail[0].msg,
-      }));
-      dispatch(setRunningNodeInfo({
-        timestampOfRun: formatDate(new Date()),
-        status: "error",
-      }));
+      dispatch(
+        setSubmitNodeResponseError({
+          nodeName: node.name,
+          name: `${errorWithDetails.detail[0].type ?? "Error msg"}: `,
+          msg: errorWithDetails.detail[0].msg,
+        })
+      );
+      dispatch(
+        setRunningNodeInfo({
+          timestampOfRun: formatDate(new Date()),
+          status: "error",
+        })
+      );
     }
     if (trackLatestSidePanel) {
       dispatch(fetchOneSnapshot(Number(firstId), Number(secondId), false, true));

@@ -9,27 +9,32 @@
  * @see CytoscapeGraph - Embedded graph visualization
  * @see GraphContext - Manages graph selection and execution state
  */
-import React, {useState} from "react";
-import {useSelector} from "react-redux";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./GraphElement.module.scss";
-import {classNames} from "../../../../utils/classnames";
-import {InputParameter, Parameters, SingleParameter} from "../../../common/Parameters/Parameters";
-import {GraphWorkflow} from "../GraphList";
-import {Checkbox} from "@mui/material";
-import {ParameterList} from "../../../common/Parameters/ParameterList";
+import { classNames } from "../../../../utils/classnames";
+import { InputParameter, Parameters, SingleParameter } from "../../../common/Parameters/Parameters";
+import { GraphWorkflow } from "../GraphList";
+import { Checkbox } from "@mui/material";
+import { ParameterList } from "../../../common/Parameters/ParameterList";
 import CytoscapeGraph from "../CytoscapeGraph/CytoscapeGraph";
-import {GraphLibraryApi} from "../../api/GraphLibraryApi";
-import {NodeDTO} from "../../../Nodes/components/NodeElement/NodeElement";
-import {GraphElementErrorWrapper} from "../GraphElementErrorWrapper/GraphElementErrorWrapper";
+import { GraphLibraryApi } from "../../api/GraphLibraryApi";
+import { NodeDTO } from "../../../Nodes/components/NodeElement/NodeElement";
+import { GraphElementErrorWrapper } from "../GraphElementErrorWrapper/GraphElementErrorWrapper";
 import BlueButton from "../../../../ui-lib/components/Button/BlueButton";
 import InputField from "../../../../common/ui-components/common/Input/InputField";
-import {GRAPH_STATUS_KEY} from "../../../../routing/ModulesRegistry";
-import {getAllGraphs, getSelectedWorkflowName} from "../../../../stores/GraphStores/GraphLibrary/selectors";
-import {fetchWorkflowGraph, setAllGraphs, setLastRunActive, setSelectedWorkflowName} from "../../../../stores/GraphStores/GraphLibrary/actions";
-import {useRootDispatch} from "../../../../stores";
-import {getWorkflowGraphElements} from "../../../../stores/GraphStores/GraphCommon/selectors";
-import {setActivePage} from "../../../../stores/NavigationStore/actions";
+import { GRAPH_STATUS_KEY } from "../../../../routing/ModulesRegistry";
+import { getAllGraphs, getSelectedWorkflowName } from "../../../../stores/GraphStores/GraphLibrary/selectors";
+import {
+  fetchWorkflowGraph,
+  setAllGraphs,
+  setLastRunActive,
+  setSelectedWorkflowName,
+} from "../../../../stores/GraphStores/GraphLibrary/actions";
+import { useRootDispatch } from "../../../../stores";
+import { getWorkflowGraphElements } from "../../../../stores/GraphStores/GraphCommon/selectors";
+import { setActivePage } from "../../../../stores/NavigationStore/actions";
 
 interface ICalibrationGraphElementProps {
   calibrationGraphKey?: string;
@@ -40,9 +45,22 @@ interface ICalibrationGraphElementProps {
  * Transformed graph structure for API submission.
  * Flattens parameter defaults from InputParameter format to simple key-value pairs.
  */
-interface TransformedGraph {
-  parameters: { [key: string]: string | number };
-  nodes: { [key: string]: { parameters: InputParameter } };
+export interface TransformedNode {
+  parameters: {
+    [key: string]: string | number | boolean | undefined;
+  };
+  nodes?: TransformedNodeMap;
+}
+
+export interface TransformedNodeMap {
+  [key: string]: TransformedNode;
+}
+
+export interface TransformedGraph {
+  parameters: {
+    [key: string]: string | number | boolean | undefined;
+  };
+  nodes: TransformedNodeMap;
 }
 
 export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrationGraphKey, calibrationGraph }) => {
@@ -99,37 +117,92 @@ export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrat
   };
   /**
    * Transforms graph and node parameters from InputParameter format to flat key-value pairs.
-   * Extracts parameter.default values for API submission.
+   * Extracts `parameter.default` values for API submission.
    */
-  const transformDataForSubmit = () => {
-    const input = allGraphs?.[selectedWorkflowName ?? ""];
-    const workflowParameters = input?.parameters;
-    const transformParameters = (params?: InputParameter) => {
-      let transformedParams = {};
-      for (const key in params) {
-        transformedParams = { ...transformedParams, [key]: params[key].default };
-      }
-      return transformedParams;
-    };
+  // const transformDataForSubmit = () => {
+  //   const input = allGraphs?.[selectedWorkflowName ?? ""];
+  //   const workflowParameters = input?.parameters;
+  //   const transformParameters = (params?: InputParameter) => {
+  //     let transformedParams = {};
+  //     for (const key in params) {
+  //       transformedParams = { ...transformedParams, [key]: params[key].default };
+  //     }
+  //     return transformedParams;
+  //   };
+  //
+  //   const transformedGraph: TransformedGraph = {
+  //     parameters: transformParameters(workflowParameters),
+  //     nodes: {},
+  //   };
+  //
+  //   //TODO FIX THIS WITH USING KEYS
+  //   // for (const nodeKey in input?.nodes) {
+  //   //   const node = input?.nodes[nodeKey] as NodeMap; //TODO FIX THIS WITH CASE FOR NESTED GRAPH
+  //   //   transformedGraph.nodes[nodeKey] = {
+  //   //     parameters: transformParameters(node.parameters),
+  //   //   };
+  //   // }
+  //
+  //   for (const nodeKey in input?.nodes) {
+  //     const node = input?.nodes[nodeKey];
+  //
+  //     // Ako je ugnježdeni graf – rekurzija
+  //     if ("nodes" in node) {
+  //       transformedGraph.nodes[nodeKey] = transformGraph(node);
+  //       continue;
+  //     }
+  //
+  //     // Normalan node
+  //     transformedGraph.nodes[nodeKey] = {
+  //       parameters: transformParameters(node.parameters ?? {}),
+  //     };
+  //   }
+  //
+  //   return transformedGraph;
+  // };
 
-    const transformedGraph: TransformedGraph = {
-      parameters: transformParameters(workflowParameters),
+  const transformParameters = (params?: InputParameter) => {
+    let transformedParams = {};
+    if (!params) return transformedParams;
+
+    for (const key in params) {
+      transformedParams = { ...transformedParams, [key]: params[key].default };
+    }
+    return transformedParams;
+  };
+
+  const transformGraph = (graph: GraphWorkflow): TransformedGraph => {
+    const transformed: TransformedGraph = {
+      parameters: transformParameters(graph.parameters),
       nodes: {},
     };
 
-    for (const nodeKey in input?.nodes) {
-      const node = input?.nodes[nodeKey];
-      transformedGraph.nodes[nodeKey] = {
+    for (const nodeKey in graph.nodes) {
+      const node = graph.nodes[nodeKey];
+      const isNodeAGraph = "nodes" in node;
+      if (isNodeAGraph) {
+        const graph = node as GraphWorkflow;
+        transformed.nodes[nodeKey] = transformGraph(graph);
+        continue;
+      }
+
+      transformed.nodes[nodeKey] = {
         parameters: transformParameters(node.parameters),
       };
     }
 
-    return transformedGraph;
+    return transformed;
   };
 
+  const transformDataForSubmit = () => {
+    const input = allGraphs?.[selectedWorkflowName ?? ""];
+    if (!input) return;
+
+    return transformGraph(input);
+  };
   /**
    * Submits workflow for execution and opens graph-status panel.
-   * Sets lastRunInfo.active to trigger UI updates via GraphContext.
+   * Sets `lastRunInfo.active` to trigger UI updates via GraphContext.
    */
   const handleSubmit = async () => {
     if (selectedWorkflowName) {

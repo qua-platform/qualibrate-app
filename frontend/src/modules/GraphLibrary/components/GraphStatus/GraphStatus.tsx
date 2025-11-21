@@ -25,7 +25,13 @@ import { getLastRunError, getLastRunNodeName } from "../../../../stores/GraphSto
 import { GlobalParameterStructure } from "../../../../stores/GraphStores/GraphStatus/GraphStatusStore";
 import { getRunStatusGraphName, getRunStatusGraphTotalNodes } from "../../../../stores/WebSocketStore/selectors";
 import { getResult } from "../../../../stores/SnapshotsStore/selectors";
-import { fetchOneSnapshot, setClickedForSnapshotSelection, setDiffData, setResult, setSelectedSnapshotId } from "../../../../stores/SnapshotsStore/actions";
+import {
+  fetchOneSnapshot,
+  setClickedForSnapshotSelection,
+  setDiffData,
+  setResult,
+  setSelectedSnapshotId,
+} from "../../../../stores/SnapshotsStore/actions";
 
 export interface Measurement {
   created_at?: string;
@@ -50,7 +56,7 @@ const GraphStatus = () => {
   const workflowGraphElements = useSelector(getWorkflowGraphElements);
   const allMeasurements = useSelector(
     getAllMeasurements,
-    (prev?: Measurement[], current?: Measurement[]) => JSON.stringify(prev) === JSON.stringify(current)
+    (prev?: Measurement[] | null, current?: Measurement[] | null) => JSON.stringify(prev) === JSON.stringify(current)
   );
   const selectedNodeNameInWorkflow = useSelector(getSelectedNodeNameInWorkflow);
   const runStatusGraphName = useSelector(getRunStatusGraphName);

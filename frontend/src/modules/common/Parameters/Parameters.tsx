@@ -19,10 +19,15 @@ interface IProps {
 }
 
 export interface SingleParameter {
-  default?: string | boolean | number;
+  id?: string;
+  name?: string;
+  parameters?: InputParameter;
+  default?: string | boolean | number | string[];
+  items?: { type: string };
   title: string;
   type: string;
-  description?: string;
+  is_targets: boolean;
+  description?: string | null;
 }
 
 export interface InputParameter {
@@ -74,11 +79,7 @@ export const Parameters: React.FC<IProps> = ({
                 </div>
                 <div className={styles.descriptionWrapper}>
                   {parameter.description && (
-                    <Tooltip
-                      title={<div className={styles.descriptionTooltip}>{parameter.description} </div>}
-                      placement="left-start"
-                      arrow
-                    >
+                    <Tooltip title={<div className={styles.descriptionTooltip}>{parameter.description} </div>} placement="left-start" arrow>
                       <span>
                         <InfoIcon />
                       </span>
