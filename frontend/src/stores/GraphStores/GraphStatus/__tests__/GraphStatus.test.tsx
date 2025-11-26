@@ -6,8 +6,8 @@ import { createSimpleGraph } from "@/test-utils/builders/reactflowElements";
 import { Measurement } from "../GraphStatusStore";
 import GraphStatus from "../../../../modules/GraphLibrary/components/GraphStatus/GraphStatus";
 import { getAllMeasurements, getTrackLatest } from "../selectors";
-import { getSelectedWorkflowName } from "../../GraphLibrary/selectors";
-import { setSelectedWorkflowName } from "../../GraphLibrary/actions";
+import { getSelectedWorkflowName } from "../../GraphCommon/selectors";
+import { setSelectedWorkflowName } from "../../GraphCommon/actions";
 import { setNodes, setEdges } from "../../GraphCommon/actions";
 import { setActivePage } from "@/stores/NavigationStore/actions";
 import { server } from "@/test-utils/mocks/server";
@@ -69,28 +69,21 @@ vi.mock("../../../../modules/common/context/SelectionContext", async () => {
   };
 });
 
-const mockNodes = [
-  {
-    group: "nodes",
-    data: {
-      id: "test_node"
+const mockNodes = {
+  nodes: [
+    {
+      id: "test_node",
+      data: { label: "test_node" },
+      position: { x: 100, y: 100 }
     },
-    position: {
-      x: 100,
-      y: 100
-    }
-  },
-  {
-    group: "nodes",
-    data: {
-      id: "another_node"
+    {
+      id: "another_node",
+      data: { label: "another_node" },
+      position: { x: 100, y: 100 }
     },
-    position: {
-      x: 100,
-      y: 100
-    }
-  }
-];
+  ],
+  edges: []
+};
 
 describe("GraphStatus - Context Coordination", () => {
   const mockMeasurements: Measurement[] = [
