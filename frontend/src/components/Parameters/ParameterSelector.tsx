@@ -8,6 +8,7 @@ import { NodeDTO } from "../../modules/Nodes";
 import { GraphWorkflow } from "../../modules/GraphLibrary";
 import InputField from "../Input/InputField";
 import { classNames } from "../../utils/classnames";
+import { ArraySelector } from "../ArraySelector";
 
 const ParameterSelector = ({
   parameterKey,
@@ -18,21 +19,21 @@ const ParameterSelector = ({
   parameterKey: string
   parameter: SingleParameter
   node?: NodeDTO | GraphWorkflow
-  onChange: (paramKey: string, newValue: string | number | boolean, isValid: boolean, nodeId?: string | undefined) => void
+  onChange: (paramKey: string, newValue: string | number | boolean | string[], isValid: boolean, nodeId?: string | undefined) => void
 }) => {
   const [error, setError] = useState<undefined | string>(undefined);
   const [inputValue, setInputValue] = useState(parameter.default);
 
-  const handleBlur = useCallback(() => {
-    const { isValid, error } = validate(parameter, inputValue);
+  const handleBlur = useCallback((value: SingleParameter["default"]) => {
+    const { isValid, error } = validate(parameter, value);
 
-    onChange(parameterKey, inputValue as string, isValid, node?.name);
+    onChange(parameterKey, value as string, isValid, node?.name);
     setError(error);
   }, [inputValue]);
 
-  const handleChangeBooelan = useCallback(() => {
+  const handleChangeBoolean = useCallback(() => {
     setInputValue(!inputValue);
-    handleBlur();
+    handleBlur(!inputValue);
   }, [handleBlur]);
 
   /**
@@ -48,28 +49,47 @@ const ParameterSelector = ({
    * time on backend, not during input. Consider adding number input with validation.
    */
   const renderInput = useCallback(() => {
+    const renderDefaultField = (
+      <InputField
+        placeholder={parameterKey}
+        value={inputValue as string}
+        onChange={setInputValue}
+        onBlur={() => handleBlur(inputValue)}
+        className={styles.input}
+        type={["number", "integer"].includes(parameter.type) ? "number" : "string"}
+        data-testid={`input-field-${parameterKey}`}
+      />
+    );
+
     switch (parameter.type) {
       case "boolean":
         return (
           <Checkbox
             checked={inputValue as boolean}
-            onClick={handleChangeBooelan}
+            onClick={handleChangeBoolean}
             inputProps={{ "aria-label": "controlled" }}
             data-testid={`input-field-${parameterKey}`}
           />
         );
+      case "array":
+        if (parameter.options)
+          return (
+            <ArraySelector
+              key={parameterKey}
+              parameterKey={parameterKey}
+              disabled={false}
+              value={inputValue as string[]}
+              onChange={(value) => {
+                setInputValue(value);
+                handleBlur(value);
+              }}
+              options={parameter.options}
+            />
+          );
+        else
+          return renderDefaultField;
       default:
-        return (
-          <InputField
-            placeholder={parameterKey}
-            value={inputValue as string}
-            onChange={setInputValue}
-            onBlur={handleBlur}
-            className={styles.input}
-            type={["number", "integer"].includes(parameter.type) ? "number" : "string"}
-            data-testid={`input-field-${parameterKey}`}
-          />
-        );
+        return renderDefaultField;
     }
   }, [inputValue, parameter.default]);
 
