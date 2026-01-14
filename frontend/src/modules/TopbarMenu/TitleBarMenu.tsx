@@ -22,9 +22,11 @@ const TitleBarMenu: React.FC = () => {
   return (
     <div className={styles.wrapper}>
       <h1 className={styles.pageName}>{modulesMap[activePage ?? ""]?.menuItem?.title ?? ""}</h1>
-      {IsRefreshButtonShown && <div className={styles.refreshButtonWrapper} data-testid="refresh-button">
-        <BlueButton onClick={() => dispatch(refreshPage())}>Refresh</BlueButton>
-      </div>}
+      {IsRefreshButtonShown && (
+        <div className={styles.refreshButtonWrapper} data-testid="refresh-button">
+          <BlueButton onClick={() => dispatch(refreshPage())}>Refresh</BlueButton>
+        </div>
+      )}
       <div className={styles.menuCardsWrapper}>
         <TopBar />
       </div>

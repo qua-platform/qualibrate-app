@@ -7,6 +7,7 @@ interface SnapshotsState {
   totalPages: number;
   pageNumber: number;
   allSnapshots: SnapshotDTO[];
+  selectedSnapshot: SnapshotDTO | undefined;
   selectedSnapshotId: number | undefined;
   latestSnapshotId: number | undefined;
   clickedForSnapshotSelection: boolean;
@@ -25,6 +26,7 @@ const initialState: SnapshotsState = {
   totalPages: 0,
   pageNumber: 0,
   allSnapshots: [],
+  selectedSnapshot: undefined,
   selectedSnapshotId: undefined,
   latestSnapshotId: undefined,
   clickedForSnapshotSelection: false,
@@ -55,6 +57,9 @@ export const SnapshotsSlice = createSlice({
     },
     setAllSnapshots: (state, action) => {
       state.allSnapshots = action.payload;
+    },
+    setSelectedSnapshot: (state, action) => {
+      state.selectedSnapshot = action.payload;
     },
     setSelectedSnapshotId: (state, action) => {
       state.selectedSnapshotId = action.payload;
@@ -93,7 +98,7 @@ export const SnapshotsSlice = createSlice({
     setReset: (state, action) => {
       state.reset = action.payload;
     },
-  }
+  },
 });
 
 export default SnapshotsSlice.reducer;

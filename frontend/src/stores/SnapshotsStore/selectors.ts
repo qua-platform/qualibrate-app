@@ -3,77 +3,34 @@ import { RootState } from "..";
 
 export const getSnapshotsState = (state: RootState) => state.snapshots;
 
-export const getTrackLatestSidePanel = createSelector(
-  getSnapshotsState,
-  (state) => state.trackLatestSidePanel
-);
+export const getTrackLatestSidePanel = createSelector(getSnapshotsState, (state) => state.trackLatestSidePanel);
 
-export const getTrackPreviousSnapshot = createSelector(
-  getSnapshotsState,
-  (state) => state.trackPreviousSnapshot
-);
+export const getTrackPreviousSnapshot = createSelector(getSnapshotsState, (state) => state.trackPreviousSnapshot);
 
-export const getTotalPages = createSelector(
-  getSnapshotsState,
-  (state) => state.totalPages
-);
+export const getTotalPages = createSelector(getSnapshotsState, (state) => state.totalPages);
 
-export const getPageNumber = createSelector(
-  getSnapshotsState,
-  (state) => state.pageNumber
-);
+export const getPageNumber = createSelector(getSnapshotsState, (state) => state.pageNumber);
 
-export const getAllSnapshots = createSelector(
-  getSnapshotsState,
-  (state) => state.allSnapshots
-);
+export const getAllSnapshots = createSelector(getSnapshotsState, (state) => state.allSnapshots);
 
-export const getSelectedSnapshotId = createSelector(
-  getSnapshotsState,
-  (state) => state.selectedSnapshotId
-);
+export const getSelectedSnapshot = createSelector(getSnapshotsState, (state) => state.selectedSnapshot);
 
-export const getLatestSnapshotId = createSelector(
-  getSnapshotsState,
-  (state) => state.latestSnapshotId
-);
+export const getSelectedSnapshotId = createSelector(getSnapshotsState, (state) => state.selectedSnapshotId);
 
-export const getClickedForSnapshotSelection = createSelector(
-  getSnapshotsState,
-  (state) => state.clickedForSnapshotSelection
-);
+export const getLatestSnapshotId = createSelector(getSnapshotsState, (state) => state.latestSnapshotId);
 
-export const getJsonData = createSelector(
-  getSnapshotsState,
-  (state) => state.jsonData
-);
+export const getClickedForSnapshotSelection = createSelector(getSnapshotsState, (state) => state.clickedForSnapshotSelection);
 
-export const getJsonDataSidePanel = createSelector(
-  getSnapshotsState,
-  (state) => state.jsonDataSidePanel
-);
+export const getJsonData = createSelector(getSnapshotsState, (state) => state.jsonData);
 
-export const getDiffData = createSelector(
-  getSnapshotsState,
-  (state) => state.diffData
-);
+export const getJsonDataSidePanel = createSelector(getSnapshotsState, (state) => state.jsonDataSidePanel);
 
-export const getResult = createSelector(
-  getSnapshotsState,
-  (state) => state.result
-);
+export const getDiffData = createSelector(getSnapshotsState, (state) => state.diffData);
 
-export const getFirstId = createSelector(
-  getSnapshotsState,
-  (state) => state.firstId
-);
+export const getResult = createSelector(getSnapshotsState, (state) => state.result);
 
-export const getSecondId = createSelector(
-  getSnapshotsState,
-  (state) => state.secondId
-);
+export const getFirstId = createSelector(getSnapshotsState, (state) => state.firstId);
 
-export const getReset = createSelector(
-  getSnapshotsState,
-  (state) => state.reset
-);
+export const getSecondId = createSelector(getSnapshotsState, (state) => state.secondId);
+
+export const getReset = createSelector(getSnapshotsState, (state) => state.reset);

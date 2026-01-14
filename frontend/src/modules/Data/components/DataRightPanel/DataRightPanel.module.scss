@@ -1,0 +1,7 @@
+.viewer {
+  display: flex;
+  flex-grow: 1;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  width: 100%;
+}

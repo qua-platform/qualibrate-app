@@ -7,6 +7,7 @@ export {
   setPageNumber,
   setTotalPages,
   setAllSnapshots,
+  setSelectedSnapshot,
   setSelectedSnapshotId,
   setLatestSnapshotId,
   setClickedForSnapshotSelection,
