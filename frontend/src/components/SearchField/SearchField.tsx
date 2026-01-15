@@ -35,6 +35,7 @@ const SearchField: React.FC<Props> = ({ placeholder, value, onChange, debounceMs
 
   return (
     <InputField
+      dataTestId="search-field"
       inputClassName={styles.searchBoxInput}
       name="search"
       type="search"

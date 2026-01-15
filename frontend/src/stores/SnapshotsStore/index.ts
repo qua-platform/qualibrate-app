@@ -30,6 +30,7 @@ export {
   getTotalPages,
   getPageNumber,
   getAllSnapshots,
+  getSelectedSnapshot,
   getSelectedSnapshotId,
   getLatestSnapshotId,
   getClickedForSnapshotSelection,

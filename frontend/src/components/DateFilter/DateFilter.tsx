@@ -50,7 +50,7 @@ const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFr
 
   return (
     <div className={styles.wrapper}>
-      <div data-testid="execution-history-date-filter" className={styles.filterButton} onClick={toggleDropdown}>
+      <div data-testid="date-filter" className={styles.filterButton} onClick={toggleDropdown}>
         <DateFilterIcon width={16} height={16} />
       </div>
       <div className={classNames(styles.dateFilterDropdown, showOptions && styles.active)} ref={ref}>

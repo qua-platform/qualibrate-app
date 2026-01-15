@@ -26,7 +26,7 @@ const VerticalResizableComponent: React.FC<Props> = ({ tabNames = ["Metadata", "
   const detailsObject = tabData[activeTabName.toLowerCase()] ?? {};
 
   return (
-    <div className={classNames(styles.contentSidebar, !expanded && styles.collapsed)} id="contentSidebar">
+    <div data-testid="vertical-component" className={classNames(styles.contentSidebar, !expanded && styles.collapsed)} id="contentSidebar">
       <button className={styles.sidebarToggleArrow} id="sidebarToggle" onClick={handleOnToggleSidebar}>
         {expanded ? "◀" : "▶"}
       </button>

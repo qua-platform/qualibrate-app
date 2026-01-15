@@ -9,7 +9,7 @@ describe("DateFilter", () => {
     render(<DateFilter onSelect={onSelect} />);
 
     // open dropdown
-    fireEvent.click(screen.getByTestId("execution-history-date-filter"));
+    fireEvent.click(screen.getByTestId("date-filter"));
 
     const option = screen.getByText("Today");
     fireEvent.click(option);
@@ -24,7 +24,7 @@ describe("DateFilter", () => {
 
     render(<DateFilter from="" to="" setFrom={setFrom} setTo={setTo} />);
 
-    fireEvent.click(screen.getByTestId("execution-history-date-filter"));
+    fireEvent.click(screen.getByTestId("date-filter"));
 
     const fromInput = screen.getByTestId("execution-history-date-filter-input-from") as HTMLInputElement;
     const toInput = screen.getByTestId("execution-history-date-filter-input-to") as HTMLInputElement;
