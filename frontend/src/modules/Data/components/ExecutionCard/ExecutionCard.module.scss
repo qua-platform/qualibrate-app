@@ -1,0 +1,150 @@
+.executionCard {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.executionCard:hover {
+  border-color: #58a6ff;
+  background: #1c2128;
+}
+
+.executionCard.selected {
+  border-color: #1f6feb;
+}
+
+.executionCard {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.executionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.executionHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.executionName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #c9d1d9;
+}
+
+.executionStatus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.statusRunning {
+  color: #f0883e;
+}
+
+.statusPending {
+  color: #3ebbf0;
+}
+
+.statusSuccess {
+  color: #3fb950;
+}
+
+.statusError {
+  color: #f85149;
+}
+
+.statusDotRunning {
+  background: #f0883e;
+}
+
+.statusDotPending {
+  background: #3ebbf0;
+}
+
+.statusDotSuccess {
+  background: #3fb950;
+}
+
+.statusDotError {
+  background: #f85149;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.executionMeta {
+  display: flex;
+  gap: 16px;
+  color: #7d8590;
+  font-size: 12px;
+}
+
+.executionMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.executionId {
+}
+
+.executionTags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: #1c2128;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #c9d1d9;
+  position: relative;
+}
+
+.tagDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #79c0ff;
+}
+
+.addTagButton {
+  padding: 4px 8px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  color: #c9d1d9;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
