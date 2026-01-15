@@ -2,8 +2,6 @@ import React, { useCallback } from "react";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./VerticalResizableComponent.module.scss";
 import { classNames } from "../../utils/classnames";
-import { useSelector } from "react-redux";
-import { getJsonData } from "../../stores/SnapshotsStore";
 import { formatNames } from "../../utils/formatNames";
 import { ParameterStructure } from "../../stores/SnapshotsStore/api/SnapshotsApi";
 
@@ -17,7 +15,6 @@ type Props = {
 const VerticalResizableComponent: React.FC<Props> = ({ tabNames = ["Metadata", "Parameters"], tabData = {} }) => {
   const [expanded, setExpanded] = React.useState(true);
   const [activeTabName, setActiveTabName] = React.useState<string>(tabNames[0]);
-  console.log("tabData", tabData);
   const handleOnToggleSidebar = () => {
     setExpanded(!expanded);
   };
@@ -26,11 +23,8 @@ const VerticalResizableComponent: React.FC<Props> = ({ tabNames = ["Metadata", "
     setActiveTabName(tabName);
   }, []);
 
-  const jsonData = useSelector(getJsonData);
   const detailsObject = tabData[activeTabName.toLowerCase()] ?? {};
-  console.log("detailsObject", detailsObject);
-  console.log("activeTabName", activeTabName);
-  console.log("jsonData", jsonData);
+
   return (
     <div className={classNames(styles.contentSidebar, !expanded && styles.collapsed)} id="contentSidebar">
       <button className={styles.sidebarToggleArrow} id="sidebarToggle" onClick={handleOnToggleSidebar}>

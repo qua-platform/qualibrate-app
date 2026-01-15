@@ -76,7 +76,7 @@ export const fetchGitgraphSnapshots = (firstTime: boolean, page: number) => asyn
     if (firstTime) {
       if (items) {
         dispatch(setSelectedSnapshotId(lastElId));
-        dispatch(setSelectedSnapshotId(items.find((snapshot) => snapshot.id === lastElId)));
+        dispatch(setSelectedSnapshot(items.find((snapshot) => snapshot.id === lastElId)));
         dispatch(fetchOneSnapshot(lastElId, lastElId - 1, true, true));
       } else {
         if (selectedSnapshotId) {

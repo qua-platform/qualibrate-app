@@ -14,14 +14,19 @@ const TopBar: React.FC = () => {
   return activePage === PROJECT_KEY ? null : <TitleBarGraphCard />;
 };
 
-const TitleBarMenu: React.FC = () => {
+type Props = {
+  customTitle?: string;
+};
+
+const TitleBarMenu: React.FC<Props> = ({ customTitle }) => {
   const dispatch = useRootDispatch();
   const activePage = useSelector(getActivePage);
   const IsRefreshButtonShown = useSelector(getIsRefreshButtonShown);
 
   return (
     <div className={styles.wrapper}>
-      <h1 className={styles.pageName}>{modulesMap[activePage ?? ""]?.menuItem?.title ?? ""}</h1>
+      <h1 className={styles.pageName}>{modulesMap[activePage ?? ""]?.menuItem?.title}</h1>
+      <h2>{customTitle}</h2>
       {IsRefreshButtonShown && (
         <div className={styles.refreshButtonWrapper} data-testid="refresh-button">
           <BlueButton onClick={() => dispatch(refreshPage())}>Refresh</BlueButton>

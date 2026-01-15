@@ -36,7 +36,6 @@
   display: block;
 }
 
-
 .dateFilterOption {
   padding: 8px 12px;
   font-size: 13px;
@@ -61,13 +60,21 @@
   margin-top: 8px;
 }
 
-
 .dateInputGroup {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
+.dateInputGroup input {
+  padding: 6px 8px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  color: #c9d1d9;
+  font-size: 12px;
+  outline: none;
+}
 
 .dateInputGroup input:focus {
   outline: none !important;
