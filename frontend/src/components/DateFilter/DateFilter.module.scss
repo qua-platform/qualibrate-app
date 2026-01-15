@@ -80,3 +80,12 @@
   outline: none !important;
   border-color: #1f6feb;
 }
+
+.dateInputGroup input:focus {
+  outline: none !important;
+  border-color: #1f6feb;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

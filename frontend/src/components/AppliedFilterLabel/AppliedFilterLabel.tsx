@@ -9,10 +9,10 @@ type Props = {
 
 const AppliedFilterLabel: React.FC<Props> = ({ label, value, onRemove }) => {
   return (
-    <div className={styles.selectedFiltersRow} id="selectedFiltersRow">
+    <div className={styles.selectedFiltersRow}>
       <div className={styles.activeDateFilter}>
         {label && <span className={styles.filterLabel}>{label}</span>}
-        {!label && <div className={styles.dot} />}
+        {!label && <div data-testid="filter-dot" className={styles.dot} />}
         <span>{value}</span>
         <span className={styles.removeFilter} onClick={onRemove}>
           ×

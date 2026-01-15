@@ -7,19 +7,25 @@ import PaginationWrapper from "../Pagination/PaginationWrapper";
 const DataLeftPanel: React.FC = () => {
   const [selectedDateFilter, setSelectedDateFilter] = useState<string | undefined>(undefined);
   const [searchText, setSearchText] = useState<string>("");
-  // const selectedSnapshotId = useSelector(getSelectedSnapshotId);
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
 
   useEffect(() => {
     // TODO call API for snapshot search
   }, [searchText, setSearchText]);
 
-  const handleOnDateFilterSelect = (dateFilterType: string) => {
+  const handleOnDateFilterSelect = (dateFilterType?: string) => {
     setSelectedDateFilter(dateFilterType);
     // TODO fetchSnapshots with sortType
   };
 
-  const handleOnDateFilterRemove = () => {
+  const handleOnDateFilterRemove = (filterName?: string) => {
     setSelectedDateFilter(undefined);
+    if (filterName === "From") {
+      setFromDate("");
+    } else if (filterName === "To") {
+      setToDate("");
+    }
   };
 
   const handleOnSortSelect = (sortType: string) => {
@@ -33,11 +39,13 @@ const DataLeftPanel: React.FC = () => {
           <h2>Execution History</h2>
           <div className={styles.searchFilterContainer}>
             <SearchField placeholder="Search executions..." value={searchText} onChange={setSearchText} debounceMs={500} />
-            <DateFilter onSelect={handleOnDateFilterSelect} />
+            <DateFilter from={fromDate} to={toDate} setFrom={setFromDate} setTo={setToDate} onSelect={handleOnDateFilterSelect} />
             <SortButton key={"sortFilter"} onSelect={handleOnSortSelect} />
           </div>
           <div className={styles.searchFilterContainer}>
             {selectedDateFilter && <AppliedFilterLabel value={selectedDateFilter} onRemove={handleOnDateFilterRemove} label={"Date"} />}
+            {fromDate && <AppliedFilterLabel value={fromDate} onRemove={() => handleOnDateFilterRemove("From")} label={"From"} />}
+            {toDate && <AppliedFilterLabel value={toDate} onRemove={() => handleOnDateFilterRemove("To")} label={"To"} />}
           </div>
         </div>
         <div className={styles.snapshotsWrapper}>
