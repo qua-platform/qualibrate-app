@@ -1,3 +1,7 @@
+.wrapper {
+  position: relative;
+}
+
 .filterButton {
   background: #161b22;
   border: 1px solid #30363d;
@@ -10,7 +14,6 @@
   cursor: pointer;
   transition: all 0.2s;
   flex-shrink: 0;
-  position: relative;
 }
 
 .filterButton:hover {

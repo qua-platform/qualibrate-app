@@ -3,6 +3,7 @@ import { DateFilterIcon } from "../Icons";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./DateFilter.module.scss";
 import { classNames } from "../../utils/classnames";
+import useClickOutside from "../../utils/hooks/useClickOutside";
 
 type Props = {
   options?: string[];
@@ -17,6 +18,7 @@ const defaultOptions = ["Today", "Last 7 days", "Last 30 days"];
 
 const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFrom, setTo, onSelect }) => {
   const [showOptions, setShowOptions] = React.useState(false);
+  const ref = useClickOutside(() => setShowOptions(false));
 
   const toggleDropdown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
@@ -28,9 +30,6 @@ const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFr
     setShowOptions(false);
     if (onSelect) onSelect(option);
   };
-
-  const handleInputClick = (e: React.SyntheticEvent) => e.stopPropagation();
-  const handleInputFocus = (e: React.SyntheticEvent) => e.stopPropagation();
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, type: "from" | "to", value: string) => {
     const parts = value.split("-");
@@ -50,9 +49,11 @@ const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFr
   };
 
   return (
-    <div data-testid="execution-history-date-filter" className={styles.filterButton} onClick={toggleDropdown}>
-      <DateFilterIcon width={16} height={16} />
-      <div className={classNames(styles.dateFilterDropdown, showOptions && styles.active)}>
+    <div className={styles.wrapper}>
+      <div data-testid="execution-history-date-filter" className={styles.filterButton} onClick={toggleDropdown}>
+        <DateFilterIcon width={16} height={16} />
+      </div>
+      <div className={classNames(styles.dateFilterDropdown, showOptions && styles.active)} ref={ref}>
         {options.map((option) => (
           <div key={option} onClick={(e) => selectPreset(e, option)} className={styles.dateFilterOption} data-filter={option}>
             {option}
@@ -67,8 +68,6 @@ const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFr
               type="date"
               value={from || ""}
               onChange={(e) => handleDateChange(e, "from", e.target.value)}
-              onClick={handleInputClick}
-              onFocus={handleInputFocus}
             />
           </div>
 
@@ -79,8 +78,6 @@ const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFr
               type="date"
               value={to || ""}
               onChange={(e) => handleDateChange(e, "to", e.target.value)}
-              onClick={handleInputClick}
-              onFocus={handleInputFocus}
             />
           </div>
         </div>

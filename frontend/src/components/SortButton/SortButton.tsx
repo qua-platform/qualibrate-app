@@ -3,6 +3,7 @@ import { SortIcon } from "../Icons";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./SortButton.module.scss";
 import { classNames } from "../../utils/classnames";
+import useClickOutside from "../../utils/hooks/useClickOutside";
 
 type Props = {
   options?: string[];
@@ -14,6 +15,7 @@ const defaultOptions = ["Date (Newest first)", "Name (A-Z)", "Result (Success Fi
 const SortButton: React.FC<Props> = ({ options = defaultOptions, onSelect }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string>(options[0]);
+  const ref = useClickOutside(() => setShowOptions(false));
 
   const onClickHandler = () => {
     setShowOptions(!showOptions);
@@ -25,9 +27,11 @@ const SortButton: React.FC<Props> = ({ options = defaultOptions, onSelect }) => 
     onSelect(option);
   };
   return (
-    <div className={styles.filterButton} id="dateFilterBtn" onClick={onClickHandler}>
-      <SortIcon width={16} height={16} />
-      <div className={classNames(styles.sortDropdown, showOptions && styles.active)} id="dateFilterDropdown">
+    <div className={styles.wrapper}>
+      <div className={styles.filterButton} id="dateFilterBtn" onClick={onClickHandler}>
+        <SortIcon width={16} height={16} />
+      </div>
+      <div className={classNames(styles.sortDropdown, showOptions && styles.active)} id="dateFilterDropdown" ref={ref}>
         {options.map((option) => (
           <div
             key={option}
