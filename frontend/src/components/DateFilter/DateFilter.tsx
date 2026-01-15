@@ -50,7 +50,7 @@ const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFr
   };
 
   return (
-    <div className={styles.filterButton} onClick={toggleDropdown}>
+    <div data-testid="execution-history-date-filter" className={styles.filterButton} onClick={toggleDropdown}>
       <DateFilterIcon width={16} height={16} />
       <div className={classNames(styles.dateFilterDropdown, showOptions && styles.active)}>
         {options.map((option) => (
@@ -63,6 +63,7 @@ const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFr
           <div className={styles.dateInputGroup}>
             <label>From</label>
             <input
+              data-testid="execution-history-date-filter-input-from"
               type="date"
               value={from || ""}
               onChange={(e) => handleDateChange(e, "from", e.target.value)}
@@ -74,6 +75,7 @@ const DateFilter: React.FC<Props> = ({ options = defaultOptions, from, to, setFr
           <div className={styles.dateInputGroup}>
             <label>To</label>
             <input
+              data-testid="execution-history-date-filter-input-to"
               type="date"
               value={to || ""}
               onChange={(e) => handleDateChange(e, "to", e.target.value)}
