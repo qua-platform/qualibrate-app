@@ -33,13 +33,27 @@ class RootTimelineDb(RootBase):
         reverse: bool,
     ) -> tuple[int, DocumentSequenceType]:
         timeline_db_config = self.timeline_db_config
+        params: dict[str, Any] = {
+            "page": pages_filter.page,
+            "per_page": pages_filter.per_page,
+            "reverse": reverse,
+        }
+        if search_filter is not None:
+            if search_filter.name is not None:
+                params["name"] = search_filter.name
+            if search_filter.name_part is not None:
+                params["name_part"] = search_filter.name_part
+            if search_filter.min_node_id != 1:
+                params["min_node_id"] = search_filter.min_node_id
+            if search_filter.max_node_id is not None:
+                params["max_node_id"] = search_filter.max_node_id
+            if search_filter.min_date is not None:
+                params["min_date"] = search_filter.min_date.isoformat()
+            if search_filter.max_date is not None:
+                params["max_date"] = search_filter.max_date.isoformat()
         result = request_with_db(
             "snapshot/n_latest",
-            params={
-                "page": pages_filter.page,
-                "per_page": pages_filter.per_page,
-                "reverse": reverse,
-            },
+            params=params,
             db_name=self._settings.project,
             host=timeline_db_config.address_with_root,
             timeout=timeline_db_config.timeout,
