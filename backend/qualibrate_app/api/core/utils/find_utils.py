@@ -35,7 +35,7 @@ def _get_subpath_value_wildcard(
         else:
             return []
 
-    if not isinstance(obj, (Mapping, Sequence)):
+    if not isinstance(obj, Mapping | Sequence):
         return []
     iter_function = cast(
         Callable[..., Sequence[tuple[str, Any]] | Sequence[tuple[int, Any]]],
