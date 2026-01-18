@@ -9,4 +9,4 @@ class UpdateHistoryRequired(BaseModel):
 
     @computed_field
     def update_required(self) -> bool:
-        return self.latest_id is not self.saved_id
+        return self.latest_id != self.saved_id
