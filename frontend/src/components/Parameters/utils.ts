@@ -1,7 +1,9 @@
 import { SingleParameter } from "./Parameters";
 
 export const validate = (parameter: SingleParameter, value: unknown) => {
-  if (value === undefined || value === "" || (Array.isArray(value) && value.length === 0)) {
+  const noDefault = !parameter.default;
+
+  if (noDefault && (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0))) {
     return {
       isValid: false,
       error: "Must be not empty",
@@ -12,7 +14,7 @@ export const validate = (parameter: SingleParameter, value: unknown) => {
 
   switch (parameter.type) {
     case "number":
-      if (isNaN(num)) {
+      if (noDefault && isNaN(num)) {
         return {
           isValid: false,
           error: "Must be a number"
@@ -21,7 +23,7 @@ export const validate = (parameter: SingleParameter, value: unknown) => {
       return { isValid: true, error: undefined };
 
     case "integer":
-      if (isNaN(num) || !Number.isInteger(num)) {
+      if (noDefault && (isNaN(num) || !Number.isInteger(num))) {
         return {
           isValid: false,
           error: "Must be an integer"
