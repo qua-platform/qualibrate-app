@@ -22,9 +22,9 @@ const ParameterSelector = ({
   onChange: (paramKey: string, newValue: ParamaterValue, isValid: boolean, nodeId?: string | undefined) => void
 }) => {
   const [error, setError] = useState<undefined | string>(undefined);
-  const [inputValue, setInputValue] = useState(parameter.default);
+  const [inputValue, setInputValue] = useState<ParamaterValue | undefined>(parameter.value);
 
-  const handleBlur = useCallback((value: SingleParameter["default"]) => {
+  const handleBlur = useCallback((value?: ParamaterValue) => {
     const { isValid, error } = validate(parameter, value);
 
     onChange(parameterKey, value as string, isValid, node?.name);
@@ -90,8 +90,8 @@ const ParameterSelector = ({
     return (
       <InputField
         placeholder={parameterKey}
-        value={inputValue as string}
-        onChange={setInputValue}
+        value={inputValue as string || undefined}
+        onChange={(value) => setInputValue(value || undefined)}
         onBlur={() => handleBlur(inputValue)}
         className={styles.input}
         type={["number", "integer"].includes(parameter.type) ? "number" : "string"}
