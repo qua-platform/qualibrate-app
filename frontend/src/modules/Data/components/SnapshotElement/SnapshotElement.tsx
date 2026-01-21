@@ -1,22 +1,21 @@
 import React from "react";
-import { SnapshotDTO } from "../../../Snapshots/SnapshotDTO";
+import { SnapshotDTO, getJsonData } from "../../../../stores/SnapshotsStore";
 import styles from "../SnapshotElement/SnapshotElement.module.scss";
 // eslint-disable-next-line css-modules/no-unused-class
-import additionalStyles from "../../../GraphLibrary/components/GraphStatus/components/MeasurementElement/MeasurementElement.module.scss";
-import {
-  MeasurementElementOutcomes,
-  MeasurementElementStatusInfoAndParameters,
-} from "../../../GraphLibrary/components/GraphStatus/components/MeasurementElementInfoSection/MeasurementElementInfoSection";
+import additionalStyles from "../../../GraphStatus/components/MeasurementElement/MeasurementElement.module.scss";
+import { MeasurementElementOutcomes, MeasurementElementStatusInfoAndParameters } from "../../../../components";
 import { classNames } from "../../../../utils/classnames";
-import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
-import { formatDateTime } from "../../../GraphLibrary/components/GraphStatus/components/MeasurementElement/MeasurementElement";
+import { formatDateTime } from "../../../../utils/formatDateTime";
+import { useSelector } from "react-redux";
 
+// TODO: probably merge with src/modules/GraphStatus/components/MeasurementElement/MeasurementElement.tsx
+// and move to src/components
 export const SnapshotElement: React.FC<{ el: SnapshotDTO; isSelected: boolean; handleOnClick: () => void }> = ({
   el,
   isSelected,
   handleOnClick,
 }) => {
-  const { jsonData } = useSnapshotsContext();
+  const jsonData = useSelector(getJsonData);
   return (
     <div className={styles.wrapper}>
       <div className={styles.headerWrapper} onClick={handleOnClick}>

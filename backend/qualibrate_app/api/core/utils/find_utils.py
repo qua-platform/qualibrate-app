@@ -138,15 +138,20 @@ def get_subpath_value_on_any_depth(
 SnapshotType = TypeVar("SnapshotType", bound="SnapshotBase")
 
 
-def _get_search_result(
+def _get_search_results(
     snapshot: SnapshotType, data_path: Sequence[str | int]
-) -> MachineSearchResults | None:
+) -> Sequence[MachineSearchResults]:
+    """Get all search results for a given data path.
+
+    Args:
+        snapshot: The snapshot to search
+        data_path: The path to search for
+
+    Returns:
+        A sequence of all matching search results (empty sequence if none found)
+    """
     search_results = snapshot.search(data_path, load=True)
-    return (
-        search_results[0]
-        if search_results and len(search_results) > 0
-        else None
-    )
+    return search_results if search_results else []
 
 
 def _get_snapshot_search_result(
@@ -165,15 +170,16 @@ def search_snapshots_data_with_filter_ascending(
 ) -> Generator[SnapshotSearchResult, None, None]:
     previous_search_result: MachineSearchResults | None = None
     for snapshot in snapshots:
-        search_result = _get_search_result(snapshot, data_path)
-        if filter_no_change:
-            if previous_search_result != search_result:
-                previous_search_result = search_result
-                yield _get_snapshot_search_result(
-                    snapshot, previous_search_result
-                )
-        else:
-            yield _get_snapshot_search_result(snapshot, search_result)
+        search_results = _get_search_results(snapshot, data_path)
+        for search_result in search_results:
+            if filter_no_change:
+                if previous_search_result != search_result:
+                    previous_search_result = search_result
+                    yield _get_snapshot_search_result(
+                        snapshot, previous_search_result
+                    )
+            else:
+                yield _get_snapshot_search_result(snapshot, search_result)
 
 
 def search_snapshots_data_with_filter_descending(
@@ -184,17 +190,25 @@ def search_snapshots_data_with_filter_descending(
     snapshot = next(snapshots, None)
     if snapshot is None:
         return
-    search_result = _get_search_result(snapshot, data_path)
+    search_results = _get_search_results(snapshot, data_path)
     if not filter_no_change:
-        yield _get_snapshot_search_result(snapshot, search_result)
-        for snapshot in snapshots:
-            search_result = _get_search_result(snapshot, data_path)
+        for search_result in search_results:
             yield _get_snapshot_search_result(snapshot, search_result)
+        for snapshot in snapshots:
+            search_results = _get_search_results(snapshot, data_path)
+            for search_result in search_results:
+                yield _get_snapshot_search_result(snapshot, search_result)
         return
-    previous: tuple[SnapshotType, Any] = snapshot, search_result
+    previous_snapshot: SnapshotType = snapshot
+    previous_results: Sequence[MachineSearchResults] = search_results
     for snapshot in snapshots:
-        search_result = _get_search_result(snapshot, data_path)
-        if previous[1] != search_result:
-            yield _get_snapshot_search_result(*previous)
-        previous = snapshot, search_result
-    yield _get_snapshot_search_result(*previous)
+        search_results = _get_search_results(snapshot, data_path)
+        if previous_results != search_results:
+            for search_result in previous_results:
+                yield _get_snapshot_search_result(
+                    previous_snapshot, search_result
+                )
+        previous_snapshot = snapshot
+        previous_results = search_results
+    for search_result in previous_results:
+        yield _get_snapshot_search_result(previous_snapshot, search_result)

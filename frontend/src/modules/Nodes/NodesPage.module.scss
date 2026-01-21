@@ -1,5 +1,5 @@
-@use "../../assets/styles/variables";
-@use "../../assets/styles/base";
+@use "../../styles/variables";
+@use "../../styles/base";
 
 .wrapper {
   display: flex;
@@ -51,12 +51,6 @@
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 10px
-}
-
-.refreshButtonWrapper {
-  display: flex;
-  background-color: #28292F;
-  align-self: center;
 }
 
 .nodeElementListWrapper {

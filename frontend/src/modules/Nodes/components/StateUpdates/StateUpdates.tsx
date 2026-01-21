@@ -1,21 +1,21 @@
 import React from "react";
-import { RunningNodeInfo, StateUpdate } from "../../context/NodesContext";
-import { SnapshotsApi } from "../../../Snapshots/api/SnapshotsApi";
+import { SnapshotsApi, getLatestSnapshotId, getSecondId, getTrackLatestSidePanel, fetchOneSnapshot } from "../../../../stores/SnapshotsStore";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "../RunningJob/RunningJob.module.scss";
 import { StateUpdateElement } from "./StateUpdateElement";
 import { Button } from "@mui/material";
 // import { ErrorStatusWrapper } from "../../../common/Error/ErrorStatusWrapper";
-import { useSnapshotsContext } from "../../../Snapshots/context/SnapshotsContext";
+import { getRunningNodeInfo, getUpdateAllButtonPressed, setUpdateAllButtonPressed, StateUpdate } from "../../../../stores/NodesStore";
+import { useSelector } from "react-redux";
+import { useRootDispatch } from "../../../../stores";
 
-export const StateUpdates: React.FC<{
-  runningNodeInfo: RunningNodeInfo | undefined;
-  setRunningNodeInfo: (a: RunningNodeInfo) => void;
-  updateAllButtonPressed: boolean;
-  setUpdateAllButtonPressed: (a: boolean) => void;
-}> = (props) => {
-  const { trackLatestSidePanel, fetchOneSnapshot, latestSnapshotId, secondId } = useSnapshotsContext();
-  const { runningNodeInfo, setRunningNodeInfo, updateAllButtonPressed, setUpdateAllButtonPressed } = props;
+export const StateUpdates: React.FC = () => {
+  const dispatch = useRootDispatch();
+  const trackLatestSidePanel = useSelector(getTrackLatestSidePanel);
+  const latestSnapshotId = useSelector(getLatestSnapshotId);
+  const secondId = useSelector(getSecondId);
+  const runningNodeInfo = useSelector(getRunningNodeInfo);
+  const updateAllButtonPressed = useSelector(getUpdateAllButtonPressed);
 
   const handleClick = async (stateUpdates: StateUpdate) => {
     const litOfUpdates = Object.entries(stateUpdates ?? {})
@@ -28,9 +28,9 @@ export const StateUpdates: React.FC<{
       });
     const result = await SnapshotsApi.updateStates(runningNodeInfo?.idx ?? "", litOfUpdates);
     if (result.isOk) {
-      setUpdateAllButtonPressed(result.result!);
+      dispatch(setUpdateAllButtonPressed(result.result!));
       if (result.result && trackLatestSidePanel) {
-        fetchOneSnapshot(Number(latestSnapshotId), Number(secondId), false, true);
+        dispatch(fetchOneSnapshot(Number(latestSnapshotId), Number(secondId), false, true));
       }
     }
   };
@@ -69,7 +69,6 @@ export const StateUpdates: React.FC<{
               index={index}
               stateUpdateObject={stateUpdateObject}
               runningNodeInfo={runningNodeInfo}
-              setRunningNodeInfo={setRunningNodeInfo}
               updateAllButtonPressed={updateAllButtonPressed}
             />
           ))}

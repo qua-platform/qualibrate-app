@@ -1,173 +1,131 @@
+/**
+ * @fileoverview Collapsible graph workflow card with parameters and visualization.
+ *
+ * Displays a calibration graph with editable parameters, node details, and a
+ * Cytoscape preview. Handles parameter transformation for API submission and
+ * opens the graph-status panel when execution starts.
+ *
+ * @see GraphList - Renders multiple GraphElements
+ * @see CytoscapeGraph - Embedded graph visualization
+ * @see GraphContext - Manages graph selection and execution state
+ */
 import React, { useState } from "react";
+import {useSelector} from "react-redux";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./GraphElement.module.scss";
-import { classNames } from "../../../../utils/classnames";
-import { InputParameter, Parameters, SingleParameter } from "../../../common/Parameters/Parameters";
-import { GraphWorkflow } from "../GraphList";
-import { useSelectionContext } from "../../../common/context/SelectionContext";
-import { Checkbox } from "@mui/material";
-import { ParameterList } from "../../../common/Parameters/ParameterList";
-import { useGraphContext } from "../../context/GraphContext";
-import CytoscapeGraph from "../CytoscapeGraph/CytoscapeGraph";
-import { GraphLibraryApi } from "../../api/GraphLibraryApi";
-import { NodeDTO } from "../../../Nodes/components/NodeElement/NodeElement";
-import { useFlexLayoutContext } from "../../../../routing/flexLayout/FlexLayoutContext";
-import { GraphElementErrorWrapper } from "../GraphElementErrorWrapper/GraphElementErrorWrapper";
-import BlueButton from "../../../../ui-lib/components/Button/BlueButton";
-import InputField from "../../../../common/ui-components/common/Input/InputField";
+import {classNames} from "../../../../utils/classnames";
+import {SubgraphBreadcrumbs} from "../../../Graph";
+import {Parameters, SingleParameter, ParameterList, ParameterSelector, BlueButton} from "../../../../components";
+import {Graph} from "../../../Graph";
+import {GraphElementErrorWrapper} from "../GraphElementErrorWrapper/GraphElementErrorWrapper";
+import {
+  getSelectedWorkflow,
+  setSelectedNodeNameInWorkflow,
+  setSelectedWorkflowName,
+  setSubgraphBack,
+  setSubgraphForward,
+  submitWorkflow,
+  getSelectedNodeNameInWorkflow,
+  getSelectedWorkflowName,
+  getSubgraphBreadcrumbs,
+  setGraphNodeParameter,
+} from "../../../../stores/GraphStores/GraphLibrary";
+import {useRootDispatch} from "../../../../stores";
+import { ParamaterValue } from "../../../../components/Parameters/Parameters";
 
-export interface ICalibrationGraphElementProps {
+interface ICalibrationGraphElementProps {
   calibrationGraphKey?: string;
-  calibrationGraph: GraphWorkflow;
 }
 
-interface TransformedGraph {
-  parameters: { [key: string]: string | number };
-  nodes: { [key: string]: { parameters: InputParameter } };
-}
+export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrationGraphKey }) => {
+  const dispatch = useRootDispatch();
+  const selectedWorkflow = useSelector(getSelectedWorkflow);
+  const selectedWorkflowName = useSelector(getSelectedWorkflowName);
+  const selectedNodeNameInWorkflow = useSelector(getSelectedNodeNameInWorkflow);
+  const subgraphBreadcrumbs = useSelector(
+    getSubgraphBreadcrumbs,
+    // avoid unnecessary re-renders
+    { equalityFn: (prev, curr) => prev.join() === curr.join() }
+  );
+  const [errors, setErrors] = useState(new Set());
 
-export const GraphElement: React.FC<ICalibrationGraphElementProps> = ({ calibrationGraphKey, calibrationGraph }) => {
-  const [errorObject, setErrorObject] = useState<unknown>(undefined);
-  const { selectedItemName, setSelectedItemName } = useSelectionContext();
-  const {
-    workflowGraphElements,
-    setSelectedWorkflowName,
-    allGraphs,
-    setAllGraphs,
-    selectedWorkflowName,
-    lastRunInfo,
-    setLastRunInfo,
-    fetchWorkflowGraph,
-  } = useGraphContext();
-  const { openTab, setActiveTabsetName } = useFlexLayoutContext();
+  const handleSubmit = () => dispatch(submitWorkflow());
+  const handleSelectWorkflow = () => dispatch(setSelectedWorkflowName(calibrationGraphKey));
+  const handleSelectNode = (nodeName?: string) => dispatch(setSelectedNodeNameInWorkflow(nodeName));
+  const handleSetSubgraphBreadcrumbs = (key: string) => dispatch(setSubgraphForward(key));
+  const handleBreadcrumbClick = (index: number) => dispatch(setSubgraphBack(index));
 
-  const updateParameter = (paramKey: string, newValue: boolean | number | string, workflow?: NodeDTO | GraphWorkflow) => {
-    const updatedParameters = {
-      ...workflow?.parameters,
-      [paramKey]: {
-        ...(workflow?.parameters as InputParameter)[paramKey],
-        default: newValue,
-      },
-    };
+  const handleSetError = (key: string, isValid: boolean) => {
+    const newSet = new Set(errors);
 
-    if (selectedWorkflowName && allGraphs?.[selectedWorkflowName]) {
-      const updatedWorkflow = {
-        ...allGraphs[selectedWorkflowName],
-        parameters: updatedParameters,
-      };
+    if (isValid)
+      newSet.delete(key);
+    else
+      newSet.add(key);
 
-      const updatedCalibrationGraphs = {
-        ...allGraphs,
-        [selectedWorkflowName]: updatedWorkflow,
-      };
-
-      setAllGraphs(updatedCalibrationGraphs);
-    }
-  };
-  const getInputElement = (key: string, parameter: SingleParameter, node?: NodeDTO | GraphWorkflow) => {
-    switch (parameter.type) {
-      case "boolean":
-        return (
-          <Checkbox
-            checked={parameter.default as boolean}
-            // onClick={() => updateParameter(key, !parameter.default, node)}
-            inputProps={{ "aria-label": "controlled" }}
-          />
-        );
-      default:
-        return (
-          <InputField
-            placeholder={key}
-            value={parameter.default ? parameter.default.toString() : ""}
-            onChange={(val: boolean | number | string) => {
-              updateParameter(key, val, node);
-            }}
-          />
-        );
-    }
-  };
-  const transformDataForSubmit = () => {
-    const input = allGraphs?.[selectedWorkflowName ?? ""];
-    const workflowParameters = input?.parameters;
-    const transformParameters = (params?: InputParameter) => {
-      let transformedParams = {};
-      for (const key in params) {
-        transformedParams = { ...transformedParams, [key]: params[key].default };
-      }
-      return transformedParams;
-    };
-
-    const transformedGraph: TransformedGraph = {
-      parameters: transformParameters(workflowParameters),
-      nodes: {},
-    };
-
-    for (const nodeKey in input?.nodes) {
-      const node = input?.nodes[nodeKey];
-      transformedGraph.nodes[nodeKey] = {
-        parameters: transformParameters(node.parameters),
-      };
-    }
-
-    return transformedGraph;
+    setErrors(newSet);
   };
 
-  const handleSubmit = async () => {
-    if (selectedWorkflowName) {
-      setLastRunInfo({
-        ...lastRunInfo,
-        active: true,
-      });
-      const response = await GraphLibraryApi.submitWorkflow(selectedWorkflowName, transformDataForSubmit());
-      if (response.isOk) {
-        openTab("graph-status");
-        setActiveTabsetName("graph-status");
-      } else {
-        setErrorObject(response.error);
-      }
-    }
+  const onNodeParameterChange = (parameterKey: string, newValue: ParamaterValue, isValid: boolean, nodeId?: string | undefined) => {
+    handleSetError(parameterKey, isValid);
+    dispatch(setGraphNodeParameter(parameterKey, newValue, nodeId));
   };
 
-  const show = selectedItemName === calibrationGraphKey;
+  const renderInputElement = (key: string, parameter: SingleParameter) =>
+    <ParameterSelector parameterKey={key} parameter={parameter} onChange={onNodeParameterChange} />;
+
+  const show = selectedWorkflowName === calibrationGraphKey;
   return (
     <div
       className={classNames(styles.wrapper, show ? styles.calibrationGraphSelected : "")}
-      onClick={async () => {
-        await fetchWorkflowGraph(calibrationGraphKey as string);
-        setSelectedItemName(calibrationGraphKey);
-        setSelectedWorkflowName(calibrationGraphKey);
-      }}
+      onClick={handleSelectWorkflow}
     >
       <div className={styles.upperContainer}>
         <div className={styles.leftContainer}>
           <div>{calibrationGraphKey}</div>
           <div className={styles.runButtonWrapper}>
-            <BlueButton disabled={!show} onClick={handleSubmit}>
+            <BlueButton disabled={!show || errors.size !== 0} onClick={handleSubmit}>
               Run
             </BlueButton>
           </div>
         </div>
         &nbsp; &nbsp; &nbsp; &nbsp;
-        {calibrationGraph?.description && (
+        {(show || selectedWorkflow?.description) &&
           <div className={styles.rightContainer}>
-            <div>{calibrationGraph?.description}</div>
+            {show && <SubgraphBreadcrumbs
+              selectedWorkflowName={selectedWorkflowName}
+              subgraphBreadcrumbs={subgraphBreadcrumbs}
+              onBreadcrumbClick={handleBreadcrumbClick}
+            />}
+            {selectedWorkflow?.description && (
+              <div>{selectedWorkflow?.description}</div>
+            )}
           </div>
-        )}
+        }
       </div>
       <div className={styles.bottomContainer}>
         <div className={styles.parametersContainer}>
-          <GraphElementErrorWrapper errorObject={errorObject} />
+          <GraphElementErrorWrapper />
           <Parameters
             key={calibrationGraphKey}
             show={show}
             showTitle={true}
-            currentItem={calibrationGraph}
-            getInputElement={getInputElement}
+            currentItem={selectedWorkflow}
+            getInputElement={renderInputElement}
+            parametersExpanded={true}
           />
-          <ParameterList showParameters={show} mapOfItems={calibrationGraph.nodes} />
+          {selectedWorkflow && <ParameterList showParameters={show} mapOfItems={selectedWorkflow.nodes} onChange={onNodeParameterChange} />}
         </div>
         {show && (
-          <div className={styles.graphContainer}>{workflowGraphElements && <CytoscapeGraph elements={workflowGraphElements} />}</div>
+          <div className={styles.graphContainer}>
+            <Graph
+              selectedWorkflowName={calibrationGraphKey}
+              selectedNodeNameInWorkflow={selectedNodeNameInWorkflow}
+              onNodeClick={handleSelectNode}
+              subgraphBreadcrumbs={subgraphBreadcrumbs}
+              onSetSubgraphBreadcrumbs={handleSetSubgraphBreadcrumbs}
+            />
+          </div>
         )}
       </div>
     </div>
