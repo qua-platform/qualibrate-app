@@ -48,6 +48,20 @@ export const getRunResultNodeError = createSelector(
 );
 
 /**
+ * shapshotInfo selectors
+ */
+
+export const getSnapshotInfo = createSelector(
+  getWebSocketState,
+  (webSocketState) => webSocketState.snapshotInfo,
+);
+
+export const getIsSnapshotUpdateRequired = createSelector(
+  getSnapshotInfo,
+  (snapshotInfo) => snapshotInfo?.update_required
+);
+
+/**
  * graph selectors
  */
 

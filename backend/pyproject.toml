@@ -18,6 +18,7 @@ tomli = { version = "^2.0.1", python = "<3.11" }
 tomli-w = "^1.0.0"
 requests = "^2.32.4"
 jsonpatch = "^1.33"
+websockets = "^15.0.1"
 qualibrate-config = "^0.1.8,<0.2.0"
 # TODO: replace after publishing timeline-db
 # json-timeline-database = { path = "../../json-timeline-database", optional = true, develop = true }
