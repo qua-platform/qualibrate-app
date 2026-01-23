@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Checkbox } from "@mui/material";
 import { ParamaterValue, SingleParameter } from "./Parameters";
-import { validate } from "./utils";
+import { getParameterType, validate } from "./utils";
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from "./Parameters.module.scss";
 import { NodeDTO } from "../../modules/Nodes";
@@ -49,7 +49,9 @@ const ParameterSelector = ({
    * time on backend, not during input. Consider adding number input with validation.
    */
   const renderInput = useCallback(() => {
-    if (parameter.type === "boolean")
+    const { type } = getParameterType(parameter);
+
+    if (type === "boolean")
       return (
         <Checkbox
           checked={inputValue as boolean}
@@ -94,7 +96,7 @@ const ParameterSelector = ({
         onChange={(value) => setInputValue(value || undefined)}
         onBlur={() => handleBlur(inputValue)}
         className={styles.input}
-        type={["number", "integer"].includes(parameter.type) ? "number" : "string"}
+        type={["number", "integer"].includes(type) ? "number" : "string"}
         data-testid={`input-field-${parameterKey}`}
       />
     );

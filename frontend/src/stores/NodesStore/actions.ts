@@ -190,7 +190,7 @@ const formatDate = (date: Date) => {
 const transformInputParameters = (parameters: InputParameter) => {
   return Object.entries(parameters).reduce(
     (acc, [key, parameter]) => {
-      acc[key] = parameter.value ?? undefined;
+      acc[key] = parameter.value ?? null;
       return acc;
     },
     {} as { [key: string]: boolean | number | string | null | string[] | undefined }

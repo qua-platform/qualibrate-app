@@ -1,9 +1,16 @@
 import { SingleParameter } from "./Parameters";
 
-export const validate = (parameter: SingleParameter, value: unknown) => {
-  const noDefault = !parameter.default;
+export const getParameterType = (parameter: SingleParameter) => {
+  return {
+    type: parameter.type || (parameter.anyOf || []).find(({ type }) => type !== "null")?.type,
+    allowEmpty: parameter.type === "null" || (parameter.anyOf || []).some(({ type }) => type === "null"),
+  };
+};
 
-  if (noDefault && (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0))) {
+export const validate = (parameter: SingleParameter, value: unknown) => {
+  const { type, allowEmpty } = getParameterType(parameter);
+
+  if (!allowEmpty && (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0))) {
     return {
       isValid: false,
       error: "Must be not empty",
@@ -12,9 +19,9 @@ export const validate = (parameter: SingleParameter, value: unknown) => {
 
   const num = Number(value);
 
-  switch (parameter.type) {
+  switch (type) {
     case "number":
-      if (noDefault && isNaN(num)) {
+      if (!allowEmpty && isNaN(num)) {
         return {
           isValid: false,
           error: "Must be a number"
@@ -23,7 +30,7 @@ export const validate = (parameter: SingleParameter, value: unknown) => {
       return { isValid: true, error: undefined };
 
     case "integer":
-      if (noDefault && (isNaN(num) || !Number.isInteger(num))) {
+      if (!allowEmpty && (isNaN(num) || !Number.isInteger(num))) {
         return {
           isValid: false,
           error: "Must be an integer"
