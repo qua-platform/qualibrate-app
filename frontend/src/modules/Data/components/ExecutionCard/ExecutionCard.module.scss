@@ -38,15 +38,21 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
 .executionName {
   font-size: 14px;
   font-weight: 600;
+  overflow: hidden;
   color: #c9d1d9;
+  text-overflow: ellipsis;
+  margin-right: 10px;
 }
 
 .executionStatus {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -72,6 +78,10 @@
   color: #f85149;
 }
 
+.statusFailure {
+  color: #f85149;
+}
+
 .statusDotRunning {
   background: #f0883e;
 }
@@ -85,6 +95,10 @@
 }
 
 .statusDotError {
+  background: #f85149;
+}
+
+.statusDotFailure {
   background: #f85149;
 }
 
@@ -108,43 +122,36 @@
   gap: 6px;
 }
 
-.executionId {
-}
-
-.executionTags {
+.executionMetaItemGraphCard {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-.tag {
-  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px;
-  background: #1c2128;
-  border: 1px solid #30363d;
-  border-radius: 4px;
-  font-size: 11px;
-  color: #c9d1d9;
-  position: relative;
+  margin-left: auto;
 }
 
-.tagDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #79c0ff;
-}
-
-.addTagButton {
-  padding: 4px 8px;
-  background: #21262d;
-  border: 1px solid #30363d;
-  border-radius: 4px;
-  color: #c9d1d9;
+.executionTypeBadge {
+  background: rgba(31, 111, 235, 0.2);
+  border: 1px solid #1f6feb;
+  color: #58a6ff;
   font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  text-transform: uppercase;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  padding: 4px 6px 4px 10px;
+  gap: 1px;
+}
+
+.executionTypeBadge:hover {
+  background: rgba(31, 111, 235, 0.35);
+  border-color: #388bfd;
+  color: #79c0ff;
+  transform: translateX(2px);
+}
+
+.executionId {
 }

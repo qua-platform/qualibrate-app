@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import MainLayout from "../MainLayout/MainLayout";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_URL } from "../../../../utils/api/apiRoutes";
-import { GRAPH_LIBRARY_KEY, GRAPH_STATUS_KEY, ModuleKey, NODES_KEY, PROJECT_KEY } from "../../ModulesRegistry";
+import { DATA_KEY, GRAPH_LIBRARY_KEY, GRAPH_STATUS_KEY, ModuleKey, NODES_KEY, PROJECT_KEY } from "../../ModulesRegistry";
 import { Nodes } from "../../../Nodes";
 import { GraphLibrary } from "../../../GraphLibrary";
 import { GraphStatus } from "../../../GraphStatus";
@@ -71,7 +71,7 @@ const MainPage = () => {
     } else if (!activeProject || shouldGoToProjectPage) {
       dispatch(setActivePage(PROJECT_KEY));
     } else {
-      dispatch(setActivePage(NODES_KEY));
+      dispatch(setActivePage(DATA_KEY));
     }
   }, [isAuthorized, activeProject, shouldGoToProjectPage]);
 

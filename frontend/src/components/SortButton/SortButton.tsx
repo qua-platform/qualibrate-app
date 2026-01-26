@@ -27,7 +27,7 @@ const SortButton: React.FC<Props> = ({ options = defaultOptions, onSelect }) => 
     onSelect(option);
   };
   return (
-    <div data-testId="sort-button" className={styles.wrapper}>
+    <div data-testid="sort-button" className={styles.wrapper}>
       <div className={styles.filterButton} id="dateFilterBtn" onClick={onClickHandler}>
         <SortIcon width={16} height={16} />
       </div>

@@ -1,29 +1,29 @@
 import React, { useCallback } from "react";
-// eslint-disable-next-line css-modules/no-unused-class
 import styles from "./VerticalResizableComponent.module.scss";
 import { classNames } from "../../utils/classnames";
 import { formatNames } from "../../utils/formatNames";
 import { ParameterStructure } from "../../stores/SnapshotsStore/api/SnapshotsApi";
+import SnapshotComments from "./SnapshotComments";
 
 type Props = {
   tabNames?: string[];
   tabData?: {
     [key: string]: ParameterStructure;
   };
+  hasCommentSection?: boolean;
 };
 
-const VerticalResizableComponent: React.FC<Props> = ({ tabNames = ["Metadata", "Parameters"], tabData = {} }) => {
+const VerticalResizableComponent: React.FC<Props> = ({ tabNames = ["Metadata", "Parameters"], tabData, hasCommentSection = true }) => {
   const [expanded, setExpanded] = React.useState(true);
   const [activeTabName, setActiveTabName] = React.useState<string>(tabNames[0]);
   const handleOnToggleSidebar = () => {
     setExpanded(!expanded);
   };
-
   const handleOnSwitchTab = useCallback((tabName: string) => {
     setActiveTabName(tabName);
   }, []);
-
-  const detailsObject = tabData[activeTabName.toLowerCase()] ?? {};
+  const detailsObject = tabData ? tabData[activeTabName.toLowerCase()] : {};
+  const showComments = hasCommentSection && activeTabName.toLowerCase() === "metadata";
 
   return (
     <div data-testid="vertical-component" className={classNames(styles.contentSidebar, !expanded && styles.collapsed)} id="contentSidebar">
@@ -66,70 +66,10 @@ const VerticalResizableComponent: React.FC<Props> = ({ tabNames = ["Metadata", "
                   </div>
                 );
               })}
+
+            {showComments && <SnapshotComments />}
           </div>
         </div>
-
-        {/*<div className={styles.displayCardContent}>*/}
-        {/*  <div className={classNames(styles.displayCardPanel, activeTabName === "metadata" && styles.active)} id="panelMeta">*/}
-        {/*    <div className={styles.displayCardPanelBody}>*/}
-        {/*      <div className={styles.displayParam}>*/}
-        {/*        <div className={styles.displayParamLabel}>Execution ID</div>*/}
-        {/*        <div className={styles.displayParamValue}>exec-005</div>*/}
-        {/*      </div>*/}
-
-        {/*      <div className={styles.displayParam}>*/}
-        {/*        <div className={styles.displayParamLabel}>Duration</div>*/}
-        {/*        <div className={styles.displayParamValue}>2m 15s</div>*/}
-        {/*      </div>*/}
-
-        {/*      <div className={styles.displayParam}>*/}
-        {/*        <div className={styles.displayParamLabel}>Start Time</div>*/}
-        {/*        <div className={styles.displayParamValue}>2024-11-16 14:30:00</div>*/}
-        {/*      </div>*/}
-
-        {/*      <div className={styles.displayParam}>*/}
-        {/*        <div className={styles.displayParamLabel}>End Time</div>*/}
-        {/*        <div className={styles.displayParamValue}>—</div>*/}
-        {/*      </div>*/}
-
-        {/*      <div className={styles.displayParam}>*/}
-        {/*        <div className={styles.displayParamLabel}>Status</div>*/}
-        {/*        <div className={styles.displayParamValue}>running</div>*/}
-        {/*      </div>*/}
-
-        {/*      <div className={styles.commentSection}>*/}
-        {/*        <div className={styles.commentHeader}>*/}
-        {/*          <div className={styles.commentLabel}>Comments</div>*/}
-        {/*          /!*<button className={styles.addCommentBtn} onClick={handleOpenCommentsModal('exec-005', -1)} title="Add comment">*!/*/}
-        {/*          <button className={styles.addCommentBtn} title="Add comment">*/}
-        {/*            +*/}
-        {/*          </button>*/}
-        {/*        </div>*/}
-
-        {/*        <div className={styles.noComment}>No comments yet</div>*/}
-        {/*      </div>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-
-        {/*  <div className={styles.displayCardPanel} id="panelParams">*/}
-        {/*    <div className={styles.displayCardPanelBody}>*/}
-        {/*      <div className={styles.displayParam}>*/}
-        {/*        <div className={styles.displayParamLabel}>Clifford Depths</div>*/}
-        {/*        <div className={styles.displayParamValue}>1, 5, 10, 20, 50</div>*/}
-        {/*      </div>*/}
-
-        {/*      <div className={styles.displayParam}>*/}
-        {/*        <div className={styles.displayParamLabel}>Sequences</div>*/}
-        {/*        <div className={styles.displayParamValue}>100</div>*/}
-        {/*      </div>*/}
-
-        {/*      <div className={styles.displayParam}>*/}
-        {/*        <div className={styles.displayParamLabel}>Qubits</div>*/}
-        {/*        <div className={styles.displayParamValue}>Q1</div>*/}
-        {/*      </div>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
       </div>
     </div>
   );
