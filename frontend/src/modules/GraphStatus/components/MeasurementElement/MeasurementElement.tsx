@@ -30,7 +30,7 @@ import {
   setResult,
   setSelectedSnapshot,
   setSelectedSnapshotId,
-} from "../../../../stores/SnapshotsStore";
+} from "../../../../stores/SnapshotsStore/actions";
 
 interface MeasurementElementProps {
   element: Measurement;

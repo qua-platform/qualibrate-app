@@ -1,3 +1,17 @@
+.titleArrow {
+  cursor: pointer;
+  color: #58a6ff;
+}
+
+.titleSlash {
+  color: #7d8590;
+  margin: 0 8px;
+}
+
+.title {
+  color: #c9d1d9;
+}
+
 .dataWrapper {
   width: 420px;
   max-width: 800px;
@@ -16,6 +30,7 @@
 .headerPanel {
   padding: 20px;
   border-bottom: 1px solid #21262d;
+  background: #0d1117;
 }
 
 .headerPanel h2 {
@@ -33,6 +48,8 @@
 }
 
 .snapshotsWrapper {
+  background: #0d1117;
   overflow: scroll;
   height: 100%;
+  width: 420px;
 }

@@ -1,17 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SnapshotDTO } from "./api/SnapshotsApi";
+import { SnapshotData, SnapshotDTO } from "./api/SnapshotsApi";
 
-interface SnapshotsState {
+export interface SnapshotsState {
   trackLatestSidePanel: boolean;
   trackPreviousSnapshot: boolean;
   totalPages: number;
   pageNumber: number;
   allSnapshots: SnapshotDTO[];
   selectedSnapshot: SnapshotDTO | undefined;
+  selectedWorkflow: SnapshotDTO | undefined;
+  selectedNodeInWorkflowName: string | undefined;
+  breadCrumbs: string[];
+  allTags: string[];
   selectedSnapshotId: number | undefined;
   latestSnapshotId: number | undefined;
   clickedForSnapshotSelection: boolean;
-  jsonData: object | undefined;
+  jsonData: SnapshotData | undefined | object;
   jsonDataSidePanel: object | undefined;
   diffData: object | undefined;
   result: object | undefined;
@@ -27,6 +31,10 @@ const initialState: SnapshotsState = {
   pageNumber: 0,
   allSnapshots: [],
   selectedSnapshot: undefined,
+  selectedWorkflow: undefined,
+  selectedNodeInWorkflowName: undefined,
+  breadCrumbs: [],
+  allTags: [],
   selectedSnapshotId: undefined,
   latestSnapshotId: undefined,
   clickedForSnapshotSelection: false,
@@ -61,6 +69,21 @@ export const SnapshotsSlice = createSlice({
     setSelectedSnapshot: (state, action) => {
       state.selectedSnapshot = action.payload;
     },
+    setSelectedWorkflow: (state, action) => {
+      state.selectedWorkflow = action.payload;
+    },
+    setSelectedNodeInWorkflowName: (state, action) => {
+      state.selectedNodeInWorkflowName = action.payload;
+    },
+    setSubgraphForward: (state, action) => {
+      state.breadCrumbs = [...state.breadCrumbs, action.payload];
+    },
+    setSubgraphBack: (state, action) => {
+      state.breadCrumbs.splice(action.payload, state.breadCrumbs.length);
+    },
+    setAllTags: (state, action) => {
+      state.allTags = action.payload;
+    },
     setSelectedSnapshotId: (state, action) => {
       state.selectedSnapshotId = action.payload;
     },
@@ -81,6 +104,9 @@ export const SnapshotsSlice = createSlice({
     },
     clearData: (state) => {
       state.selectedSnapshotId = undefined;
+      state.selectedSnapshot = undefined;
+      state.selectedWorkflow = undefined;
+      state.selectedNodeInWorkflowName = undefined;
       state.jsonData = undefined;
       state.result = undefined;
       state.diffData = undefined;

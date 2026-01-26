@@ -1,7 +1,10 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "..";
+import { SnapshotDTO } from "./api/SnapshotsApi";
 
 export const getSnapshotsState = (state: RootState) => state.snapshots;
+
+export const getNodesState = (state: RootState) => state.nodes;
 
 export const getTrackLatestSidePanel = createSelector(getSnapshotsState, (state) => state.trackLatestSidePanel);
 
@@ -14,6 +17,31 @@ export const getPageNumber = createSelector(getSnapshotsState, (state) => state.
 export const getAllSnapshots = createSelector(getSnapshotsState, (state) => state.allSnapshots);
 
 export const getSelectedSnapshot = createSelector(getSnapshotsState, (state) => state.selectedSnapshot);
+
+export const getSelectedSnapshotNode = createSelector(getSnapshotsState, getNodesState, (snapshotState, nodesState) =>
+  nodesState?.allNodes ? nodesState?.allNodes[snapshotState.selectedSnapshot?.metadata?.name ?? ""] : undefined
+);
+
+export const getAllTags = createSelector(getSnapshotsState, (state) => state.allTags);
+
+export const getSelectedWorkflow = createSelector(getSnapshotsState, (state) => state.selectedWorkflow);
+
+export const getSelectedNodeInWorkflowName = createSelector(getSnapshotsState, (state) => state.selectedNodeInWorkflowName);
+
+export const getBreadCrumbs = createSelector(getSnapshotsState, (state) => state.breadCrumbs);
+
+const findByBreadcrumbs = (items: SnapshotDTO[], breadcrumbs: string[]): SnapshotDTO | undefined =>
+  breadcrumbs.reduce<SnapshotDTO | undefined>((current, name, index) => {
+    const source = index === 0 ? items : current?.type_of_execution === "workflow" ? current.items : undefined;
+
+    if (!source) return undefined;
+
+    return source.find((item: SnapshotDTO) => item.metadata?.name === name);
+  }, undefined);
+
+export const getSelectedWorkflowForGraph = createSelector(getAllSnapshots, getBreadCrumbs, (allSnapshots = [], breadcrumbs = []) =>
+  breadcrumbs.length ? findByBreadcrumbs(allSnapshots, breadcrumbs) : undefined
+);
 
 export const getSelectedSnapshotId = createSelector(getSnapshotsState, (state) => state.selectedSnapshotId);
 
