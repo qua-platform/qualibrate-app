@@ -1,5 +1,5 @@
 import Api, { BASIC_HEADERS } from "../../../utils/api";
-import { Res } from "../../../utils/api/types";
+import { API_METHODS, Res } from "../../../utils/api/types";
 import {
   ALL_SNAPSHOTS,
   ONE_SNAPSHOT,
@@ -9,7 +9,6 @@ import {
   UPDATE_SNAPSHOT,
   UPDATE_SNAPSHOTS,
 } from "../../../utils/api/apiRoutes";
-import { API_METHODS } from "../../../utils/api/types";
 import { GlobalParameterStructure } from "../../GraphStores/GraphStatus";
 
 type SnapshotLoadTypeFlag =
@@ -29,20 +28,35 @@ interface SnapshotResult {
   total_pages: number;
 }
 
+export interface SnapshotMetadata {
+  description?: string | null;
+  data_path: string;
+  name: string;
+  run_start?: string | null;
+  run_end?: string | null;
+  run_duration?: number | null;
+  status?: string | null;
+}
+
+export interface ParameterStructure {
+  [key: string]: string | number | null | undefined | string[];
+}
+
 export interface SnapshotDTO {
   created_at: string;
   status?: string;
   id: number;
   result?: object;
-  data?: { [key: string]: object; };
-  metadata?: {
-    description?: string | null;
-    data_path: string;
-    name: string;
-    run_start?: string | null;
-    run_end?: string | null;
-    run_duration?: number | null;
+  data?: {
+    parameters?: {
+      model?: ParameterStructure;
+      [key: string]: unknown;
+    };
+    quam?: Record<string, unknown>;
+    [key: string]: unknown;
   };
+  metadata: SnapshotMetadata;
+
   parents: [];
   parameters?: GlobalParameterStructure;
   outcomes?: object;
@@ -68,7 +82,7 @@ export class SnapshotsApi extends Api {
     const params = new URLSearchParams();
 
     // Use DataWithMachine as default if no load type flag is provided
-    const flagsToUse = loadTypeFlag && loadTypeFlag.length > 0 ? loadTypeFlag : ["DataWithMachine"];
+    const flagsToUse = loadTypeFlag && loadTypeFlag.length > 0 ? loadTypeFlag : ["Full"];
 
     flagsToUse.forEach((flag) => params.append("load_type_flag", flag));
 
