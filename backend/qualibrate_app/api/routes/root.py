@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from qualibrate_config.models import QualibrateConfig, StorageType
 
 from qualibrate_app.api.core.domain.bases.branch import BranchLoadType
@@ -21,10 +21,12 @@ from qualibrate_app.api.core.models.snapshot import (
 )
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
 from qualibrate_app.api.core.types import (
+    STATUS_SORT_PRIORITY,
     IdType,
     PageFilter,
     SearchFilter,
     SearchWithIdFilter,
+    SortField,
 )
 from qualibrate_app.api.dependencies.search import get_search_path
 from qualibrate_app.api.routes.utils.dependencies import (
@@ -367,6 +369,29 @@ name_part=test_cal&max_node_id=365&max_date=2025-08-20`
     return snapshots[0].dump()
 
 
+def _get_sort_key(
+    snapshot: SimplifiedSnapshotWithMetadata,
+    sort_field: SortField,
+    descending: bool,
+) -> tuple[int, Any]:
+    """Get sort key for a snapshot based on the sort field.
+
+    Returns a tuple of (priority, value) for stable sorting.
+    """
+    if sort_field == SortField.name:
+        name = snapshot.metadata.name if snapshot.metadata else None
+        # Use empty string for None to sort nulls last
+        return (0 if name else 1, (name or "").lower())
+    elif sort_field == SortField.date:
+        # Use created_at for date sorting
+        return (0 if snapshot.created_at else 1, snapshot.created_at)
+    elif sort_field == SortField.status:
+        status = snapshot.metadata.status if snapshot.metadata else None
+        priority = STATUS_SORT_PRIORITY.get(status, len(STATUS_SORT_PRIORITY))
+        return (priority, status or "")
+    return (0, snapshot.id)
+
+
 @root_router.get("/snapshots_history", summary="List snapshots history")
 def get_snapshots_history(
     *,
@@ -389,14 +414,28 @@ def get_snapshots_history(
             description="This field is ignored. Use `descending` instead.",
         ),
     ] = False,
+    sort: Annotated[
+        SortField | None,
+        Query(
+            description=(
+                "Field to sort by: 'name' (alphabetical), 'date' (creation "
+                "time), or 'status' (finished first, then skipped, pending, "
+                "running, error). Default sorts by date."
+            )
+        ),
+    ] = None,
+    search_filters: Annotated[SearchFilter, Depends(get_search_filter)],
     root: Annotated[RootBase, Depends(_get_root_instance)],
 ) -> PagedCollection[SimplifiedSnapshotWithMetadata]:
     """List snapshots history.
 
     Returns a paginated list of snapshots for the storage. Order is controlled
-    by the `descending` flag.
+    by the `descending` flag. Optionally filter by date range, name, or node ID.
+    Use the `sort` parameter to sort by name, date, or status.
 
     ### Examples
+
+    #### 1) Basic pagination
     **Request:** `/root/snapshots_history?page=1&per_page=3`
 
     **Response:**
@@ -445,15 +484,68 @@ def get_snapshots_history(
       "total_pages": 45
     }
     ```
+
+    #### 2) Filter by date range
+    **Request:**
+    `/root/snapshots_history?page=1&per_page=100&min_date=2025-08-21&max_date=2025-08-22`
+
+    Returns snapshots created between 2025-08-21 and 2025-08-22 (inclusive).
+
+    #### 3) Filter by name substring and date
+    **Request:**
+    `/root/snapshots_history?page=1&per_page=50&name_part=test_cal&min_date=2025-08-01`
+
+    Returns snapshots with name containing "test_cal" created on or after
+    2025-08-01.
+
+    #### 4) Filter by exact name
+    **Request:**
+    `/root/snapshots_history?page=1&per_page=100&name=test_cal`
+
+    Returns only snapshots with name exactly matching "test_cal".
+
+    #### 5) Sort by name (A-Z)
+    **Request:**
+    `/root/snapshots_history?page=1&per_page=100&sort=name&descending=false`
+
+    Returns snapshots sorted alphabetically by name (A to Z).
+
+    #### 6) Sort by status (errors first)
+    **Request:**
+    `/root/snapshots_history?page=1&per_page=100&sort=status&descending=true`
+
+    Returns snapshots sorted by status with errors first, then running,
+    pending, skipped, and finished last.
+
+    **Note:** Cannot use both `name` (exact match) and `name_part` (substring
+    match) in the same request - this will return a 400 Bad Request error.
     """
+    if search_filters.name is not None and search_filters.name_part is not None:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Cannot use both 'name' (exact match) and 'name_part' "
+                "(substring match) parameters together. Use only one."
+            ),
+        )
     total, snapshots = root.get_latest_snapshots(
         pages_filter=page_filter,
+        search_filter=SearchWithIdFilter(**search_filters.model_dump()),
         descending=descending,
     )
     snapshots_dumped = [
         SimplifiedSnapshotWithMetadata(**snapshot.dump().model_dump())
         for snapshot in snapshots
     ]
+
+    # Apply sorting if sort field is specified
+    if sort is not None:
+        snapshots_dumped = sorted(
+            snapshots_dumped,
+            key=lambda s: _get_sort_key(s, sort, descending),
+            reverse=descending,
+        )
+
     return PagedCollection[SimplifiedSnapshotWithMetadata](
         page=page_filter.page,
         per_page=page_filter.per_page,
