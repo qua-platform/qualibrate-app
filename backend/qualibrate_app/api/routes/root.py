@@ -21,12 +21,12 @@ from qualibrate_app.api.core.models.snapshot import (
 )
 from qualibrate_app.api.core.models.snapshot import Snapshot as SnapshotModel
 from qualibrate_app.api.core.types import (
+    STATUS_SORT_PRIORITY,
     IdType,
     PageFilter,
     SearchFilter,
     SearchWithIdFilter,
     SortField,
-    STATUS_SORT_PRIORITY,
 )
 from qualibrate_app.api.dependencies.search import get_search_path
 from qualibrate_app.api.routes.utils.dependencies import (
